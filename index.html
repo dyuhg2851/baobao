@@ -49,48 +49,57 @@
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
-            padding: 20px 16px 40px 16px;
-            margin-top: -10px; /* 稍微向上衔接圆角 */
+            padding: 16px 16px 80px 16px;
+            margin-top: -10px;
         }
-        /* 底部区域圆角适配 - 调整内边距适配15Plus */
+        /* 底部输入栏固定 */
         footer {
             background: white;
             border-top-left-radius: var(--accent-radius);
             border-top-right-radius: var(--accent-radius);
-            padding-bottom: var(--safe-bottom);
             box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
             z-index: 50;
             flex-shrink: 0;
-            padding-top: 8px;
+            padding: 8px 16px;
             padding-bottom: calc(8px + var(--safe-bottom));
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
         }
+        /* 消息气泡缩小：减少内边距、缩小字体，随文字自适应 */
         .msg-bubble { 
-            max-width: 82%; 
-            padding: 12px 18px; 
-            border-radius: 1.4rem; 
-            font-size: 16px; 
-            line-height: 1.5; 
+            max-width: 75%; 
+            padding: 8px 12px; 
+            border-radius: 1.2rem; 
+            font-size: 15px; 
+            line-height: 1.4; 
             word-wrap: break-word;
             position: relative;
+            transition: transform 0.2s ease;
         }
         .user-bubble { background: #000; color: #fff; border-top-right-radius: 4px; }
         .ai-bubble { background: #fff; color: #000; border-top-left-radius: 4px; border: 0.5px solid rgba(0,0,0,0.1); }
+        /* 左划菜单样式 */
         .bubble-menu { 
             position: absolute; 
-            top: -55px; 
+            top: 50%;
+            transform: translateY(-50%);
             background: rgba(0, 0, 0, 0.9); 
-            backdrop-filter: blur(10px);
-            border-radius: 14px; 
+            backdrop-filter: blur(8px);
+            border-radius: 8px; 
             display: flex; 
             padding: 4px; 
             opacity: 0; 
-            transform: scale(0.9); 
-            transition: all 0.2s ease; 
             pointer-events: none; 
             z-index: 60; 
+            transition: opacity 0.2s ease;
         }
-        .bubble-menu.active { opacity: 1; transform: scale(1); pointer-events: auto; }
-        .menu-item { color: white; padding: 6px 12px; font-size: 13px; font-weight: 500; }
+        .user-bubble .bubble-menu { right: -80px; width: 76px; }
+        .ai-bubble .bubble-menu { left: -110px; width: 106px; }
+        .bubble-menu.active { opacity: 1; pointer-events: auto; }
+        .menu-item { color: white; padding: 6px 8px; font-size: 12px; font-weight: 500; cursor: pointer; text-align: center; flex: 1; }
+        /* 面板样式 */
         .page-overlay { 
             position: fixed; 
             top: 0; left: 0; right: 0; bottom: 0;
@@ -103,7 +112,8 @@
             padding-top: var(--safe-top);
         }
         .page-overlay.active { transform: translateY(0); }
-        .typing-dot { animation: typing 1.4s infinite ease-in-out both; width: 5px; height: 5px; background: #999; border-radius: 50%; }
+        /* 输入状态动画 */
+        .typing-dot { animation: typing 1.4s infinite ease-in-out both; width: 4px; height: 4px; background: #999; border-radius: 50%; margin: 0 2px; }
         @keyframes typing { 0%, 80%, 100% { transform: scale(0.5); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
         
         ::-webkit-scrollbar { display: none; }
@@ -114,11 +124,8 @@
             border: 2px solid transparent;
             transition: all 0.2s;
         }
-        .api-card.active {
-            border-color: #000;
-            background: #fdfdfd;
-        }
-        /* 输入区域样式调整 - 核心适配15Plus */
+        .api-card.active { border-color: #000; background: #fdfdfd; }
+        /* 输入区域 */
         .input-wrapper {
             background: #f1f1f1;
             border-radius: 1.8rem;
@@ -131,23 +138,25 @@
             border: none;
             outline: none;
             resize: none;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.4;
             min-height: 20px;
             max-height: 80px;
             padding: 4px 0;
         }
-        /* 引用栏适配 */
+        /* 引用栏 */
         #quote-preview-bar {
             padding: 2px 16px;
             font-size: 11px;
+            margin-bottom: 4px;
         }
-        /* 折叠面板样式 */
+        /* 折叠面板 */
         .foldable-section {
             background: white;
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            margin-bottom: 16px;
         }
         .foldable-header {
             display: flex;
@@ -180,7 +189,7 @@
             max-height: 0;
             padding: 0;
         }
-        /* 新增：弹窗报错样式 */
+        /* 报错弹窗 */
         .error-modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -243,14 +252,13 @@
                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M5 12c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm7 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2zm7 0c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2z"/></svg>
             </button>
         </header>
-        <main id="chat-box"></main>
-        <footer>
+        <main id="chat-box" onclick="hideAllBubbleMenus()"></main>
+        <footer id="app-footer">
             <div id="quote-preview-bar" class="hidden bg-gray-50 border-l-4 border-black text-gray-500 flex justify-between items-center">
                 <span id="quote-preview-text" class="truncate italic mr-4"></span>
                 <button onclick="cancelQuote()" class="text-gray-400 text-xs">✕</button>
             </div>
-            
-            <div class="px-5 py-2 flex items-center gap-3">
+            <div class="px-1 py-2 flex items-center gap-3">
                 <div class="relative">
                     <div id="plus-menu" class="hidden absolute bottom-12 left-0 w-44 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[60]">
                         <button onclick="toggleSettings(); closeMenu();" class="w-full text-left px-5 py-3 active:bg-gray-50 text-[15px] font-medium border-b border-gray-50">API 预设 ⚙️</button>
@@ -260,13 +268,12 @@
                         <svg id="plus-icon" class="w-7 h-7 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path d="M12 6v12M6 12h12"/></svg>
                     </button>
                 </div>
-                <!-- 调整输入框外层结构，适配新样式 -->
-                <div class="input-wrapper">
+                <div class="input-wrapper flex-1">
                     <textarea id="message-input" rows="1" placeholder="发个消息..." enterkeyhint="send"></textarea>
                 </div>
             </div>
         </footer>
-        <!-- 人设 & 世界书面板 - 折叠版 -->
+        <!-- 人设面板 -->
         <div id="persona-page" class="page-overlay">
             <header class="rounded-none">
                 <button onclick="closePersonaPage()" class="text-[16px] text-gray-400">关闭</button>
@@ -274,7 +281,6 @@
                 <button onclick="savePersona()" class="text-[16px] font-bold text-black">保存</button>
             </header>
             <div class="flex-1 overflow-y-auto p-6 space-y-4 pb-10">
-                <!-- 折叠面板：人设 -->
                 <div class="foldable-section">
                     <div class="foldable-header" onclick="toggleFold('persona-fold')">
                         <h3>人设信息</h3>
@@ -289,8 +295,6 @@
                         <textarea id="p-prompt" rows="4" class="w-full bg-white rounded-2xl p-4 text-[15px] outline-none shadow-sm" placeholder="TA是谁？"></textarea>
                     </div>
                 </div>
-
-                <!-- 折叠面板：世界书 -->
                 <div class="foldable-section">
                     <div class="foldable-header" onclick="toggleFold('wb-fold')">
                         <h3>世界书</h3>
@@ -302,7 +306,7 @@
                 </div>
             </div>
         </div>
-        <!-- API 预设管理面板 (由 settings 改编) -->
+        <!-- API管理面板 -->
         <div id="settings-modal" class="page-overlay">
             <header class="rounded-none">
                 <button onclick="toggleSettings()" class="text-[16px] text-gray-400">取消</button>
@@ -310,16 +314,12 @@
                 <button onclick="addNewConfig()" class="text-[16px] font-bold text-blue-500">+ 新增</button>
             </header>
             <div class="flex-1 overflow-y-auto p-6 space-y-6">
-                <div id="config-list" class="space-y-4">
-                    <!-- 动态加载预设 -->
-                </div>
-                
+                <div id="config-list" class="space-y-4"></div>
                 <div id="edit-area" class="hidden bg-white p-6 rounded-[2rem] shadow-sm space-y-4">
                     <h3 class="font-bold text-sm text-gray-400 uppercase">编辑选中预设</h3>
                     <input type="text" id="api-name" class="w-full border-b py-2 outline-none text-sm" placeholder="预设名称 (如: DeepSeek)">
                     <input type="text" id="api-url" class="w-full border-b py-2 outline-none text-sm" placeholder="Base URL">
                     <input type="password" id="api-key" class="w-full border-b py-2 outline-none text-sm" placeholder="API Key">
-                    
                     <div class="flex gap-2 items-center">
                         <input type="text" id="api-model" class="flex-1 border-b py-2 outline-none text-sm" placeholder="模型名称">
                         <button onclick="fetchModels()" class="px-3 py-2 bg-black text-white text-[11px] font-bold rounded-lg shadow-md active:scale-95 transition-all">拉取列表</button>
@@ -327,7 +327,6 @@
                     <div id="model-select-container" class="hidden">
                         <select id="model-dropdown" class="w-full p-2 bg-gray-50 rounded-lg text-sm" onchange="document.getElementById('api-model').value = this.value"></select>
                     </div>
-                    
                     <div class="flex gap-3 pt-2">
                         <button onclick="saveCurrentEdit()" class="flex-1 py-3 bg-black text-white rounded-xl font-bold">保存修改</button>
                         <button onclick="deleteCurrentConfig()" class="px-5 py-3 bg-red-50 text-red-500 rounded-xl font-bold text-sm">删除</button>
@@ -335,9 +334,9 @@
                 </div>
             </div>
         </div>
-        
+        <!-- 轻量提示 -->
         <div id="toast" class="fixed top-24 left-1/2 -translate-x-1/2 bg-black/90 text-white px-6 py-3 rounded-full text-[12px] font-bold opacity-0 transition-all pointer-events-none z-[300] shadow-xl"></div>
-        <!-- 新增：API报错弹窗 -->
+        <!-- API报错弹窗 -->
         <div id="error-modal" class="error-modal">
             <div class="error-box">
                 <div class="error-title">
@@ -358,6 +357,7 @@
         let messages = [];
         let isWaiting = false;
         let quoting = null;
+        let touchStartX = 0;
 
         // 折叠面板控制
         function toggleFold(id) {
@@ -365,57 +365,186 @@
             const icon = document.getElementById(`${id}-icon`);
             if (content.classList.contains('collapsed')) {
                 content.classList.remove('collapsed');
-                if (icon) icon.classList.add('rotated');
+                icon?.classList.add('rotated');
             } else {
                 content.classList.add('collapsed');
-                if (icon) icon.classList.remove('rotated');
+                icon?.classList.remove('rotated');
             }
         }
 
-        // 新增：弹窗报错控制
+        // 报错弹窗控制
         function showErrorModal(text) {
             document.getElementById('error-text').innerText = text;
             document.getElementById('error-modal').classList.add('active');
-            isWaiting = false; // 报错后解除等待状态，可重新发送
+            isWaiting = false;
         }
         function closeErrorModal() {
             document.getElementById('error-modal').classList.remove('active');
         }
 
+        // 核心：点击屏幕中间隐藏所有消息左划菜单
+        function hideAllBubbleMenus() {
+            const allMenus = document.querySelectorAll('.bubble-menu');
+            allMenus.forEach(menu => menu.classList.remove('active'));
+            // 恢复消息气泡原始位置
+            const allBubbles = document.querySelectorAll('.msg-bubble');
+            allBubbles.forEach(bubble => bubble.style.transform = 'translateX(0)');
+        }
+
+        // 消息左划逻辑（优化：仅左划显示菜单，点击空白处恢复）
+        function initBubbleSwipe(bubbleEl, menuEl, isAiBubble, idx) {
+            bubbleEl.addEventListener('touchstart', (e) => {
+                touchStartX = e.touches[0].clientX;
+                // 阻止事件冒泡，避免触发chat-box的点击隐藏
+                e.stopPropagation();
+            });
+            bubbleEl.addEventListener('touchmove', (e) => {
+                const touchMoveX = e.touches[0].clientX;
+                const diffX = touchStartX - touchMoveX;
+                // 左划超过20px显示菜单，右划恢复
+                if (isAiBubble) {
+                    if (diffX < -20) {
+                        bubbleEl.style.transform = 'translateX(20px)';
+                        menuEl.classList.add('active');
+                    } else if (diffX > 0) {
+                        bubbleEl.style.transform = 'translateX(0)';
+                        menuEl.classList.remove('active');
+                    }
+                } else {
+                    if (diffX > 20) {
+                        bubbleEl.style.transform = 'translateX(-20px)';
+                        menuEl.classList.add('active');
+                    } else if (diffX < 0) {
+                        bubbleEl.style.transform = 'translateX(0)';
+                        menuEl.classList.remove('active');
+                    }
+                }
+                e.stopPropagation();
+            });
+            bubbleEl.addEventListener('touchend', (e) => {
+                const touchEndX = e.changedTouches[0].clientX;
+                const diffX = touchStartX - touchEndX;
+                // 左划距离不足20px，自动恢复
+                if (isAiBubble) {
+                    if (diffX > -20) {
+                        bubbleEl.style.transform = 'translateX(0)';
+                        menuEl.classList.remove('active');
+                    }
+                } else {
+                    if (diffX < 20) {
+                        bubbleEl.style.transform = 'translateX(0)';
+                        menuEl.classList.remove('active');
+                    }
+                }
+                e.stopPropagation();
+            });
+            // 点击菜单本身不隐藏
+            menuEl.addEventListener('click', (e) => e.stopPropagation());
+            // 绑定重答按钮事件（仅AI气泡）
+            if (isAiBubble) {
+                const reanswerBtn = menuEl.querySelector('.menu-item-reanswer');
+                if (reanswerBtn) {
+                    reanswerBtn.onclick = () => reanswerAIMsg(idx);
+                }
+            }
+        }
+
+        // AI重答核心方法：删除原AI消息，重新请求生成
+        function reanswerAIMsg(idx) {
+            hideAllBubbleMenus();
+            if (isWaiting) return showToast('AI正在回复中，请稍候');
+            // 校验是否为AI消息
+            if (!messages[idx] || messages[idx].role !== 'assistant') return showToast('仅可重答AI消息');
+            // 删除原AI消息
+            messages.splice(idx, 1);
+            localStorage.setItem('ai_his', JSON.stringify(messages));
+            renderHistory();
+            // 立即重新请求AI回复（无5秒延迟）
+            isWaiting = true;
+            const loader = createLoader();
+            // 重新请求逻辑和原请求一致
+            const cfg = configs.find(c => c.id === activeConfigId);
+            if (!cfg || !cfg.apiUrl || !cfg.apiKey || !cfg.model) {
+                loader.remove();
+                isWaiting = false;
+                return showErrorModal("请先配置完整的API信息");
+            }
+            const lastContent = messages[messages.length-1].content;
+            const wb = persona.worldBook.filter(i => i.key && lastContent.includes(i.key)).map(i => `${i.key}:${i.content}`).join('\n');
+            const sys = `你是${persona.name}。${persona.prompt}\n${wb?'背景资料:'+wb:''}\n[禁止括号描写，禁止AI自称]`;
+            
+            fetch(`${cfg.apiUrl}/chat/completions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${cfg.apiKey}` },
+                body: JSON.stringify({
+                    model: cfg.model,
+                    messages: [{ role: 'system', content: sys }, ...messages.slice(-10).map(m=>({role:m.role,content:m.content}))],
+                    temperature: 0.8
+                })
+            }).then(res => {
+                if (!res.ok) throw new Error(`HTTP错误：${res.status}`);
+                return res.json();
+            }).then(data => {
+                loader.remove();
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) throw new Error("未获取到有效回复");
+                const reply = data.choices[0].message.content;
+                const segments = reply.split(/\n/).filter(s => s.trim());
+                // 逐行渲染新回复
+                (async () => {
+                    for (let s of segments) {
+                        const content = cleanBrackets(s);
+                        messages.push({ role: 'assistant', content });
+                        displayMessage('assistant', content, messages.length - 1);
+                        localStorage.setItem('ai_his', JSON.stringify(messages));
+                        await new Promise(r => setTimeout(r, 1000));
+                    }
+                    showToast('AI已重答');
+                })();
+            }).catch(e => {
+                loader.remove();
+                showErrorModal(`重答失败：${e.message}`);
+            }).finally(() => {
+                isWaiting = false;
+            });
+        }
+
         window.onload = () => {
+            // 加载本地存储
             const sc = localStorage.getItem('ai_configs'); if (sc) configs = JSON.parse(sc);
             const sa = localStorage.getItem('ai_active_id'); if (sa) activeConfigId = sa;
             const sp = localStorage.getItem('ai_psn'); if (sp) persona = JSON.parse(sp);
             const sh = localStorage.getItem('ai_his'); if (sh) { messages = JSON.parse(sh); renderHistory(); }
             
+            // 初始化页面
             document.getElementById('display-name').innerText = persona.name;
             document.getElementById('p-name').value = persona.name;
             document.getElementById('p-prompt').value = persona.prompt;
             renderWBList();
             renderConfigList();
+            
+            // 输入框高度自适应
             const input = document.getElementById('message-input');
-            // 调整输入框高度自适应逻辑，适配新尺寸
             input.oninput = function() { 
                 this.style.height = 'auto'; 
                 this.style.height = Math.min(this.scrollHeight, 80) + 'px'; 
             };
             input.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
         };
+
         // --- API 配置逻辑 ---
         function renderConfigList() {
             const list = document.getElementById('config-list');
             list.innerHTML = '';
             configs.forEach(cfg => {
-                const isActive = cfg.id === activeConfigId;
                 const div = document.createElement('div');
-                div.className = `api-card ${isActive ? 'active' : ''}`;
+                div.className = `api-card ${cfg.id === activeConfigId ? 'active' : ''}`;
                 div.innerHTML = `
                     <div class="flex justify-between items-center" onclick="selectConfig('${cfg.id}')">
                         <div>
                             <div class="font-bold text-[16px]">${cfg.name || '未命名'}</div>
                             <div class="text-[11px] text-gray-400 mt-1">${cfg.model || '未设置模型'}</div>
                         </div>
-                        ${isActive ? '<span class="text-xs bg-black text-white px-2 py-0.5 rounded-full">当前</span>' : ''}
+                        ${cfg.id === activeConfigId ? '<span class="text-xs bg-black text-white px-2 py-0.5 rounded-full">当前</span>' : ''}
                     </div>
                 `;
                 list.appendChild(div);
@@ -432,7 +561,6 @@
             const editArea = document.getElementById('edit-area');
             const cfg = configs.find(c => c.id === activeConfigId);
             if (!cfg) return editArea.classList.add('hidden');
-            
             editArea.classList.remove('hidden');
             document.getElementById('api-name').value = cfg.name || '';
             document.getElementById('api-url').value = cfg.apiUrl || '';
@@ -470,9 +598,7 @@
             if (!baseUrl || !apiKey) return showErrorModal("请先填写完整的Base URL和API Key");
             showToast("正在拉取模型列表...");
             try {
-                const res = await fetch(`${baseUrl}/models`, {
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
-                });
+                const res = await fetch(`${baseUrl}/models`, { headers: { 'Authorization': `Bearer ${apiKey}` } });
                 if (!res.ok) throw new Error(`HTTP错误，状态码：${res.status}`);
                 const data = await res.json();
                 if (data.data && Array.isArray(data.data)) {
@@ -480,33 +606,29 @@
                     select.innerHTML = '<option value="">请选择获取到的模型</option>';
                     data.data.forEach(m => {
                         const opt = document.createElement('option');
-                        opt.value = m.id;
-                        opt.innerText = m.id;
+                        opt.value = m.id; opt.innerText = m.id;
                         select.appendChild(opt);
                     });
                     document.getElementById('model-select-container').classList.remove('hidden');
                     showToast(`成功获取 ${data.data.length} 个模型`);
-                } else {
-                    throw new Error("接口返回数据格式错误，未找到模型列表");
-                }
+                } else throw new Error("接口返回数据格式错误，未找到模型列表");
             } catch (e) {
                 showErrorModal(`拉取模型失败：${e.message}`);
             }
         }
+
         // --- 聊天逻辑 ---
         async function requestAI() {
             if (isWaiting) return;
             const cfg = configs.find(c => c.id === activeConfigId);
-            // 配置校验，失败弹弹窗
-            if (!cfg) return showErrorModal("未找到当前API预设配置，请重新添加");
+            // 配置校验
+            if (!cfg) return showErrorModal("未找到当前API预设配置");
             if (!cfg.apiUrl) return showErrorModal("Base URL未配置，请前往API管理页面填写");
             if (!cfg.apiKey) return showErrorModal("API Key未配置，请前往API管理页面填写");
             if (!cfg.model) return showErrorModal("模型名称未配置，请前往API管理页面填写/拉取");
             
             isWaiting = true;
-            // 显示"正在输入"动画
             const loader = createLoader();
-            
             try {
                 const lastContent = messages[messages.length-1].content;
                 const wb = persona.worldBook.filter(i => i.key && lastContent.includes(i.key)).map(i => `${i.key}:${i.content}`).join('\n');
@@ -521,21 +643,15 @@
                         temperature: 0.8
                     })
                 });
-
-                // HTTP状态码错误处理
                 if (!res.ok) {
                     const errData = await res.json().catch(() => ({ message: '无错误信息' }));
-                    throw new Error(`HTTP ${res.status}：${errData.error?.message || errData.message || '接口请求被拒绝'}`);
+                    throw new Error(`HTTP ${res.status}：${errData.error?.message || errData.message}`);
                 }
-
                 const data = await res.json();
                 loader.remove();
-                
-                // 接口返回数据校验
                 if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-                    throw new Error("接口返回数据异常，未找到有效回复内容");
+                    throw new Error("接口返回数据异常，未找到有效回复");
                 }
-
                 const reply = data.choices[0].message.content;
                 const segments = reply.split(/\n/).filter(s => s.trim());
                 for (let s of segments) {
@@ -546,14 +662,14 @@
                     await new Promise(r => setTimeout(r, 1000));
                 }
             } catch (e) {
-                // 所有异常统一弹弹窗，并移除加载动画
                 loader?.remove();
                 showErrorModal(`请求失败：${e.message}`);
             } finally {
                 isWaiting = false;
             }
         }
-        // --- 基础 UI 交互 ---
+
+        // --- 消息渲染与交互 ---
         function handleSend() {
             const input = document.getElementById('message-input');
             const text = input.value.trim();
@@ -564,75 +680,152 @@
             messages.push(msg);
             displayMessage('user', msg.content, messages.length - 1, msg.quote);
             localStorage.setItem('ai_his', JSON.stringify(messages));
-            
-            // 5秒延迟调用AI请求
-            setTimeout(() => {
-                requestAI();
-            }, 5000);
+            // 5秒延迟调用AI
+            setTimeout(() => requestAI(), 5000);
         }
         function displayMessage(role, content, idx, quote = null) {
             const isUser = role === 'user';
+            const isAiBubble = !isUser;
             const chatBox = document.getElementById('chat-box');
             const div = document.createElement('div');
-            div.className = `w-full flex flex-col mb-5 ${isUser ? 'items-end' : 'items-start'}`;
+            div.className = `w-full flex flex-col mb-4 ${isUser ? 'items-end' : 'items-start'}`;
             div.id = `msg-${idx}`;
             
-            const qH = quote ? `<div class="px-2 mb-1 text-[11px] text-gray-400">“${cleanBrackets(quote)}”</div>` : '';
+            // 引用内容
+            const qH = quote ? `<div class="px-2 mb-1 text-[11px] text-gray-400 ${isUser ? 'text-right' : 'text-left'}">“${cleanBrackets(quote)}”</div>` : '';
+            // 消息气泡+左划菜单：AI气泡【重答、引用、删除】，用户气泡【引用、删除】
+            const menuHtml = isAiBubble 
+                ? `<div class="bubble-menu" id="menu-${idx}">
+                    <div class="menu-item menu-item-reanswer">重答</div>
+                    <div class="menu-item">引用</div>
+                    <div class="menu-item text-red-400">删除</div>
+                   </div>`
+                : `<div class="bubble-menu" id="menu-${idx}">
+                    <div class="menu-item">引用</div>
+                    <div class="menu-item text-red-400">删除</div>
+                   </div>`;
+            // 拼接气泡html
             div.innerHTML = `
                 ${qH}
-                <div class="relative flex ${isUser ? 'justify-end' : 'justify-start'} w-full">
-                    <div class="bubble-menu ${isUser ? 'right-0' : 'left-0'}" id="menu-${idx}">
-                        <div class="menu-item" onclick="quoteMsg(${idx})">引用</div>
-                        <div class="menu-item text-red-400" onclick="deleteMsg(${idx})">删除</div>
+                <div class="relative">
+                    <div class="msg-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}" id="bubble-${idx}">
+                        ${escapeHTML(content)}
                     </div>
-                    <div id="bubble-${idx}" class="msg-bubble ${isUser ? 'user-bubble' : 'ai-bubble'}">${escapeHTML(content)}</div>
+                    ${menuHtml}
                 </div>
             `;
-            
-            const b = div.querySelector(`#bubble-${idx}`);
-            let sX = 0;
-            b.ontouchstart = (e) => sX = e.touches[0].clientX;
-            b.ontouchmove = (e) => {
-                let d = e.touches[0].clientX - sX;
-                if (d < -40) { hideAllMenus(); div.querySelector('.bubble-menu').classList.add('active'); b.style.transform = 'translateX(-20px)'; }
-                if (d > 40) hideAllMenus();
-            };
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
+            // 初始化左划事件
+            initBubbleSwipe(document.getElementById(`bubble-${idx}`), document.getElementById(`menu-${idx}`), isAiBubble, idx);
         }
         function createLoader() {
-            const d = document.createElement('div'); d.className = 'w-full flex items-start mb-5';
-            d.innerHTML = `<div class="ai-bubble px-5 py-3 flex gap-1.5"><div class="typing-dot"></div><div class="typing-dot" style="animation-delay:0.2s"></div><div class="typing-dot" style="animation-delay:0.4s"></div></div>`;
+            const d = document.createElement('div');
+            d.className = 'w-full flex flex-col mb-4 items-start';
+            d.innerHTML = `<div class="msg-bubble ai-bubble px-4 py-3 flex gap-1"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
             document.getElementById('chat-box').appendChild(d);
             document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
             return d;
         }
+        function renderHistory() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.innerHTML = '';
+            messages.forEach((m, i) => displayMessage(m.role, m.content, i, m.quote));
+        }
+        function quoteMsg(i) {
+            hideAllBubbleMenus();
+            quoting = messages[i];
+            document.getElementById('quote-preview-bar').classList.remove('hidden');
+            document.getElementById('quote-preview-text').innerText = cleanBrackets(messages[i].content);
+            document.getElementById('message-input').focus();
+        }
+        function cancelQuote() {
+            quoting = null;
+            document.getElementById('quote-preview-bar').classList.add('hidden');
+        }
+        function deleteMsg(i) {
+            hideAllBubbleMenus();
+            messages.splice(i, 1);
+            localStorage.setItem('ai_his', JSON.stringify(messages));
+            renderHistory();
+        }
+
+        // --- 世界书逻辑 ---
         function renderWBList() {
-            const l = document.getElementById('wb-list'); l.innerHTML = '';
+            const l = document.getElementById('wb-list');
+            l.innerHTML = '';
             persona.worldBook.forEach((item, i) => {
-                const d = document.createElement('div'); d.className = 'bg-white p-4 rounded-2xl shadow-sm';
-                d.innerHTML = `<div class="flex gap-2 mb-2"><input type="text" class="flex-1 font-bold text-xs bg-transparent border-b" value="${item.key}" onchange="upWB(${i},'key',this.value)" placeholder="触发词"><button onclick="rmWB(${i})" class="text-red-300">✕</button></div><textarea class="w-full text-xs bg-transparent outline-none" rows="2" onchange="upWB(${i},'content',this.value)" placeholder="具体内容">${item.content}</textarea>`;
+                const d = document.createElement('div');
+                d.className = 'bg-white p-4 rounded-2xl shadow-sm';
+                d.innerHTML = `
+                    <div class="flex gap-2 mb-2">
+                        <input type="text" class="flex-1 font-bold text-xs bg-transparent border-b" value="${item.key || ''}" onchange="upWB(${i},'key',this.value)" placeholder="触发词">
+                        <button onclick="rmWB(${i})" class="text-red-300">✕</button>
+                    </div>
+                    <textarea class="w-full text-xs bg-transparent outline-none" rows="2" onchange="upWB(${i},'content',this.value)" placeholder="具体内容">${item.content || ''}</textarea>
+                `;
                 l.appendChild(d);
             });
         }
-        function upWB(i, f, v) { persona.worldBook[i][f] = v; }
-        function rmWB(i) { persona.worldBook.splice(i, 1); renderWBList(); }
-        function addWBItem() { persona.worldBook.push({key:'', content:''}); renderWBList(); }
-        function hideAllMenus() { document.querySelectorAll('.bubble-menu').forEach(m => m.classList.remove('active')); document.querySelectorAll('.msg-bubble').forEach(b => b.style.transform = 'translateX(0)'); }
-        function quoteMsg(i) { hideAllMenus(); quoting = messages[i]; document.getElementById('quote-preview-bar').classList.remove('hidden'); document.getElementById('quote-preview-text').innerText = cleanBrackets(quoting.content); document.getElementById('message-input').focus(); }
-        function cancelQuote() { quoting = null; document.getElementById('quote-preview-bar').classList.add('hidden'); }
-        function deleteMsg(i) { messages.splice(i, 1); localStorage.setItem('ai_his', JSON.stringify(messages)); renderHistory(); }
-        function renderHistory() { document.getElementById('chat-box').innerHTML = ''; messages.forEach((m, i) => displayMessage(m.role, m.content, i, m.quote)); }
-        function toggleMenu() { document.getElementById('plus-menu').classList.toggle('hidden'); document.getElementById('plus-icon').classList.toggle('rotate-45'); }
-        function closeMenu() { document.getElementById('plus-menu').classList.add('hidden'); document.getElementById('plus-icon').classList.remove('rotate-45'); }
-        function openPersonaPage() { document.getElementById('persona-page').classList.add('active'); }
-        function closePersonaPage() { document.getElementById('persona-page').classList.remove('active'); }
-        function toggleSettings() { document.getElementById('settings-modal').classList.toggle('active'); }
-        function savePersona() { persona.name = document.getElementById('p-name').value; persona.prompt = document.getElementById('p-prompt').value; localStorage.setItem('ai_psn', JSON.stringify(persona)); document.getElementById('display-name').innerText = persona.name; closePersonaPage(); }
-        function clearChat() { messages = []; localStorage.removeItem('ai_his'); renderHistory(); }
-        function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.classList.remove('opacity-0'); t.style.transform = 'translate(-50%, -10px)'; setTimeout(()=>{t.classList.add('opacity-0'); t.style.transform = 'translate(-50%, 0)';}, 2000); }
-        function escapeHTML(s) { return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-        function cleanBrackets(s) { return s.replace(/\[.*?\]|\(.*?\)/g, '').trim(); }
+        function upWB(i, f, v) {
+            persona.worldBook[i][f] = v;
+            localStorage.setItem('ai_psn', JSON.stringify(persona));
+        }
+        function rmWB(i) {
+            persona.worldBook.splice(i, 1);
+            localStorage.setItem('ai_psn', JSON.stringify(persona));
+            renderWBList();
+        }
+        function addWBItem() {
+            persona.worldBook.push({key:'', content:''});
+            localStorage.setItem('ai_psn', JSON.stringify(persona));
+            renderWBList();
+        }
+
+        // --- 面板与菜单控制 ---
+        function openPersonaPage() {
+            document.getElementById('persona-page').classList.add('active');
+        }
+        function closePersonaPage() {
+            document.getElementById('persona-page').classList.remove('active');
+            // 保存人设（自动）
+            persona.name = document.getElementById('p-name').value;
+            persona.prompt = document.getElementById('p-prompt').value;
+            localStorage.setItem('ai_psn', JSON.stringify(persona));
+            document.getElementById('display-name').innerText = persona.name;
+        }
+        function toggleSettings() {
+            document.getElementById('settings-modal').classList.toggle('active');
+        }
+        function toggleMenu() {
+            document.getElementById('plus-menu').classList.toggle('hidden');
+            document.getElementById('plus-icon').classList.toggle('rotate-45');
+        }
+        function closeMenu() {
+            document.getElementById('plus-menu').classList.remove('hidden');
+            document.getElementById('plus-icon').classList.remove('rotate-45');
+        }
+        function clearChat() {
+            messages = [];
+            localStorage.removeItem('ai_his');
+            renderHistory();
+            closeMenu();
+            isWaiting = false;
+        }
+
+        // --- 工具函数 ---
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m;
+            t.classList.remove('opacity-0');
+            setTimeout(() => t.classList.add('opacity-0'), 2000);
+        }
+        function escapeHTML(s) {
+            return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+        }
+        function cleanBrackets(s) {
+            return s.replace(/\[.*?\]|\(.*?\)/g, '').trim();
+        }
     </script>
 </body>
 </html>
