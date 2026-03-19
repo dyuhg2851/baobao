@@ -1,0 +1,9 @@
+{
+  "name": "晕倒料理",
+  "short_name": "晕倒料理",
+  "start_url": ".?homescreen=1",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": []
+}

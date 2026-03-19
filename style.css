@@ -1,0 +1,44 @@
+/* Reset & base */
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;padding:0;overflow-x:hidden;background:#f0f0f0;-webkit-text-size-adjust:100%}
+body{display:flex;align-items:center;justify-content:center;min-height:100vh}
+
+/* 设备容器：模拟 iPhone 15 Plus 内容区 430x932 */
+.device{
+	width:430px;
+	height:932px;
+	background:#ffffff;
+	border-radius:28px;
+	overflow:hidden;
+	box-shadow:0 12px 30px rgba(0,0,0,0.14);
+	-webkit-font-smoothing:antialiased;
+}
+
+/* 容器内部保持完全空白（确保无默认内外边距） */
+.device, .device *{margin:0;padding:0;border:0;background:transparent}
+
+/* 在桌面预览（较大视口）时按两倍缩小以便居中显示 */
+@media (min-width:600px){
+	.device{transform:scale(0.5);transform-origin:center center}
+}
+
+/* 在真实小屏设备上（如 iPhone 15 Plus）铺满屏幕并确保覆盖安全区 */
+@media (max-width:430px){
+	html,body{height:100svh}
+	.device{
+		position:fixed;
+		inset:0;
+		width:100vw;
+		height:100svh;
+		border-radius:0;
+		margin:0;
+		box-shadow:none;
+		background:#fff;
+		/* 为刘海与底部手势预留安全区，便于放置底部 dock 图标 */
+		padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom)) env(safe-area-inset-left);
+	}
+}
+
+/* 禁止横向滚动 */
+html,body{overflow-x:hidden}
+
