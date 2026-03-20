@@ -1,6 +1,15 @@
 /* Reset & base */
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;padding:0;overflow-x:hidden;background:#f0f0f0;-webkit-text-size-adjust:100%}
+/* 根：使用白色背景并用 svh 覆盖移动视口，禁止滚动以避免底部露出灰色 */
+html,body{
+	background:#ffffff;
+	margin:0;
+	padding:0;
+	height:100svh;
+	min-height:100svh;
+	overflow:hidden;
+	-webkit-text-size-adjust:100%;
+}
 body{display:flex;align-items:center;justify-content:center;min-height:100vh}
 
 /* 设备容器：模拟 iPhone 15 Plus 内容区 430x932 */
@@ -41,4 +50,18 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh}
 
 /* 禁止横向滚动 */
 html,body{overflow-x:hidden}
+
+/* 当以主屏幕 standalone 模式打开时加类 .is-standalone，可用于强制 full-bleed */
+.is-standalone .device{
+	position:fixed;
+	inset:0;
+	width:100vw;
+	height:100svh;
+	border-radius:0 !important;
+	box-shadow:none !important;
+	background:#ffffff !important;
+	padding-top:env(safe-area-inset-top);
+	padding-left:env(safe-area-inset-left);
+	padding-right:env(safe-area-inset-right);
+}
 
