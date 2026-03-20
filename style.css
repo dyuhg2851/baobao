@@ -1,5 +1,6 @@
 /* Reset & base */
 *{box-sizing:border-box}
+
 /* 根：使用白色背景并用 svh 覆盖移动视口，禁止滚动以避免底部露出灰色 */
 html,body{
 	background:#ffffff;
@@ -8,9 +9,16 @@ html,body{
 	height:100svh;
 	min-height:100svh;
 	overflow:hidden;
+	overflow-x:hidden;
 	-webkit-text-size-adjust:100%;
 }
-body{display:flex;align-items:center;justify-content:center;min-height:100vh}
+
+body{
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	min-height:100vh;
+}
 
 /* 设备容器：模拟 iPhone 15 Plus 内容区 430x932 */
 .device{
@@ -23,17 +31,115 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh}
 	-webkit-font-smoothing:antialiased;
 }
 
-/* 容器内部保持完全空白（确保无默认内外边距） */
-.device, .device *{margin:0;padding:0;border:0;background:transparent}
+/* 容器内部统一重置 */
+.device,
+.device *{
+	margin:0;
+	padding:0;
+	border:0;
+	background:transparent;
+}
+
+/* 主屏幕布局 */
+.home-screen{
+	position:relative;
+	width:100%;
+	height:100%;
+	display:flex;
+	align-items:flex-end;
+	justify-content:center;
+	padding:32px 18px calc(24px + env(safe-area-inset-bottom));
+	background:linear-gradient(180deg, #ffffff 0%, #f7f7f9 100%);
+}
+
+.dock{
+	width:100%;
+	max-width:394px;
+	display:flex;
+	align-items:flex-end;
+	justify-content:center;
+	gap:18px;
+	padding:16px 18px 14px;
+	border-radius:30px;
+	background:rgba(255,255,255,0.58);
+	border:1px solid rgba(255,255,255,0.5);
+	box-shadow:
+		0 14px 40px rgba(15,23,42,0.10),
+		inset 0 1px 0 rgba(255,255,255,0.72);
+	backdrop-filter:blur(22px) saturate(180%);
+	-webkit-backdrop-filter:blur(22px) saturate(180%);
+}
+
+.dock-app{
+	flex:1;
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	justify-content:flex-start;
+	gap:5px;
+	min-width:0;
+	font:inherit;
+	color:#1f1f1f;
+	cursor:pointer;
+	appearance:none;
+	-webkit-appearance:none;
+}
+
+.app-icon{
+	width:64px;
+	height:64px;
+	display:block;
+	border-radius:18px;
+	background:linear-gradient(180deg, #ffffff 0%, #f4f4f6 100%);
+	border:1px solid rgba(15,23,42,0.06);
+	box-shadow:
+		0 8px 20px rgba(15,23,42,0.08),
+		inset 0 1px 0 rgba(255,255,255,0.95),
+		inset 0 -1px 0 rgba(0,0,0,0.04);
+	transition:transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.app-label{
+	display:block;
+	font-size:13px;
+	line-height:1.2;
+	font-weight:500;
+	letter-spacing:0.01em;
+	color:#2b2b2f;
+	text-align:center;
+	white-space:nowrap;
+}
+
+.dock-app:focus-visible{
+	outline:none;
+}
+
+.dock-app:focus-visible .app-icon{
+	box-shadow:
+		0 0 0 3px rgba(0,122,255,0.22),
+		0 8px 20px rgba(15,23,42,0.08),
+		inset 0 1px 0 rgba(255,255,255,0.95),
+		inset 0 -1px 0 rgba(0,0,0,0.04);
+}
+
+.dock-app:active .app-icon{
+	transform:scale(0.96);
+}
 
 /* 在桌面预览（较大视口）时按两倍缩小以便居中显示 */
 @media (min-width:600px){
-	.device{transform:scale(0.5);transform-origin:center center}
+	.device{
+		transform:scale(0.5);
+		transform-origin:center center;
+	}
 }
 
 /* 在真实小屏设备上（如 iPhone 15 Plus）铺满屏幕并确保覆盖安全区 */
 @media (max-width:430px){
-	html,body{height:100svh}
+	html,body{
+		height:100svh;
+	}
+
 	.device{
 		position:fixed;
 		inset:0;
@@ -43,13 +149,30 @@ body{display:flex;align-items:center;justify-content:center;min-height:100vh}
 		margin:0;
 		box-shadow:none;
 		background:#fff;
-		/* 为刘海与底部手势预留安全区，便于放置底部 dock 图标 */
 		padding:env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom)) env(safe-area-inset-left);
 	}
-}
 
-/* 禁止横向滚动 */
-html,body{overflow-x:hidden}
+	.home-screen{
+		padding:32px 12px calc(18px + env(safe-area-inset-bottom));
+	}
+
+	.dock{
+		max-width:none;
+		gap:10px;
+		padding:14px 12px 12px;
+		border-radius:26px;
+	}
+
+	.app-icon{
+		width:58px;
+		height:58px;
+		border-radius:16px;
+	}
+
+	.app-label{
+		font-size:12px;
+	}
+}
 
 /* 当以主屏幕 standalone 模式打开时加类 .is-standalone，可用于强制 full-bleed */
 .is-standalone .device{
@@ -64,4 +187,3 @@ html,body{overflow-x:hidden}
 	padding-left:env(safe-area-inset-left);
 	padding-right:env(safe-area-inset-right);
 }
-

@@ -13,9 +13,28 @@
 	<meta name="format-detection" content="telephone=no">
 </head>
 <body>
-	<!-- 纯内容容器：用于在 Live Server 中模拟 iPhone 15 Plus（430×932）
-			 容器内部必须完全空白（无任何默认内容） -->
-	<div class="device" aria-hidden="true"></div>
+	<div class="device">
+		<main class="home-screen" aria-label="主屏幕">
+			<nav class="dock" aria-label="底部 Dock 栏">
+				<button class="dock-app" type="button" aria-label="电话">
+					<span class="app-icon" aria-hidden="true"></span>
+					<span class="app-label">电话</span>
+				</button>
+				<button class="dock-app" type="button" aria-label="信息">
+					<span class="app-icon" aria-hidden="true"></span>
+					<span class="app-label">信息</span>
+				</button>
+				<button class="dock-app" type="button" aria-label="主题">
+					<span class="app-icon" aria-hidden="true"></span>
+					<span class="app-label">主题</span>
+				</button>
+				<button class="dock-app" type="button" aria-label="设置">
+					<span class="app-icon" aria-hidden="true"></span>
+					<span class="app-label">设置</span>
+				</button>
+			</nav>
+		</main>
+	</div>
 
 	<script src="script.js"></script>
 	<script>
