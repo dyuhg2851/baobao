@@ -63,6 +63,7 @@ html,body{overflow-x:hidden}
 	padding-top:env(safe-area-inset-top);
 	padding-left:env(safe-area-inset-left);
 	padding-right:env(safe-area-inset-right);
+	padding-bottom:env(safe-area-inset-bottom);
 }
 
 /* 主屏幕内容区域（保持空白） */
@@ -74,7 +75,7 @@ html,body{overflow-x:hidden}
 	left:50%;
 	transform:translateX(-50%);
 	/* 距离底部并考虑安全区 */
-	bottom:calc(env(safe-area-inset-bottom) + 12px);
+	bottom:12px;
 	display:flex;
 	gap:18px;
 	align-items:flex-end;
@@ -99,8 +100,16 @@ html,body{overflow-x:hidden}
 	gap:5px;
 	padding:0;
 	cursor:pointer;
+	-webkit-tap-highlight-color:transparent;
+	outline:none;
 }
-.dock-item:active .icon{transform:scale(0.96)}
+.dock-item:active .icon{
+	transform:scale(0.92);
+	transition:transform 0.15s ease-out;
+}
+.dock-item .icon{
+	transition:transform 0.15s ease-out;
+}
 
 .dock-item .icon{
 	width:72px;
