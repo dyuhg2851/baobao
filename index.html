@@ -104,7 +104,7 @@
                     <label for="airplane-mode" class="toggle-label"></label>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item" onclick="goToWifiPage()">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">无线局域网</div>
                 <div class="settings-value">kakashi</div>
@@ -201,6 +201,116 @@
             </div>
         </div>
     </div>
+    
+    <!-- 无线局域网子页面 -->
+    <div id="wifi-page" class="settings-page">
+        <!-- 顶部导航栏 -->
+        <div class="settings-header">
+            <div class="back-button" onclick="goBackFromWifi()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </div>
+            <h1 class="settings-title">无线局域网</h1>
+            <div class="header-right"></div>
+        </div>
+        
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" placeholder="搜索网络" class="search-input">
+        </div>
+        
+        <!-- API配置和模型选择部分 -->
+        <div class="settings-group">
+            <div class="settings-item">
+                <div class="settings-label">URL</div>
+                <input type="url" id="api-url" placeholder="输入接口地址" class="settings-input">
+            </div>
+            <div class="settings-item">
+                <div class="settings-label">API key</div>
+                <input type="password" id="api-key" placeholder="输入API密钥" class="settings-input">
+            </div>
+            <div class="settings-item">
+                <div class="settings-label">选择模型</div>
+                <div id="selected-model" class="settings-value">请先拉取模型</div>
+                <div class="settings-arrow" onclick="openModelSelector()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="settings-item buttons-row">
+                <button class="settings-button" onclick="fetchModels()">拉取模型</button>
+                <button class="settings-button" onclick="openAddPresetDialog()">添加API预设</button>
+            </div>
+        </div>
+        
+        <!-- API预设部分 -->
+        <div class="settings-group">
+            <div class="settings-group-title">API预设</div>
+            <div id="preset-list" class="preset-avatars">
+                <!-- 预设列表将动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 模型选择弹窗 -->
+        <div id="model-selector" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>选择模型</h3>
+                    <button class="modal-close" onclick="closeModelSelector()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="model-list">
+                        <!-- 模型列表将动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加API预设弹窗 -->
+        <div id="add-preset-dialog" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加API预设</h3>
+                    <button class="modal-close" onclick="closeAddPresetDialog()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-form-item">
+                        <label>预设名称</label>
+                        <input type="text" id="preset-name" placeholder="输入预设名称">
+                    </div>
+                    <div class="modal-form-item">
+                        <label>API密钥</label>
+                        <input type="password" id="preset-api-key" placeholder="输入API密钥">
+                    </div>
+                    <div class="modal-form-item">
+                        <label>接口地址</label>
+                        <input type="url" id="preset-api-url" placeholder="输入接口地址">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-button cancel" onclick="closeAddPresetDialog()">取消</button>
+                        <button class="modal-button confirm" onclick="saveApiPreset()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="script.js?v=1.0.0"></script>
 </body>
 </html>

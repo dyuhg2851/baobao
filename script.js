@@ -48,6 +48,7 @@ if (slideContainer) {
 // 从主页面跳转到设置页面
 const settingsIcon = document.getElementById('settings-icon');
 const settingsPage = document.getElementById('settings-page');
+const wifiPage = document.getElementById('wifi-page');
 const mainScreen = document.querySelector('.main-screen');
 
 if (settingsIcon) {
@@ -199,8 +200,205 @@ function initSwipeBack() {
     });
 }
 
+// 从设置页面跳转到无线局域网子页面
+function goToWifiPage() {
+    // 显示无线局域网子页面
+    wifiPage.style.transform = 'translateX(0)';
+    wifiPage.style.opacity = '1';
+    wifiPage.classList.add('show');
+    // 隐藏设置页面
+    settingsPage.classList.remove('show');
+}
+
+// 从无线局域网子页面返回设置页面
+function goBackFromWifi() {
+    // 隐藏无线局域网子页面
+    wifiPage.classList.remove('show');
+    // 显示设置页面
+    settingsPage.classList.add('show');
+    // 复位无线局域网子页面的样式
+    setTimeout(function() {
+        wifiPage.style.transform = 'translateX(0)';
+        wifiPage.style.opacity = '1';
+    }, 100);
+}
+
+// 存储模型列表和预设列表
+let models = [];
+let presets = JSON.parse(localStorage.getItem('apiPresets') || '[]');
+
 // 页面加载时初始化
 window.addEventListener('load', function() {
     loadProfileInfo();
     initSwipeBack();
+    loadPresets();
 });
+
+// 拉取模型列表
+async function fetchModels() {
+    const apiKey = document.getElementById('api-key').value;
+    const apiUrl = document.getElementById('api-url').value;
+    
+    if (!apiKey || !apiUrl) {
+        alert('请先填写API密钥和接口地址');
+        return;
+    }
+    
+    try {
+        // 自动拼接接口地址为 `${baseUrl}/v1/models`，处理斜杠重复问题
+        const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+        const modelsUrl = `${baseUrl}/v1/models`;
+        
+        // 向接口地址发送请求（参考OpenAI /v1/models接口）
+        const response = await fetch(modelsUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // 解析返回的JSON数据，提取data数组里的模型id
+        if (data.data && Array.isArray(data.data)) {
+            models = data.data.map(model => ({
+                id: model.id,
+                name: model.id
+            }));
+            
+            alert('模型拉取成功 ^ ^');
+            document.getElementById('selected-model').textContent = '请选择模型';
+        } else {
+            throw new Error('Invalid response format');
+        }
+    } catch (error) {
+        console.error('Error fetching models:', error);
+        alert('模型拉取失败，请检查API配置或网络 T^T');
+    }
+}
+
+// 打开模型选择弹窗
+function openModelSelector() {
+    if (models.length === 0) {
+        alert('请先拉取模型');
+        return;
+    }
+    
+    const modelList = document.getElementById('model-list');
+    modelList.innerHTML = '';
+    
+    models.forEach(model => {
+        const modelItem = document.createElement('div');
+        modelItem.className = 'model-item';
+        modelItem.onclick = () => selectModel(model);
+        modelItem.innerHTML = `
+            <span>${model.name}</span>
+        `;
+        modelList.appendChild(modelItem);
+    });
+    
+    document.getElementById('model-selector').classList.add('show');
+}
+
+// 关闭模型选择弹窗
+function closeModelSelector() {
+    document.getElementById('model-selector').classList.remove('show');
+}
+
+// 选择模型
+function selectModel(model) {
+    document.getElementById('selected-model').textContent = model.name;
+    closeModelSelector();
+}
+
+// 打开添加API预设弹窗
+function openAddPresetDialog() {
+    const apiKey = document.getElementById('api-key').value;
+    const apiUrl = document.getElementById('api-url').value;
+    
+    if (!apiKey || !apiUrl) {
+        alert('请先填写API密钥和接口地址');
+        return;
+    }
+    
+    document.getElementById('preset-name').value = '';
+    document.getElementById('preset-api-key').value = apiKey;
+    document.getElementById('preset-api-url').value = apiUrl;
+    document.getElementById('add-preset-dialog').classList.add('show');
+}
+
+// 关闭添加API预设弹窗
+function closeAddPresetDialog() {
+    document.getElementById('add-preset-dialog').classList.remove('show');
+}
+
+// 保存API预设
+function saveApiPreset() {
+    const presetName = document.getElementById('preset-name').value;
+    const presetApiKey = document.getElementById('preset-api-key').value;
+    const presetApiUrl = document.getElementById('preset-api-url').value;
+    
+    if (!presetName || !presetApiKey || !presetApiUrl) {
+        alert('请填写完整的预设信息');
+        return;
+    }
+    
+    const newPreset = {
+        id: Date.now().toString(),
+        name: presetName,
+        apiKey: presetApiKey,
+        apiUrl: presetApiUrl
+    };
+    
+    presets.push(newPreset);
+    localStorage.setItem('apiPresets', JSON.stringify(presets));
+    loadPresets();
+    closeAddPresetDialog();
+    alert('API预设保存成功 ^ ^');
+}
+
+// 加载API预设
+function loadPresets() {
+    const presetList = document.getElementById('preset-list');
+    presetList.innerHTML = '';
+    
+    presets.forEach(preset => {
+        // 生成圆形头像的首字母
+        const initial = preset.name.charAt(0).toUpperCase();
+        
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-avatar';
+        presetItem.innerHTML = `
+            <div class="preset-avatar-icon" onclick="usePreset(${JSON.stringify(preset)})")">
+                ${initial}
+            </div>
+            <div class="preset-avatar-name">${preset.name}</div>
+        `;
+        presetList.appendChild(presetItem);
+    });
+}
+
+// 使用API预设
+function usePreset(preset) {
+    document.getElementById('api-key').value = preset.apiKey;
+    document.getElementById('api-url').value = preset.apiUrl;
+    // 清空当前模型选择
+    models = [];
+    document.getElementById('selected-model').textContent = '请选择模型';
+    alert('已切换API预设 ^ ^');
+}
+
+// 删除API预设
+function deletePreset(presetId) {
+    if (confirm('确定要删除这个预设吗？')) {
+        presets = presets.filter(p => p.id !== presetId);
+        localStorage.setItem('apiPresets', JSON.stringify(presets));
+        loadPresets();
+        alert('预设已删除');
+    }
+}
