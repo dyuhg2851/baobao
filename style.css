@@ -65,8 +65,9 @@ body {
     border-radius: 16px;
     padding: 10px 20px;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
+    gap: 5px;
 }
 .dock-item {
     display: flex;
