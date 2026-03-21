@@ -78,8 +78,8 @@ body {
     align-items: center;
 }
 .dock-icon {
-    width: 37.5px;
-    height: 37.5px;
+    width: 36px;
+    height: 36px;
     background-color: #ffffff;
     border-radius: 10.5px;
     overflow: hidden;
