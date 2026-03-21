@@ -35,7 +35,7 @@ body {
     scroll-snap-align: start;
 }
 .page-indicator {
-    position: absolute;
+    position: fixed;
     bottom: calc(10px + (80px + env(safe-area-inset-bottom)));
     left: 50%;
     transform: translateX(-50%);
