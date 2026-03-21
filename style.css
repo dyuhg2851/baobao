@@ -89,6 +89,28 @@ body {
     background-color: #ffffff;
     border-radius: 10.5px;
 }
+/* App 图标网格 */
+.app-grid {
+    position: absolute;
+    bottom: 140px;
+    right: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    z-index: 5;
+}
+.app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+.app-label {
+    font-size: 7px;
+    color: #000000;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    margin-top: 2.5px;
+}
 @media screen and (max-width: 430px) {
     body {
         background-color: #e6f9e6;
@@ -129,5 +151,20 @@ body {
     .page-indicator {
         bottom: calc(130px + env(safe-area-inset-bottom));
         gap: 7px;
+    }
+    /* 移动端 App 图标网格 */
+    .app-grid {
+        bottom: calc(140px + env(safe-area-inset-bottom));
+        right: 20px;
+        gap: 15px;
+    }
+    .app-icon {
+        width: 75px;
+        height: 75px;
+        border-radius: 21px;
+    }
+    .app-label {
+        font-size: 12px;
+        margin-top: 5px;
     }
 }
