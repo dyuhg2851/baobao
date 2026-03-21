@@ -12,25 +12,7 @@
 <body>
     <div class="container">
         <div class="slide-container">
-            <div class="slide-page">
-                <!-- 可交互自定义小组件 -->
-                <div class="widget">
-                    <!-- 顶部头像区域 -->
-                    <div class="widget-avatar" onclick="openImageUpload()">
-                        <img id="avatarImage" src="" alt="头像">
-                    </div>
-                    <!-- 上方大圆角矩形卡片 -->
-                    <div class="widget-card">
-                        <div class="widget-card-title" onclick="editText(this, 'cardTitle')">点击编辑标题</div>
-                        <div class="widget-card-subtitle" onclick="editText(this, 'cardSubtitle')">点击编辑副标题</div>
-                    </div>
-                    <!-- 下方小卡片与右侧圆形按钮 -->
-                    <div class="widget-bottom">
-                        <div class="widget-small-card" onclick="editText(this, 'smallCardText')">点击编辑文本</div>
-                        <div class="widget-emoji-button" onclick="editEmoji(this)">🍎</div>
-                    </div>
-                </div>
-            </div>
+            <div class="slide-page"></div>
             <div class="slide-page"></div>
         </div>
         <div class="page-indicator">
@@ -51,8 +33,6 @@
                 <div class="dock-icon"></div>
             </div>
         </div>
-        <!-- 隐藏的文件输入框 -->
-        <input type="file" id="imageUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(this)">
     </div>
     <script src="script.js"></script>
 </body>
