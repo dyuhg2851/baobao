@@ -45,14 +45,15 @@ if (slideContainer) {
 
 // 从主页面跳转到设置页面
 const settingsIcon = document.getElementById('settings-icon');
+const settingsPage = document.getElementById('settings-page');
+const mainScreen = document.querySelector('.main-screen');
+
 if (settingsIcon) {
     settingsIcon.addEventListener('click', function() {
-        document.getElementById('home-screen').classList.add('hide');
-        document.getElementById('settings-page').classList.add('show');
-        // 加载个人信息
-        loadProfileInfo();
-        // 初始化右滑返回
-        initSwipeBack();
+        // 显示设置页面
+        settingsPage.classList.add('show');
+        // 隐藏主屏幕
+        mainScreen.classList.add('hidden');
     });
 }
 
@@ -125,8 +126,10 @@ window.editDescription = function(event) {
 
 // 返回上一页
 window.goBack = function() {
-    document.getElementById('settings-page').classList.remove('show');
-    document.getElementById('home-screen').classList.remove('hide');
+    // 隐藏设置页面
+    settingsPage.classList.remove('show');
+    // 显示主屏幕
+    mainScreen.classList.remove('hidden');
 };
 
 // 初始化右滑返回
@@ -137,7 +140,7 @@ function initSwipeBack() {
     
     document.addEventListener('touchstart', function(e) {
         startX = e.touches[0].clientX;
-        if (startX < 50) { // 只有从屏幕左侧开始滑动才触发
+        if (startX < 50 && settingsPage.classList.contains('show')) { // 只有从屏幕左侧开始滑动且设置页面显示时才触发
             isSwiping = true;
         }
     });
@@ -149,7 +152,6 @@ function initSwipeBack() {
         const diffX = currentX - startX;
         
         if (diffX > 0) { // 向右滑动
-            const settingsPage = document.getElementById('settings-page');
             settingsPage.style.transform = `translateX(${Math.min(diffX, window.innerWidth / 3)}px)`;
             settingsPage.style.opacity = 1 - (diffX / (window.innerWidth / 3)) * 0.3;
         }
@@ -159,11 +161,10 @@ function initSwipeBack() {
         if (!isSwiping) return;
         
         const diffX = currentX - startX;
-        const settingsPage = document.getElementById('settings-page');
         
         if (diffX > window.innerWidth / 3) {
-            // 滑动距离超过屏幕1/3，返回上一页
-            window.goBack();
+            // 滑动距离超过屏幕1/3，返回主屏幕
+            goBack();
         } else {
             // 否则回弹复位
             settingsPage.style.transform = 'translateX(0)';
@@ -173,3 +174,9 @@ function initSwipeBack() {
         isSwiping = false;
     });
 }
+
+// 页面加载时初始化
+window.addEventListener('load', function() {
+    loadProfileInfo();
+    initSwipeBack();
+});

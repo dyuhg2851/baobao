@@ -108,19 +108,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     margin-top: 2.5px;
 }
-/* 主屏幕样式 */
-#home-screen {
-    width: 100vw;
-    height: 100vh;
-    position: absolute;
+/* 设置页面样式 */
+.settings-page {
+    position: fixed;
     top: 0;
     left: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 10;
-}
-
-/* 设置页面样式 */
-#settings-page {
     width: 100vw;
     height: 100vh;
     background-color: #f5f5f5;
@@ -128,29 +120,22 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
-    position: absolute;
-    top: 0;
-    left: 0;
+    display: none;
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 5;
-    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 100;
 }
 
-/* 显示设置页面 */
-#settings-page.show {
+/* 设置页面显示状态 */
+.settings-page.show {
+    display: block;
     opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-    z-index: 20;
 }
 
-/* 隐藏主屏幕 */
-#home-screen.hide {
+/* 主屏幕隐藏状态 */
+.main-screen.hidden {
     opacity: 0;
-    transform: translateY(-20px);
-    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
 /* 顶部导航栏 */
