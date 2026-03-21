@@ -22,3 +22,21 @@ window.addEventListener('load', function() {
         window.scrollTo(0, 1);
     }, 100);
 });
+
+// 滑动切换和页面指示器
+const slideContainer = document.querySelector('.slide-container');
+const indicatorDots = document.querySelectorAll('.indicator-dot');
+
+slideContainer.addEventListener('scroll', function() {
+    const scrollPosition = slideContainer.scrollLeft;
+    const pageWidth = slideContainer.offsetWidth;
+    const currentPage = Math.round(scrollPosition / pageWidth);
+    
+    indicatorDots.forEach((dot, index) => {
+        if (index === currentPage) {
+            dot.classList.add('active');
+        } else {
+            dot.classList.remove('active');
+        }
+    });
+});
