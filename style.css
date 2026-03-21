@@ -89,11 +89,18 @@ body {
 @media screen and (max-width: 430px) {
     body {
         background-color: #e6f9e6;
-    }
-    .container {
+        margin: 0;
+        padding: 0;
         width: 100vw;
         height: 100vh;
+        overflow: hidden;
+    }
+    .container {
+        width: 100%;
+        max-width: 430px;
+        height: 100vh;
         border-radius: 0;
+        margin: 0 auto;
     }
     .dock {
         border-radius: 40px;
@@ -102,6 +109,10 @@ body {
         padding-bottom: calc(1px + env(safe-area-inset-bottom));
         gap: 20px;
         bottom: 13px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 380px;
     }
     .dock-icon {
         width: 75px;
