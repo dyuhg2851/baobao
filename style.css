@@ -57,17 +57,25 @@ body {
 }
 .dock {
     position: absolute;
-    bottom: 1.5px;
-    left: 4.5px;
-    right: 4.5px;
-    background: rgba(255, 255, 255, 0.8);
+    /* 保留之前的核心样式：Dock 栏上移 10px */
+    bottom: 10px;
+    /* 左右边距改为 15px */
+    left: 15px;
+    right: 15px;
+    /* 完全恢复 Dock 栏包裹图标的效果 */
+    background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(20px);
-    border-radius: 12px;
-    padding: 2.5px 10px;
+    /* 圆角保持 40px */
+    border-radius: 40px;
+    /* 图标与 Dock 栏背景上下左右都有合适内边距，不要贴边 */
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    /* 长度缩短，图标间距保持合适 */
+    gap: 15px;
+    /* 固定高度，防止拉伸或压缩 */
+    height: 80px;
 }
 .dock-item {
     display: flex;
@@ -79,12 +87,6 @@ body {
     height: 37.5px;
     background-color: #ffffff;
     border-radius: 10.5px;
-    margin-bottom: 2.5px;
-}
-.dock-label {
-    font-size: 7px;
-    color: #000000;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 @media screen and (max-width: 430px) {
     body {
@@ -104,30 +106,20 @@ body {
         position: relative;
     }
     .dock {
-        /* 恢复原本的视觉效果 */
-        border-radius: 40px;
-        background: rgba(255, 255, 255, 0.6);
-        padding: 15px 20px 5px;
-        padding-bottom: calc(5px + env(safe-area-inset-bottom));
-        gap: 20px;
-        /* 修正安全区适配，底部距离改为 calc(25px + env(safe-area-inset-bottom)) */
-        bottom: calc(25px + env(safe-area-inset-bottom));
-        left: 20px;
-        right: 20px;
-        /* 只保留固定 height 值，移除 max-height 限制 */
-        height: 80px;
-        /* 移除可能导致 Dock 栏被隐藏的 overflow:hidden */
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        /* 安全区适配整体往下调，避免被底部横条遮挡 */
+        bottom: calc(10px + env(safe-area-inset-bottom));
+        /* 左右边距改为 15px */
+        left: 15px;
+        right: 15px;
+        /* 图标与 Dock 栏背景上下左右都有合适内边距，不要贴边 */
+        padding: 10px;
+        /* 长度缩短，图标间距保持合适 */
+        gap: 15px;
     }
     .dock-icon {
         width: 75px;
         height: 75px;
         border-radius: 21px;
-    }
-    .dock-label {
-        font-size: 12px;
     }
     .indicator-dot {
         width: 6px;
