@@ -51,26 +51,23 @@ body {
     background-color: #ffffff;
 }
 .dock {
-    position: absolute;
-    /* 整体往下移动 20px，在原有位置基础上再靠近屏幕底部10px */
-    bottom: 10px;
-    /* 左右边距改为 15px */
+    position: fixed;
+    bottom: 0;
     left: 15px;
     right: 15px;
-    /* 完全恢复 Dock 栏包裹图标的效果 */
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(20px);
-    /* 圆角改为 30px */
     border-radius: 30px;
-    /* 图标与 Dock 栏背景上下左右都有合适内边距，不要贴边 */
     padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    /* 长度缩短，图标间距保持合适 */
     gap: 15px;
-    /* 固定高度改为 100px */
     height: 100px;
+    z-index: 1000;
+    /* 适配移动设备安全区域 */
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    height: calc(100px + env(safe-area-inset-bottom));
 }
 .dock-item {
     display: flex;
