@@ -14,7 +14,7 @@ body {
     width: 215px;
     height: 466px;
     background-color: #e6f9e6;
-    border-radius: 20px;
+    border-radius: 24px;
     position: relative;
     overflow: hidden;
 }
@@ -38,16 +38,16 @@ body {
 }
 .page-indicator {
     position: absolute;
-    bottom: 90px;
+    bottom: 60px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 6px;
+    gap: 3px;
     z-index: 10;
 }
 .indicator-dot {
-    width: 4px;
-    height: 4px;
+    width: 3px;
+    height: 3px;
     border-radius: 50%;
     background-color: #d0d0d0;
     transition: background-color 0.3s ease;
@@ -57,13 +57,13 @@ body {
 }
 .dock {
     position: absolute;
-    bottom: 3px;
-    left: 9px;
-    right: 9px;
+    bottom: 1.5px;
+    left: 4.5px;
+    right: 4.5px;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 10px 20px;
+    border-radius: 12px;
+    padding: 2.5px 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -75,11 +75,11 @@ body {
     align-items: center;
 }
 .dock-icon {
-    width: 40px;
-    height: 40px;
+    width: 37.5px;
+    height: 37.5px;
     background-color: #ffffff;
-    border-radius: 11.2px;
-    margin-bottom: 5px;
+    border-radius: 10.5px;
+    margin-bottom: 2.5px;
 }
 .dock-label {
     font-size: 7px;
@@ -97,15 +97,17 @@ body {
     }
     .dock {
         border-radius: 24px;
-        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        padding: 5px 20px;
+        padding-bottom: calc(5px + env(safe-area-inset-bottom));
+        gap: 10px;
     }
     .dock-icon {
-        width: 70px;
-        height: 70px;
-        border-radius: 19.6px;
+        width: 75px;
+        height: 75px;
+        border-radius: 21px;
     }
     .dock-label {
-        font-size: 12px;
+        font-size: 14px;
     }
     .indicator-dot {
         width: 6px;
