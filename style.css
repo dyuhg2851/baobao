@@ -61,12 +61,12 @@ body {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(20px);
     border-radius: 30px;
-    padding: 8px;
+    padding: 12px 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
-    height: 80px;
+    height: 90px;
     z-index: 1000;
 }
 .dock-item {
