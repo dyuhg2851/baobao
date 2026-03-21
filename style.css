@@ -38,7 +38,8 @@ body {
 }
 .page-indicator {
     position: absolute;
-    bottom: 60px;
+    /* 页面指示器往下移 10px */
+    bottom: 50px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -57,8 +58,8 @@ body {
 }
 .dock {
     position: absolute;
-    /* 保留之前的核心样式：Dock 栏上移 10px */
-    bottom: 10px;
+    /* Dock 栏往下移 10px */
+    bottom: 0;
     /* 左右边距改为 15px */
     left: 15px;
     right: 15px;
@@ -106,8 +107,8 @@ body {
         position: relative;
     }
     .dock {
-        /* 安全区适配整体往下调，避免被底部横条遮挡 */
-        bottom: calc(10px + env(safe-area-inset-bottom));
+        /* 安全区适配整体往下调，避免被底部横条遮挡，同时往下移 10px */
+        bottom: calc(0 + env(safe-area-inset-bottom));
         /* 左右边距改为 15px */
         left: 15px;
         right: 15px;
@@ -126,27 +127,34 @@ body {
         height: 6px;
     }
     .page-indicator {
-        bottom: calc(120px + env(safe-area-inset-bottom));
+        bottom: calc(110px + env(safe-area-inset-bottom));
         gap: 7px;
     }
     /* 可交互自定义小组件样式 */
     .widget {
         position: relative;
-        top: 40px;
-        left: 15px;
-        right: 15px;
-        margin: 0 auto;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(20px);
-        border-radius: 30px;
-        padding: 20px;
+        /* 调整位置，使其位于屏幕上半部分 */
+        top: 20px;
+        /* 左右边距15px，水平居中 */
+        margin: 0 15px;
+        /* 移除小组件整体背景，设为透明 */
+        background: transparent;
+        /* 移除模糊效果 */
+        backdrop-filter: none;
+        /* 移除边框半径 */
+        border-radius: 0;
+        /* 调整内边距 */
+        padding: 10px;
         display: flex;
         flex-direction: column;
         align-items: center;
+        /* 确保小组件占据上半部分约1/2区域 */
+        max-height: 50vh;
     }
     .widget-avatar {
-        width: 100px;
-        height: 100px;
+        /* 头像直径从100px增大到170px */
+        width: 170px;
+        height: 170px;
         border-radius: 50%;
         background-color: #e0e0e0;
         display: flex;
@@ -154,9 +162,10 @@ body {
         align-items: center;
         cursor: pointer;
         position: relative;
-        top: -50px;
         z-index: 2;
         overflow: hidden;
+        /* 调整位置，让头像稍微覆盖大圆角矩形的上半部分 */
+        margin-bottom: -30px;
     }
     .widget-avatar img {
         width: 100%;
@@ -165,14 +174,16 @@ body {
     }
     .widget-card {
         width: 100%;
-        background-color: white;
+        /* 半透明白色背景 */
+        background: rgba(255, 255, 255, 0.8);
         border-radius: 100px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        padding: 40px 20px 20px;
+        /* 恢复原始内边距 */
+        padding: 30px 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-top: -50px;
+        margin-bottom: 30px;
     }
     .widget-card-title {
         font-size: 25px;
@@ -190,11 +201,15 @@ body {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: 20px;
+        margin-bottom: 20px;
+        /* 确保小圆角矩形和圆形加起来的整体长度和大圆角矩形一样 */
+        gap: 10px;
     }
     .widget-small-card {
-        width: 70%;
-        background-color: white;
+        /* 调整宽度，确保和圆形加起来与大卡片宽度一致 */
+        flex: 1;
+        /* 半透明白色背景 */
+        background: rgba(255, 255, 255, 0.8);
         border-radius: 50px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         padding: 15px 20px;
@@ -204,7 +219,8 @@ body {
     .widget-emoji-button {
         width: 50px;
         height: 50px;
-        background-color: white;
+        /* 半透明白色背景 */
+        background: rgba(255, 255, 255, 0.8);
         border-radius: 50%;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         display: flex;
@@ -218,21 +234,28 @@ body {
 /* 电脑端小组件样式 */
 .widget {
     position: relative;
-    top: 40px;
-    left: 15px;
-    right: 15px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 30px;
-    padding: 20px;
+    /* 调整位置，使其位于屏幕上半部分 */
+    top: 20px;
+    /* 左右边距15px，水平居中 */
+    margin: 0 15px;
+    /* 移除小组件整体背景，设为透明 */
+    background: transparent;
+    /* 移除模糊效果 */
+    backdrop-filter: none;
+    /* 移除边框半径 */
+    border-radius: 0;
+    /* 调整内边距 */
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* 确保小组件占据上半部分约1/2区域 */
+    max-height: 50vh;
 }
 .widget-avatar {
-    width: 50px;
-    height: 50px;
+    /* 头像直径从50px增大到85px（手机端170px的一半） */
+    width: 85px;
+    height: 85px;
     border-radius: 50%;
     background-color: #e0e0e0;
     display: flex;
@@ -240,9 +263,10 @@ body {
     align-items: center;
     cursor: pointer;
     position: relative;
-    top: -25px;
     z-index: 2;
     overflow: hidden;
+    /* 调整位置，让头像稍微覆盖大圆角矩形的上半部分 */
+    margin-bottom: -15px;
 }
 .widget-avatar img {
     width: 100%;
@@ -251,14 +275,16 @@ body {
 }
 .widget-card {
     width: 100%;
-    background-color: white;
+    /* 半透明白色背景 */
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 50px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-    padding: 20px 10px 10px;
+    /* 恢复原始内边距 */
+    padding: 15px 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: -25px;
+    margin-bottom: 15px;
 }
 .widget-card-title {
     font-size: 12.5px;
@@ -276,11 +302,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
+    margin-bottom: 10px;
+    /* 确保小圆角矩形和圆形加起来的整体长度和大圆角矩形一样 */
+    gap: 10px;
 }
 .widget-small-card {
-    width: 70%;
-    background-color: white;
+    /* 调整宽度，确保和圆形加起来与大卡片宽度一致 */
+    flex: 1;
+    /* 半透明白色背景 */
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 25px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     padding: 7.5px 10px;
@@ -290,7 +320,8 @@ body {
 .widget-emoji-button {
     width: 25px;
     height: 25px;
-    background-color: white;
+    /* 半透明白色背景 */
+    background: rgba(255, 255, 255, 0.8);
     border-radius: 50%;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     display: flex;
