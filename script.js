@@ -50,6 +50,9 @@ const mainScreen = document.querySelector('.main-screen');
 
 if (settingsIcon) {
     settingsIcon.addEventListener('click', function() {
+        // 重置设置页面的transform和opacity
+        settingsPage.style.transform = 'translateX(0)';
+        settingsPage.style.opacity = '1';
         // 显示设置页面
         settingsPage.classList.add('show');
         // 隐藏主屏幕
@@ -130,6 +133,11 @@ window.goBack = function() {
     settingsPage.classList.remove('show');
     // 显示主屏幕
     mainScreen.classList.remove('hidden');
+    // 复位设置页面的样式
+    setTimeout(function() {
+        settingsPage.style.transform = 'translateX(0)';
+        settingsPage.style.opacity = '1';
+    }, 100);
 };
 
 // 初始化右滑返回
