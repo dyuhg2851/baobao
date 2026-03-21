@@ -33,8 +33,7 @@ body {
 }
 .page-indicator {
     position: absolute;
-    /* 整体往下移动 10px */
-    bottom: 70px;
+    bottom: 120px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -87,8 +86,7 @@ body {
 /* App 图标网格 */
 .app-grid {
     position: absolute;
-    /* 整体位置再往上移动20px */
-    bottom: 160px;
+    bottom: 220px;
     right: 20px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
