@@ -42,7 +42,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 3px;
+    gap: 7px;
     z-index: 10;
 }
 .indicator-dot {
@@ -98,7 +98,7 @@ body {
     .dock {
         border-radius: 40px;
         background: rgba(255, 255, 255, 0.6);
-        padding: 2px 20px 1px;
+        padding: 10px 20px 1px;
         padding-bottom: calc(1px + env(safe-area-inset-bottom));
         gap: 20px;
         bottom: 13px;
@@ -117,5 +117,6 @@ body {
     }
     .page-indicator {
         bottom: calc(120px + env(safe-area-inset-bottom));
+        gap: 7px;
     }
 }
