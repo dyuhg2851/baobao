@@ -44,139 +44,132 @@ if (slideContainer) {
 }
 
 // 从主页面跳转到设置页面
-const dockItems = document.querySelectorAll('.dock-item');
-if (dockItems.length > 3) {
-    dockItems[3].addEventListener('click', function() {
-        window.location.href = '设置.html';
+const settingsIcon = document.getElementById('settings-icon');
+if (settingsIcon) {
+    settingsIcon.addEventListener('click', function() {
+        document.getElementById('home-screen').classList.add('hide');
+        document.getElementById('settings-page').classList.add('show');
+        // 加载个人信息
+        loadProfileInfo();
+        // 初始化右滑返回
+        initSwipeBack();
     });
 }
 
-// 设置页面功能
-if (window.location.pathname.includes('设置.html')) {
-    // 页面加载时从localStorage加载个人信息
-    window.addEventListener('load', function() {
-        loadProfileInfo();
-        initSwipeBack();
+// 加载个人信息
+function loadProfileInfo() {
+    const avatar = localStorage.getItem('profileAvatar');
+    const name = localStorage.getItem('profileName');
+    const desc = localStorage.getItem('profileDesc');
+    
+    if (avatar) {
+        document.getElementById('avatar-image').src = avatar;
+    }
+    
+    if (name) {
+        document.querySelector('.profile-name').textContent = name;
+    }
+    
+    if (desc) {
+        document.querySelector('.profile-desc').textContent = desc;
+    }
+}
+
+// 编辑个人信息
+window.editProfile = function() {
+    // 可以添加更多编辑功能
+};
+
+// 更换头像
+window.changeAvatar = function(event) {
+    event.stopPropagation();
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const avatarUrl = e.target.result;
+                document.getElementById('avatar-image').src = avatarUrl;
+                localStorage.setItem('profileAvatar', avatarUrl);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+};
+
+// 编辑用户名
+window.editName = function(event) {
+    event.stopPropagation();
+    const currentName = document.querySelector('.profile-name').textContent;
+    const newName = prompt('请输入新的用户名：', currentName);
+    if (newName && newName.trim() !== '') {
+        document.querySelector('.profile-name').textContent = newName.trim();
+        localStorage.setItem('profileName', newName.trim());
+    }
+};
+
+// 编辑描述
+window.editDescription = function(event) {
+    event.stopPropagation();
+    const currentDesc = document.querySelector('.profile-desc').textContent;
+    const newDesc = prompt('请输入新的描述：', currentDesc);
+    if (newDesc && newDesc.trim() !== '') {
+        document.querySelector('.profile-desc').textContent = newDesc.trim();
+        localStorage.setItem('profileDesc', newDesc.trim());
+    }
+};
+
+// 返回上一页
+window.goBack = function() {
+    document.getElementById('settings-page').classList.remove('show');
+    document.getElementById('home-screen').classList.remove('hide');
+};
+
+// 初始化右滑返回
+function initSwipeBack() {
+    let startX = 0;
+    let currentX = 0;
+    let isSwiping = false;
+    
+    document.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        if (startX < 50) { // 只有从屏幕左侧开始滑动才触发
+            isSwiping = true;
+        }
     });
     
-    // 加载个人信息
-    function loadProfileInfo() {
-        const avatar = localStorage.getItem('profileAvatar');
-        const name = localStorage.getItem('profileName');
-        const desc = localStorage.getItem('profileDesc');
+    document.addEventListener('touchmove', function(e) {
+        if (!isSwiping) return;
         
-        if (avatar) {
-            document.getElementById('avatar-image').src = avatar;
+        currentX = e.touches[0].clientX;
+        const diffX = currentX - startX;
+        
+        if (diffX > 0) { // 向右滑动
+            const settingsPage = document.getElementById('settings-page');
+            settingsPage.style.transform = `translateX(${Math.min(diffX, window.innerWidth / 3)}px)`;
+            settingsPage.style.opacity = 1 - (diffX / (window.innerWidth / 3)) * 0.3;
+        }
+    });
+    
+    document.addEventListener('touchend', function() {
+        if (!isSwiping) return;
+        
+        const diffX = currentX - startX;
+        const settingsPage = document.getElementById('settings-page');
+        
+        if (diffX > window.innerWidth / 3) {
+            // 滑动距离超过屏幕1/3，返回上一页
+            window.goBack();
+        } else {
+            // 否则回弹复位
+            settingsPage.style.transform = 'translateX(0)';
+            settingsPage.style.opacity = '1';
         }
         
-        if (name) {
-            document.querySelector('.profile-name').textContent = name;
-        }
-        
-        if (desc) {
-            document.querySelector('.profile-desc').textContent = desc;
-        }
-    }
-    
-    // 编辑个人信息
-    window.editProfile = function() {
-        // 可以添加更多编辑功能
-    };
-    
-    // 更换头像
-    window.changeAvatar = function(event) {
-        event.stopPropagation();
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const avatarUrl = e.target.result;
-                    document.getElementById('avatar-image').src = avatarUrl;
-                    localStorage.setItem('profileAvatar', avatarUrl);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        input.click();
-    };
-    
-    // 编辑用户名
-    window.editName = function(event) {
-        event.stopPropagation();
-        const currentName = document.querySelector('.profile-name').textContent;
-        const newName = prompt('请输入新的用户名：', currentName);
-        if (newName && newName.trim() !== '') {
-            document.querySelector('.profile-name').textContent = newName.trim();
-            localStorage.setItem('profileName', newName.trim());
-        }
-    };
-    
-    // 编辑描述
-    window.editDescription = function(event) {
-        event.stopPropagation();
-        const currentDesc = document.querySelector('.profile-desc').textContent;
-        const newDesc = prompt('请输入新的描述：', currentDesc);
-        if (newDesc && newDesc.trim() !== '') {
-            document.querySelector('.profile-desc').textContent = newDesc.trim();
-            localStorage.setItem('profileDesc', newDesc.trim());
-        }
-    };
-    
-    // 返回上一页
-    window.goBack = function() {
-        window.location.href = 'index.html';
-    };
-    
-    // 初始化右滑返回
-    function initSwipeBack() {
-        let startX = 0;
-        let currentX = 0;
-        let isSwiping = false;
-        
-        // 确保body有正确的样式
-        document.body.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-        
-        document.addEventListener('touchstart', function(e) {
-            startX = e.touches[0].clientX;
-            // 重置状态
-            document.body.style.transform = 'translateX(0)';
-            document.body.style.opacity = '1';
-            if (startX < 50) { // 只有从屏幕左侧开始滑动才触发
-                isSwiping = true;
-            }
-        });
-        
-        document.addEventListener('touchmove', function(e) {
-            if (!isSwiping) return;
-            
-            currentX = e.touches[0].clientX;
-            const diffX = currentX - startX;
-            
-            if (diffX > 0) { // 向右滑动
-                document.body.style.transform = `translateX(${Math.min(diffX, window.innerWidth / 3)}px)`;
-                document.body.style.opacity = 1 - (diffX / (window.innerWidth / 3)) * 0.3;
-            }
-        });
-        
-        document.addEventListener('touchend', function() {
-            if (!isSwiping) return;
-            
-            const diffX = currentX - startX;
-            
-            if (diffX > window.innerWidth / 3) {
-                // 滑动距离超过屏幕1/3，返回上一页
-                window.location.href = 'index.html';
-            } else {
-                // 否则回弹复位
-                document.body.style.transform = 'translateX(0)';
-                document.body.style.opacity = '1';
-            }
-            
-            isSwiping = false;
-        });
-    }
+        isSwiping = false;
+    });
 }
