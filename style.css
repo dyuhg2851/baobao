@@ -58,8 +58,8 @@ body {
 }
 .dock {
     position: absolute;
-    /* 整体往下移动 10px */
-    bottom: 20px;
+    /* 整体往下移动 20px，在原有位置基础上再靠近屏幕底部10px */
+    bottom: 10px;
     /* 左右边距改为 15px */
     left: 15px;
     right: 15px;
@@ -92,11 +92,13 @@ body {
 /* App 图标网格 */
 .app-grid {
     position: absolute;
-    bottom: 140px;
+    /* 整体位置再往上移动20px */
+    bottom: 160px;
     right: 20px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
+    /* 左右间距调整为20px */
+    gap: 20px;
     z-index: 5;
 }
 .app-item {
@@ -130,7 +132,8 @@ body {
     }
     .dock {
         /* 安全区适配整体往下调，避免被底部横条遮挡 */
-        bottom: calc(20px + env(safe-area-inset-bottom));
+        /* 整体往下移动 10px，在原有位置基础上再靠近屏幕底部10px */
+        bottom: calc(10px + env(safe-area-inset-bottom));
         /* 左右边距改为 15px */
         left: 15px;
         right: 15px;
@@ -154,9 +157,11 @@ body {
     }
     /* 移动端 App 图标网格 */
     .app-grid {
-        bottom: calc(140px + env(safe-area-inset-bottom));
+        /* 整体位置再往上移动20px */
+        bottom: calc(160px + env(safe-area-inset-bottom));
         right: 20px;
-        gap: 15px;
+        /* 左右间距调整为20px */
+        gap: 20px;
     }
     .app-icon {
         width: 75px;
