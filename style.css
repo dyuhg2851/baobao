@@ -94,7 +94,6 @@ body {
         width: 100vw;
         height: 100vh;
         overflow: hidden;
-        padding-bottom: env(safe-area-inset-bottom);
     }
     .container {
         width: 100%;
@@ -102,21 +101,22 @@ body {
         height: 100vh;
         border-radius: 0;
         margin: 0 auto;
-        overflow: hidden;
         position: relative;
     }
     .dock {
+        /* 恢复原本的视觉效果 */
         border-radius: 40px;
         background: rgba(255, 255, 255, 0.6);
         padding: 15px 20px 5px;
         padding-bottom: calc(5px + env(safe-area-inset-bottom));
         gap: 20px;
-        bottom: calc(13px + env(safe-area-inset-bottom));
+        /* 修正安全区适配，底部距离改为 calc(25px + env(safe-area-inset-bottom)) */
+        bottom: calc(25px + env(safe-area-inset-bottom));
         left: 20px;
         right: 20px;
+        /* 只保留固定 height 值，移除 max-height 限制 */
         height: 80px;
-        max-height: 80px;
-        overflow: hidden;
+        /* 移除可能导致 Dock 栏被隐藏的 overflow:hidden */
         display: flex;
         justify-content: center;
         align-items: center;
