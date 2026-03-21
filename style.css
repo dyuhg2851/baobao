@@ -113,6 +113,249 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     margin-top: 2.5px;
 }
+/* 设置页面样式 */
+.settings-page {
+    width: 100vw;
+    height: 100vh;
+    background-color: #f5f5f5;
+    padding: 0 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    box-sizing: border-box;
+}
+
+/* 顶部导航栏 */
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-top: 20px;
+}
+
+.back-button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    cursor: pointer;
+}
+
+.settings-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #000;
+}
+
+.header-right {
+    width: 40px;
+}
+
+/* 搜索栏 */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #e6e6e6;
+    border-radius: 10px;
+    padding: 8px 12px;
+    margin-bottom: 20px;
+}
+
+.search-icon {
+    color: #8e8e93;
+    margin-right: 8px;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    color: #000;
+    outline: none;
+}
+
+/* 个人信息卡片 */
+.profile-card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #e6e6e6;
+    overflow: hidden;
+    margin-right: 16px;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.profile-desc {
+    font-size: 14px;
+    color: #8e8e93;
+}
+
+.profile-arrow {
+    color: #8e8e93;
+}
+
+/* 设置组 */
+.settings-group {
+    background-color: #fff;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+/* 设置项 */
+.settings-item {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+/* 设置图标 */
+.settings-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 16px;
+    color: #fff;
+}
+
+.settings-icon-orange {
+    background-color: #ff9500;
+}
+
+.settings-icon-blue {
+    background-color: #007aff;
+}
+
+.settings-icon-green {
+    background-color: #34c759;
+}
+
+.settings-icon-gray {
+    background-color: #8e8e93;
+}
+
+.settings-icon-red {
+    background-color: #ff3b30;
+}
+
+/* 设置标签 */
+.settings-label {
+    flex: 1;
+    font-size: 16px;
+    color: #000;
+}
+
+/* 设置值 */
+.settings-value {
+    font-size: 16px;
+    color: #8e8e93;
+    margin-right: 8px;
+}
+
+/* 设置箭头 */
+.settings-arrow {
+    color: #c7c7cc;
+}
+
+/* 开关按钮 */
+.settings-toggle {
+    position: relative;
+    width: 51px;
+    height: 31px;
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #e6e6e6;
+    border-radius: 15.5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle-label::before {
+    position: absolute;
+    content: "";
+    height: 27px;
+    width: 27px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.toggle-input:checked + .toggle-label {
+    background-color: #34c759;
+}
+
+.toggle-input:checked + .toggle-label::before {
+    transform: translateX(20px);
+}
+
+/* 右滑返回效果 */
+.swipe-back {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 999;
+}
+
+.swipe-back.active {
+    opacity: 1;
+    visibility: visible;
+}
+
 @media screen and (max-width: 430px) {
     body {
         background-color: #e6f9e6;
@@ -171,5 +414,13 @@ body {
     .app-label {
         font-size: 12px;
         margin-top: 5px;
+    }
+    /* 移动端设置页面 */
+    .settings-page {
+        padding: 20px 16px;
+        padding-top: calc(20px + env(safe-area-inset-top));
+    }
+    .settings-header {
+        padding-top: 0;
     }
 }
