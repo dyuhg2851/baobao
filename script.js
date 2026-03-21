@@ -148,8 +148,8 @@ function initSwipeBack() {
     
     document.addEventListener('touchstart', function(e) {
         startX = e.touches[0].clientX;
-        // 限制滑动触发区域为屏幕左侧20%区域
-        if (startX < window.innerWidth * 0.2 && settingsPage.classList.contains('show')) {
+        // 扩大滑动触发区域为屏幕左侧30%区域
+        if (startX < window.innerWidth * 0.3 && settingsPage.classList.contains('show')) {
             isSwiping = true;
             // 确保设置页面有过渡效果
             settingsPage.style.transition = 'none';
@@ -163,8 +163,8 @@ function initSwipeBack() {
         const diffX = currentX - startX;
         
         if (diffX > 0) { // 向右滑动
-            // 页面跟随手指平滑移动
-            settingsPage.style.transform = `translateX(${Math.min(diffX, window.innerWidth * 0.5)}px)`;
+            // 页面跟随手指平滑移动，提高灵敏度
+            settingsPage.style.transform = `translateX(${Math.min(diffX * 1.2, window.innerWidth * 0.8)}px)`;
             settingsPage.style.opacity = 1 - (diffX / (window.innerWidth * 0.5)) * 0.3;
         }
     });
@@ -174,15 +174,16 @@ function initSwipeBack() {
         
         const diffX = currentX - startX;
         
-        // 恢复过渡效果
-        settingsPage.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        // 恢复过渡效果，使用更短的过渡时间提高响应速度
+        settingsPage.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
         
-        if (diffX > window.innerWidth / 3) {
-            // 滑动距离超过屏幕1/3，返回主屏幕
+        // 降低滑动距离阈值，轻轻右滑就能返回
+        if (diffX > window.innerWidth / 5) {
+            // 滑动距离超过屏幕1/5，返回主屏幕
             settingsPage.style.transform = `translateX(${window.innerWidth}px)`;
             settingsPage.style.opacity = '0';
             // 延迟执行goBack，等待动画完成
-            setTimeout(goBack, 300);
+            setTimeout(goBack, 200);
         } else {
             // 否则回弹复位
             settingsPage.style.transform = 'translateX(0)';

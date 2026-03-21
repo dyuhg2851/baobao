@@ -9,18 +9,21 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    overflow: hidden;
+    touch-action: none;
 }
 .slide-container {
     width: 100vw;
     height: 100vh;
     display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     background-color: #e6f9e6;
     position: relative;
-    overflow: hidden;
+    touch-action: pan-x;
 }
 .slide-container::-webkit-scrollbar {
     display: none;
@@ -58,16 +61,16 @@ body {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(20px);
     border-radius: 30px;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
-    height: 100px;
+    height: 80px;
     z-index: 1000;
     /* 适配移动设备安全区域 */
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
-    height: calc(100px + env(safe-area-inset-bottom));
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    height: calc(80px + env(safe-area-inset-bottom));
 }
 .dock-item {
     display: flex;
