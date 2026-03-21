@@ -105,14 +105,12 @@ body {
     .dock {
         border-radius: 40px;
         background: rgba(255, 255, 255, 0.6);
-        padding: 10px 20px 1px;
-        padding-bottom: calc(1px + env(safe-area-inset-bottom));
+        padding: 15px 20px 5px;
+        padding-bottom: calc(5px + env(safe-area-inset-bottom));
         gap: 20px;
         bottom: 13px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 380px;
+        left: 9px;
+        right: 9px;
     }
     .dock-icon {
         width: 75px;
