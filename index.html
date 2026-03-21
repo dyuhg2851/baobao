@@ -6,50 +6,49 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="iPhone 15 Plus 容器">
+    <link rel="manifest" href="manifest.json">
     <title>iPhone 15 Plus 容器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="slide-container">
-            <div class="slide-page"></div>
-            <div class="slide-page"></div>
+    <div class="slide-container">
+        <div class="slide-page"></div>
+        <div class="slide-page"></div>
+    </div>
+    <div class="page-indicator">
+        <div class="indicator-dot active"></div>
+        <div class="indicator-dot"></div>
+    </div>
+    <div class="app-grid">
+        <div class="app-item">
+            <div class="dock-icon"></div>
+            <div class="app-label">微信</div>
         </div>
-        <div class="page-indicator">
-            <div class="indicator-dot active"></div>
-            <div class="indicator-dot"></div>
+        <div class="app-item">
+            <div class="dock-icon"></div>
+            <div class="app-label">家庭</div>
         </div>
-        <div class="app-grid">
-            <div class="app-item">
-                <div class="dock-icon"></div>
-                <div class="app-label">微信</div>
-            </div>
-            <div class="app-item">
-                <div class="dock-icon"></div>
-                <div class="app-label">家庭</div>
-            </div>
-            <div class="app-item">
-                <div class="dock-icon"></div>
-                <div class="app-label">查找</div>
-            </div>
-            <div class="app-item">
-                <div class="dock-icon"></div>
-                <div class="app-label">音乐</div>
-            </div>
+        <div class="app-item">
+            <div class="dock-icon"></div>
+            <div class="app-label">查找</div>
         </div>
-        <div class="dock">
-            <div class="dock-item">
-                <div class="dock-icon"></div>
-            </div>
-            <div class="dock-item">
-                <div class="dock-icon"></div>
-            </div>
-            <div class="dock-item">
-                <div class="dock-icon"></div>
-            </div>
-            <div class="dock-item">
-                <div class="dock-icon"></div>
-            </div>
+        <div class="app-item">
+            <div class="dock-icon"></div>
+            <div class="app-label">音乐</div>
+        </div>
+    </div>
+    <div class="dock">
+        <div class="dock-item">
+            <div class="dock-icon"></div>
+        </div>
+        <div class="dock-item">
+            <div class="dock-icon"></div>
+        </div>
+        <div class="dock-item">
+            <div class="dock-icon"></div>
+        </div>
+        <div class="dock-item">
+            <div class="dock-icon"></div>
         </div>
     </div>
     <script src="script.js"></script>
