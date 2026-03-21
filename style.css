@@ -41,7 +41,7 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 7px;
-    z-index: 10;
+    z-index: 1001;
 }
 .indicator-dot {
     width: 3px;
