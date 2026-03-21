@@ -1,10 +1,12 @@
-// 阻止双击放大
+// 阻止双击放大和双击导致的图标位置移动
 let lastTap = 0;
 document.addEventListener('touchstart', function(e) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
     if (tapLength < 300 && tapLength > 0) {
         e.preventDefault();
+        // 阻止双击事件冒泡，防止影响图标布局
+        e.stopPropagation();
     }
     lastTap = currentTime;
 });
@@ -145,9 +147,11 @@ function initSwipeBack() {
     let startX = 0;
     let currentX = 0;
     let isSwiping = false;
+    let hasMoved = false;
     
     document.addEventListener('touchstart', function(e) {
         startX = e.touches[0].clientX;
+        hasMoved = false;
         // 扩大滑动触发区域为屏幕左侧30%区域
         if (startX < window.innerWidth * 0.3 && settingsPage.classList.contains('show')) {
             isSwiping = true;
@@ -159,6 +163,7 @@ function initSwipeBack() {
     document.addEventListener('touchmove', function(e) {
         if (!isSwiping) return;
         
+        hasMoved = true;
         currentX = e.touches[0].clientX;
         const diffX = currentX - startX;
         
@@ -177,8 +182,8 @@ function initSwipeBack() {
         // 恢复过渡效果，使用更短的过渡时间提高响应速度
         settingsPage.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
         
-        // 降低滑动距离阈值，轻轻右滑就能返回
-        if (diffX > window.innerWidth / 5) {
+        // 只有在有移动且滑动距离超过阈值时才返回
+        if (hasMoved && diffX > window.innerWidth / 5) {
             // 滑动距离超过屏幕1/5，返回主屏幕
             settingsPage.style.transform = `translateX(${window.innerWidth}px)`;
             settingsPage.style.opacity = '0';
