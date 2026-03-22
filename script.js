@@ -766,6 +766,21 @@ function switchTab(element) {
     });
     // 给当前点击的选项添加active类
     element.classList.add('active');
+    
+    // 获取当前选中的页面
+    const targetPage = element.dataset.page;
+    
+    // 隐藏所有页面
+    const pages = document.querySelectorAll('.wechat-page');
+    pages.forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // 显示目标页面
+    const targetPageElement = document.querySelector(`.wechat-page[data-page="${targetPage}"]`);
+    if (targetPageElement) {
+        targetPageElement.classList.add('active');
+    }
 }
 
 // 编辑提示词文字
@@ -776,6 +791,28 @@ function editNoticeText() {
         if (noticeText) {
             noticeText.textContent = newText;
         }
+    }
+}
+
+// 切换分段选择器选项
+function switchSegment(segment) {
+    // 移除所有选项的active类
+    const segmentItems = document.querySelectorAll('.wechat-segment-item');
+    segmentItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 给当前点击的选项添加active类
+    if (segment === 'all') {
+        document.querySelector('.wechat-segment-item:nth-child(1)').classList.add('active');
+        // 显示聊天列表，隐藏好友列表
+        document.getElementById('chat-list').classList.add('active');
+        document.getElementById('friends-list').classList.remove('active');
+    } else if (segment === 'friends') {
+        document.querySelector('.wechat-segment-item:nth-child(2)').classList.add('active');
+        // 显示好友列表，隐藏聊天列表
+        document.getElementById('friends-list').classList.add('active');
+        document.getElementById('chat-list').classList.remove('active');
     }
 }
 
