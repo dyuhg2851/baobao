@@ -232,6 +232,15 @@ window.addEventListener('load', function() {
     loadProfileInfo();
     initSwipeBack();
     loadPresets();
+    loadAiConfig();
+    
+    // 添加输入框变化监听，自动保存配置
+    if (document.getElementById('api-url')) {
+        document.getElementById('api-url').addEventListener('input', saveAiConfig);
+    }
+    if (document.getElementById('api-key')) {
+        document.getElementById('api-key').addEventListener('input', saveAiConfig);
+    }
 });
 
 // 拉取模型列表
@@ -273,6 +282,8 @@ async function fetchModels() {
             
             alert('模型拉取成功 ^ ^');
             document.getElementById('selected-model').textContent = '请选择模型';
+            // 保存配置到localStorage
+            saveAiConfig();
         } else {
             throw new Error('Invalid response format');
         }
@@ -314,6 +325,8 @@ function closeModelSelector() {
 function selectModel(model) {
     document.getElementById('selected-model').textContent = model.name;
     closeModelSelector();
+    // 保存配置到localStorage
+    saveAiConfig();
 }
 
 // 打开添加API预设弹窗
@@ -379,6 +392,38 @@ function loadPresets() {
     });
 }
 
+// 保存API配置到localStorage
+function saveAiConfig() {
+    const apiUrl = document.getElementById('api-url').value;
+    const apiKey = document.getElementById('api-key').value;
+    const selectedModel = document.getElementById('selected-model').textContent;
+    
+    const aiConfig = {
+        apiUrl: apiUrl,
+        apiKey: apiKey,
+        selectedModel: selectedModel
+    };
+    
+    localStorage.setItem('aiConfig', JSON.stringify(aiConfig));
+}
+
+// 加载API配置从localStorage
+function loadAiConfig() {
+    const aiConfig = localStorage.getItem('aiConfig');
+    if (aiConfig) {
+        const config = JSON.parse(aiConfig);
+        if (document.getElementById('api-url')) {
+            document.getElementById('api-url').value = config.apiUrl || '';
+        }
+        if (document.getElementById('api-key')) {
+            document.getElementById('api-key').value = config.apiKey || '';
+        }
+        if (document.getElementById('selected-model')) {
+            document.getElementById('selected-model').textContent = config.selectedModel || '请先拉取模型';
+        }
+    }
+}
+
 // 使用API预设
 function usePreset(preset) {
     document.getElementById('api-key').value = preset.apiKey;
@@ -387,6 +432,9 @@ function usePreset(preset) {
     models = [];
     document.getElementById('selected-model').textContent = '请选择模型';
     alert('已切换API预设 ^ ^');
+    
+    // 保存配置到localStorage
+    saveAiConfig();
     
     // 更新预设的选中状态
     const allPresetIcons = document.querySelectorAll('.preset-avatar-icon');
