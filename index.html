@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="晕倒料理">
     <title>晕倒料理</title>
     <link rel="apple-touch-icon" href="https://i.postimg.cc/Jn63yqvs/IMG-9251.jpg">
     <link rel="icon" href="https://i.postimg.cc/Jn63yqvs/IMG-9251.jpg">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css?v=1.0.0">
 </head>
 <body>
-    <div class="main-screen">
+    <div id="app-container">
+        <div class="main-screen">
         <div class="slide-container">
             <div class="slide-page">
                 <div class="app-grid">
@@ -667,5 +669,6 @@
     <input type="file" id="restore-file-input" accept=".json" style="display: none;">
     
     <script src="script.js?v=1.0.0"></script>
+    </div>
 </body>
 </html>
