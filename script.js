@@ -142,63 +142,27 @@ window.goBack = function() {
     }, 100);
 };
 
-// 初始化右滑返回
-function initSwipeBack() {
-    let startX = 0;
-    let currentX = 0;
-    let isSwiping = false;
-    let hasMoved = false;
-    
+// 禁用浏览器/移动端的边缘侧滑返回手势
+function disableSwipeBack() {
+    // 禁用触摸事件的默认行为，防止侧滑返回
     document.addEventListener('touchstart', function(e) {
-        startX = e.touches[0].clientX;
-        hasMoved = false;
-        // 扩大滑动触发区域为屏幕左侧30%区域
-        if (startX < window.innerWidth * 0.3 && settingsPage.classList.contains('show')) {
-            isSwiping = true;
-            // 确保设置页面有过渡效果
-            settingsPage.style.transition = 'none';
-        } else {
-            isSwiping = false;
-        }
-    });
-    
-    document.addEventListener('touchmove', function(e) {
-        if (!isSwiping) return;
-        
-        hasMoved = true;
-        currentX = e.touches[0].clientX;
-        const diffX = currentX - startX;
-        
-        if (diffX > 0) { // 向右滑动
-            // 页面跟随手指平滑移动，提高灵敏度
-            settingsPage.style.transform = `translateX(${Math.min(diffX * 1.2, window.innerWidth * 0.8)}px)`;
-            settingsPage.style.opacity = 1 - (diffX / (window.innerWidth * 0.5)) * 0.3;
+        // 只在屏幕左侧边缘禁用，避免影响其他滑动操作
+        if (e.touches[0].clientX < 30) {
             e.preventDefault();
         }
     }, { passive: false });
     
-    document.addEventListener('touchend', function() {
-        if (!isSwiping) return;
-        
-        const diffX = currentX - startX;
-        
-        // 恢复过渡效果，使用更短的过渡时间提高响应速度
-        settingsPage.style.transition = 'transform 0.2s ease, opacity 0.2s ease';
-        
-        // 只有在有移动且滑动距离超过阈值时才返回
-        if (hasMoved && diffX > window.innerWidth / 5) {
-            // 滑动距离超过屏幕1/5，返回主屏幕
-            settingsPage.style.transform = `translateX(${window.innerWidth}px)`;
-            settingsPage.style.opacity = '0';
-            // 延迟执行goBack，等待动画完成
-            setTimeout(goBack, 200);
-        } else {
-            // 否则回弹复位
-            settingsPage.style.transform = 'translateX(0)';
-            settingsPage.style.opacity = '1';
+    document.addEventListener('touchmove', function(e) {
+        // 只在屏幕左侧边缘禁用，避免影响其他滑动操作
+        if (e.touches[0].clientX < 30) {
+            e.preventDefault();
         }
-        
-        isSwiping = false;
+    }, { passive: false });
+    
+    // 禁用浏览器的历史记录导航
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', function() {
+        window.history.pushState(null, null, window.location.href);
     });
 }
 
@@ -231,7 +195,7 @@ let currentBlur = 0;
 // 页面加载时初始化
 window.addEventListener('load', function() {
     loadProfileInfo();
-    initSwipeBack();
+    disableSwipeBack();
     loadPresets();
     loadAiConfig();
     applySavedWallpaper();
