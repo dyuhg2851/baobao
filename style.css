@@ -10,12 +10,12 @@
 }
 
 /* 全局点击动画效果 */
-button, a, .app-item, .dock-item, .back-button, .settings-item, .modal-button, .modal-close, .world-book-card, .wallpaper-card, [onclick], [role="button"] {
+button, a, .app-item, .dock-item, .back-button, .settings-item, .modal-button, .modal-close, .world-book-card, .wallpaper-card, .wechat-chat-item, .wechat-tab-item, [onclick], [role="button"] {
     transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
-button:active, a:active, .app-item:active, .dock-item:active, .back-button:active, .settings-item:active, .modal-button:active, .modal-close:active, .world-book-card:active, .wallpaper-card:active, [onclick]:active, [role="button"]:active {
+button:active, a:active, .app-item:active, .dock-item:active, .back-button:active, .settings-item:active, .modal-button:active, .modal-close:active, .world-book-card:active, .wallpaper-card:active, .wechat-chat-item:active, .wechat-tab-item:active, [onclick]:active, [role="button"]:active {
     transform: scale(0.94);
     opacity: 0.85;
 }
@@ -1182,4 +1182,298 @@ body {
     .settings-header {
         padding-top: 0;
     }
+}
+
+/* 微信页面 */
+.wechat-page {
+    width: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* 微信顶部导航栏 */
+.wechat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: #f5f5f5;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.wechat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wechat-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+.wechat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wechat-username {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+}
+
+.wechat-header-center {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    flex: 1;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wechat-header-right {
+    display: flex;
+    align-items: center;
+}
+
+.wechat-add-button {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: #000;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 微信搜索框 */
+.wechat-search {
+    padding: 10px 16px;
+    background-color: #f5f5f5;
+}
+
+.wechat-search-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 24px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.wechat-search-icon {
+    color: #8e8e93;
+    margin-right: 8px;
+}
+
+.wechat-search-input {
+    flex: 1;
+    border: none;
+    background-color: transparent;
+    font-size: 14px;
+    color: #000;
+    outline: none;
+}
+
+.wechat-search {
+    padding: 6px 16px;
+    background-color: #f5f5f5;
+}
+
+/* 分段选择器和提示栏容器 */
+.wechat-segment-container {
+    margin: 6px 16px;
+    background-color: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 微信分段选择器 */
+.wechat-segment {
+    display: flex;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.wechat-segment-item {
+    flex: 1;
+    padding: 8px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #8e8e93;
+    position: relative;
+    cursor: pointer;
+}
+
+.wechat-segment-item.active {
+    color: #CCE4AE;
+}
+
+.wechat-segment-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 20%;
+    width: 60%;
+    height: 2px;
+    background-color: #CCE4AE;
+    border-radius: 1px;
+}
+
+/* 微信提示栏 */
+.wechat-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: white;
+}
+
+.wechat-notice-icon {
+    font-size: 16px;
+    color: #8e8e93;
+}
+
+.wechat-notice-text {
+    font-size: 14px;
+    color: #8e8e93;
+}
+
+/* 微信聊天列表 */
+.wechat-chat-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 16px;
+    background-color: #f5f5f5;
+}
+
+/* 聊天卡片 */
+.wechat-chat-card {
+    background-color: white;
+    border-radius: 24px;
+    overflow: hidden;
+    margin-bottom: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 微信聊天列表项 */
+.wechat-chat-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+}
+
+.wechat-chat-item:last-child {
+    border-bottom: none;
+}
+
+.wechat-chat-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 12px;
+}
+
+.wechat-chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wechat-chat-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.wechat-chat-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wechat-chat-message {
+    font-size: 14px;
+    color: #8e8e93;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wechat-chat-time {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    margin-left: 12px;
+}
+
+.wechat-chat-time-text {
+    font-size: 12px;
+    color: #c7c7cc;
+}
+
+/* 微信底部Tab栏 */
+.wechat-tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 12px 0 20px 0;
+    background-color: white;
+    border-radius: 24px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    z-index: 100;
+    max-width: calc(100% - 32px);
+}
+
+.wechat-tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.wechat-tab-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(60%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(90%) contrast(80%);
+}
+
+.wechat-tab-item.active .wechat-tab-icon {
+    filter: invert(85%) sepia(25%) saturate(300%) hue-rotate(80deg) brightness(90%) contrast(90%);
+}
+
+.wechat-tab-item.active .wechat-tab-label {
+    color: #CCE4AE;
 }

@@ -725,6 +725,60 @@ function goBackFromDisplay() {
     settingsPage.classList.add('show');
 }
 
+// 打开微信页面
+function openWechatPage() {
+    window.location.href = 'wechat.html';
+}
+
+// 从微信页面返回主屏幕
+function goBackFromWechat() {
+    window.location.href = 'index.html';
+}
+
+// 更换头像
+function changeAvatar() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const avatarImg = document.querySelector('.wechat-avatar img');
+                if (avatarImg) {
+                    avatarImg.src = event.target.result;
+                    // 这里可以添加保存头像到localStorage的代码
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+// 切换底部导航栏选项
+function switchTab(element) {
+    // 移除所有选项的active类
+    const tabItems = document.querySelectorAll('.wechat-tab-item');
+    tabItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    // 给当前点击的选项添加active类
+    element.classList.add('active');
+}
+
+// 编辑提示词文字
+function editNoticeText() {
+    const newText = prompt('请输入新的提示文字:', '许愿像轻松熊一样轻松');
+    if (newText) {
+        const noticeText = document.querySelector('.wechat-notice-text');
+        if (noticeText) {
+            noticeText.textContent = newText;
+        }
+    }
+}
+
 // 加载显示与美化设置
 function loadDisplaySettings() {
     // 加载保存的字体链接
