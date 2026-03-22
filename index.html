@@ -163,7 +163,7 @@
         
         <!-- 第二组设置 -->
         <div class="settings-group">
-            <div class="settings-item">
+            <div class="settings-item" onclick="goToGeneralPage()">
                 <div class="settings-icon settings-icon-gray" data-icon-url=""></div>
                 <div class="settings-label">通用</div>
                 <div class="settings-arrow">
@@ -371,6 +371,186 @@
             </div>
         </div>
     </div>
+    
+    <!-- 通用页面 -->
+    <div id="general-page" class="settings-page">
+        <!-- 顶部导航栏 -->
+        <div class="settings-header">
+            <div class="back-button" onclick="goBackFromGeneral()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </div>
+            <h1 class="settings-title">通用</h1>
+            <div class="header-right"></div>
+        </div>
+        
+        <!-- 世界书管理模块 -->
+        <div class="settings-group">
+            <div class="settings-group-title">世界书管理</div>
+            <div class="world-book-header">
+                <h3>世界书</h3>
+                <button class="add-world-book-button" onclick="openAddWorldBookDialog()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    添加
+                </button>
+            </div>
+            <div id="world-book-list" class="world-book-grid">
+                <!-- 世界书列表将动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 备份与恢复模块 -->
+        <div class="settings-group" style="margin-top: auto;">
+            <div class="settings-group-title">备份与恢复</div>
+            <div class="settings-item" onclick="openBackupDialog()">
+                <div class="settings-label">备份全部数据</div>
+                <div class="settings-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="settings-item" onclick="openRestoreDialog()">
+                <div class="settings-label">从文件恢复</div>
+                <div class="settings-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加世界书弹窗 -->
+    <div id="add-world-book-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>添加世界书</h3>
+                <button class="modal-close" onclick="closeAddWorldBookDialog()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-form-item">
+                    <label>世界书名称</label>
+                    <input type="text" id="world-book-name" placeholder="输入世界书名称">
+                </div>
+                <div class="modal-form-item">
+                    <label>世界书内容</label>
+                    <textarea id="world-book-content" placeholder="输入世界书内容" rows="4"></textarea>
+                </div>
+                <div class="modal-form-item">
+                    <label>全局使用</label>
+                    <div class="settings-toggle" style="margin-left: auto;">
+                        <input type="checkbox" id="world-book-global" class="toggle-input">
+                        <label for="world-book-global" class="toggle-label"></label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-button cancel" onclick="closeAddWorldBookDialog()">取消</button>
+                    <button class="modal-button confirm" onclick="saveWorldBook()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑世界书弹窗 -->
+    <div id="edit-world-book-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>编辑世界书</h3>
+                <button class="modal-close" onclick="closeEditWorldBookDialog()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-form-item">
+                    <label>世界书名称</label>
+                    <input type="text" id="edit-world-book-name" placeholder="输入世界书名称">
+                </div>
+                <div class="modal-form-item">
+                    <label>世界书内容</label>
+                    <textarea id="edit-world-book-content" placeholder="输入世界书内容" rows="4"></textarea>
+                </div>
+                <div class="modal-form-item">
+                    <label>全局使用</label>
+                    <div class="settings-toggle" style="margin-left: auto;">
+                        <input type="checkbox" id="edit-world-book-global" class="toggle-input">
+                        <label for="edit-world-book-global" class="toggle-label"></label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-button cancel" onclick="closeEditWorldBookDialog()">取消</button>
+                    <button class="modal-button confirm" onclick="updateWorldBook()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 备份弹窗 -->
+    <div id="backup-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>备份数据</h3>
+                <button class="modal-close" onclick="closeBackupDialog()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-form-item">
+                    <label>备份文件名</label>
+                    <input type="text" id="backup-filename" value="好好吃的料理.json" placeholder="输入备份文件名">
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-button cancel" onclick="closeBackupDialog()">取消</button>
+                    <button class="modal-button confirm" onclick="downloadBackup()">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 恢复确认弹窗 -->
+    <div id="restore-confirm-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>恢复数据</h3>
+                <button class="modal-close" onclick="closeRestoreConfirmDialog()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px;">恢复将覆盖当前所有数据，是否继续？</p>
+                <div class="modal-actions">
+                    <button class="modal-button cancel" onclick="closeRestoreConfirmDialog()">取消</button>
+                    <button class="modal-button confirm" onclick="restoreData()">继续</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 长按菜单 -->
+    <div id="context-menu" class="context-menu">
+        <div class="context-menu-item" onclick="deleteWorldBook()">删除</div>
+    </div>
+    
+    <!-- 文件输入框（用于恢复） -->
+    <input type="file" id="restore-file-input" accept=".json" style="display: none;">
     
     <script src="script.js?v=1.0.0"></script>
 </body>

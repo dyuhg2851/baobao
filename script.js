@@ -4,6 +4,7 @@ document.addEventListener('touchstart', function(e) {
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
     if (tapLength < 300 && tapLength > 0) {
+        // 只在双击时阻止默认行为
         e.preventDefault();
         // 阻止双击事件冒泡，防止影响图标布局
         e.stopPropagation();
@@ -16,7 +17,7 @@ document.addEventListener('touchmove', function(e) {
     if (e.touches.length > 1) {
         e.preventDefault();
     }
-}, { passive: false });
+}, { passive: true });
 
 // 隐藏地址栏和工具栏
 window.addEventListener('load', function() {
@@ -54,9 +55,6 @@ const mainScreen = document.querySelector('.main-screen');
 
 if (settingsIcon) {
     settingsIcon.addEventListener('click', function() {
-        // 重置设置页面的transform和opacity
-        settingsPage.style.transform = 'translateX(0)';
-        settingsPage.style.opacity = '1';
         // 显示设置页面
         settingsPage.classList.add('show');
         // 隐藏主屏幕
@@ -139,7 +137,7 @@ window.goBack = function() {
     mainScreen.classList.remove('hidden');
     // 复位设置页面的样式
     setTimeout(function() {
-        settingsPage.style.transform = 'translateX(0)';
+        settingsPage.style.transform = 'translateX(100%)';
         settingsPage.style.opacity = '1';
     }, 100);
 };
@@ -159,6 +157,8 @@ function initSwipeBack() {
             isSwiping = true;
             // 确保设置页面有过渡效果
             settingsPage.style.transition = 'none';
+        } else {
+            isSwiping = false;
         }
     });
     
@@ -173,8 +173,9 @@ function initSwipeBack() {
             // 页面跟随手指平滑移动，提高灵敏度
             settingsPage.style.transform = `translateX(${Math.min(diffX * 1.2, window.innerWidth * 0.8)}px)`;
             settingsPage.style.opacity = 1 - (diffX / (window.innerWidth * 0.5)) * 0.3;
+            e.preventDefault();
         }
-    });
+    }, { passive: false });
     
     document.addEventListener('touchend', function() {
         if (!isSwiping) return;
@@ -204,8 +205,6 @@ function initSwipeBack() {
 // 从设置页面跳转到无线局域网子页面
 function goToWifiPage() {
     // 显示无线局域网子页面
-    wifiPage.style.transform = 'translateX(0)';
-    wifiPage.style.opacity = '1';
     wifiPage.classList.add('show');
     // 隐藏设置页面
     settingsPage.classList.remove('show');
@@ -217,11 +216,6 @@ function goBackFromWifi() {
     wifiPage.classList.remove('show');
     // 显示设置页面
     settingsPage.classList.add('show');
-    // 复位无线局域网子页面的样式
-    setTimeout(function() {
-        wifiPage.style.transform = 'translateX(0)';
-        wifiPage.style.opacity = '1';
-    }, 100);
 }
 
 // 存储模型列表和预设列表
@@ -268,8 +262,6 @@ window.addEventListener('load', function() {
 // 打开壁纸选择页面
 function openWallpaperPage() {
     // 显示壁纸选择页面
-    wallpaperPage.style.transform = 'translateX(0)';
-    wallpaperPage.style.opacity = '1';
     wallpaperPage.classList.add('show');
     // 隐藏设置页面
     settingsPage.classList.remove('show');
@@ -281,11 +273,6 @@ function goBackFromWallpaper() {
     wallpaperPage.classList.remove('show');
     // 显示设置页面
     settingsPage.classList.add('show');
-    // 复位壁纸选择页面的样式
-    setTimeout(function() {
-        wallpaperPage.style.transform = 'translateX(0)';
-        wallpaperPage.style.opacity = '1';
-    }, 100);
 }
 
 // 打开相册选择
@@ -689,5 +676,340 @@ function deletePreset(presetId) {
         localStorage.setItem('apiPresets', JSON.stringify(presets));
         loadPresets();
         alert('预设已删除');
+    }
+}
+
+// 通用页面相关功能
+const generalPage = document.getElementById('general-page');
+let worldBooks = JSON.parse(localStorage.getItem('worldBooks') || '[]');
+let currentWorldBook = null;
+let longPressTimer = null;
+
+// 从设置页面跳转到通用页面
+function goToGeneralPage() {
+    // 显示通用页面
+    generalPage.classList.add('show');
+    // 隐藏设置页面
+    settingsPage.classList.remove('show');
+    // 加载世界书列表
+    loadWorldBooks();
+}
+
+// 从通用页面返回设置页面
+function goBackFromGeneral() {
+    // 隐藏通用页面
+    generalPage.classList.remove('show');
+    // 显示设置页面
+    settingsPage.classList.add('show');
+}
+
+// 加载世界书列表
+function loadWorldBooks() {
+    const worldBookList = document.getElementById('world-book-list');
+    worldBookList.innerHTML = '';
+    
+    worldBooks.forEach(book => {
+        const worldBookCard = document.createElement('div');
+        worldBookCard.className = 'world-book-card';
+        worldBookCard.onclick = () => openEditWorldBookDialog(book);
+        
+        // 添加长按事件
+        worldBookCard.addEventListener('touchstart', function(e) {
+            longPressTimer = setTimeout(() => {
+                showContextMenu(e, book);
+            }, 500);
+        });
+        
+        worldBookCard.addEventListener('touchend', function() {
+            clearTimeout(longPressTimer);
+        });
+        
+        worldBookCard.addEventListener('touchmove', function() {
+            clearTimeout(longPressTimer);
+        });
+        
+        worldBookCard.innerHTML = `
+            <div class="world-book-icon">📄</div>
+            <div class="world-book-name">${book.name}</div>
+            <div class="world-book-time">${formatTime(book.lastModified)}</div>
+            ${book.isGlobal ? '<div class="world-book-global">全局使用</div>' : ''}
+        `;
+        worldBookList.appendChild(worldBookCard);
+    });
+}
+
+// 格式化时间
+function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// 显示长按菜单
+function showContextMenu(e, book) {
+    currentWorldBook = book;
+    const contextMenu = document.getElementById('context-menu');
+    const touch = e.touches[0];
+    contextMenu.style.left = touch.clientX + 'px';
+    contextMenu.style.top = touch.clientY + 'px';
+    contextMenu.style.display = 'block';
+    
+    // 点击其他地方关闭菜单
+    setTimeout(() => {
+        document.addEventListener('click', closeContextMenu);
+    }, 100);
+}
+
+// 关闭长按菜单
+function closeContextMenu() {
+    document.getElementById('context-menu').style.display = 'none';
+    document.removeEventListener('click', closeContextMenu);
+}
+
+// 删除世界书
+function deleteWorldBook() {
+    if (currentWorldBook && confirm('确定要删除这个世界书吗？')) {
+        worldBooks = worldBooks.filter(book => book.id !== currentWorldBook.id);
+        localStorage.setItem('worldBooks', JSON.stringify(worldBooks));
+        loadWorldBooks();
+        closeContextMenu();
+        alert('世界书已删除');
+    }
+}
+
+// 打开添加世界书弹窗
+function openAddWorldBookDialog() {
+    document.getElementById('world-book-name').value = '';
+    document.getElementById('world-book-global').checked = false;
+    document.getElementById('add-world-book-dialog').classList.add('show');
+}
+
+// 关闭添加世界书弹窗
+function closeAddWorldBookDialog() {
+    document.getElementById('add-world-book-dialog').classList.remove('show');
+}
+
+// 保存世界书
+function saveWorldBook() {
+    const name = document.getElementById('world-book-name').value;
+    const content = document.getElementById('world-book-content').value;
+    const isGlobal = document.getElementById('world-book-global').checked;
+    
+    if (!name || name.trim() === '') {
+        alert('请输入世界书名称');
+        return;
+    }
+    
+    // 如果设置为全局使用，取消其他世界书的全局状态
+    if (isGlobal) {
+        worldBooks.forEach(book => {
+            book.isGlobal = false;
+        });
+    }
+    
+    const newWorldBook = {
+        id: Date.now().toString(),
+        name: name.trim(),
+        content: content.trim(),
+        isGlobal: isGlobal,
+        lastModified: Date.now()
+    };
+    
+    worldBooks.push(newWorldBook);
+    localStorage.setItem('worldBooks', JSON.stringify(worldBooks));
+    loadWorldBooks();
+    closeAddWorldBookDialog();
+    alert('世界书添加成功 ^ ^');
+}
+
+// 打开编辑世界书弹窗
+function openEditWorldBookDialog(book) {
+    currentWorldBook = book;
+    document.getElementById('edit-world-book-name').value = book.name;
+    document.getElementById('edit-world-book-content').value = book.content || '';
+    document.getElementById('edit-world-book-global').checked = book.isGlobal;
+    document.getElementById('edit-world-book-dialog').classList.add('show');
+}
+
+// 关闭编辑世界书弹窗
+function closeEditWorldBookDialog() {
+    document.getElementById('edit-world-book-dialog').classList.remove('show');
+}
+
+// 更新世界书
+function updateWorldBook() {
+    if (!currentWorldBook) return;
+    
+    const name = document.getElementById('edit-world-book-name').value;
+    const content = document.getElementById('edit-world-book-content').value;
+    const isGlobal = document.getElementById('edit-world-book-global').checked;
+    
+    if (!name || name.trim() === '') {
+        alert('请输入世界书名称');
+        return;
+    }
+    
+    // 如果设置为全局使用，取消其他世界书的全局状态
+    if (isGlobal) {
+        worldBooks.forEach(book => {
+            book.isGlobal = false;
+        });
+    }
+    
+    const updatedBook = {
+        ...currentWorldBook,
+        name: name.trim(),
+        content: content.trim(),
+        isGlobal: isGlobal,
+        lastModified: Date.now()
+    };
+    
+    const index = worldBooks.findIndex(book => book.id === currentWorldBook.id);
+    if (index !== -1) {
+        worldBooks[index] = updatedBook;
+        localStorage.setItem('worldBooks', JSON.stringify(worldBooks));
+        loadWorldBooks();
+        closeEditWorldBookDialog();
+        alert('世界书更新成功 ^ ^');
+    }
+}
+
+// 打开备份弹窗
+function openBackupDialog() {
+    document.getElementById('backup-dialog').classList.add('show');
+}
+
+// 关闭备份弹窗
+function closeBackupDialog() {
+    document.getElementById('backup-dialog').classList.remove('show');
+}
+
+// 下载备份
+function downloadBackup() {
+    const filename = document.getElementById('backup-filename').value;
+    if (!filename || filename.trim() === '') {
+        alert('请输入备份文件名');
+        return;
+    }
+    
+    // 确保文件名以.json结尾
+    const finalFilename = filename.endsWith('.json') ? filename : filename + '.json';
+    
+    // 收集所有数据
+    const backupData = {
+        worldBooks: worldBooks,
+        apiPresets: presets,
+        aiConfig: JSON.parse(localStorage.getItem('aiConfig') || '{}'),
+        wallpaper: localStorage.getItem('wallpaper'),
+        wallpaperBlur: localStorage.getItem('wallpaperBlur'),
+        profileAvatar: localStorage.getItem('profileAvatar'),
+        profileName: localStorage.getItem('profileName'),
+        profileDesc: localStorage.getItem('profileDesc'),
+        timestamp: Date.now()
+    };
+    
+    // 创建JSON文件
+    const jsonStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // 创建下载链接
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = finalFilename;
+    a.click();
+    
+    // 清理
+    URL.revokeObjectURL(url);
+    closeBackupDialog();
+    alert('备份成功 ^ ^');
+}
+
+// 打开恢复弹窗
+function openRestoreDialog() {
+    document.getElementById('restore-file-input').click();
+}
+
+// 处理文件选择
+document.getElementById('restore-file-input').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const backupData = JSON.parse(event.target.result);
+                // 验证数据格式
+                if (typeof backupData === 'object' && backupData !== null) {
+                    // 保存到全局变量以便恢复
+                    window.backupData = backupData;
+                    // 显示确认弹窗
+                    document.getElementById('restore-confirm-dialog').classList.add('show');
+                } else {
+                    throw new Error('无效的备份文件格式');
+                }
+            } catch (error) {
+                alert('备份文件格式错误，请检查文件是否正确');
+            }
+        };
+        reader.readAsText(file);
+    }
+});
+
+// 关闭恢复确认弹窗
+function closeRestoreConfirmDialog() {
+    document.getElementById('restore-confirm-dialog').classList.remove('show');
+    // 清空文件输入
+    document.getElementById('restore-file-input').value = '';
+}
+
+// 恢复数据
+function restoreData() {
+    if (window.backupData) {
+        // 恢复所有数据
+        if (window.backupData.worldBooks) {
+            worldBooks = window.backupData.worldBooks;
+            localStorage.setItem('worldBooks', JSON.stringify(worldBooks));
+        }
+        
+        if (window.backupData.apiPresets) {
+            presets = window.backupData.apiPresets;
+            localStorage.setItem('apiPresets', JSON.stringify(presets));
+        }
+        
+        if (window.backupData.aiConfig) {
+            localStorage.setItem('aiConfig', JSON.stringify(window.backupData.aiConfig));
+        }
+        
+        if (window.backupData.wallpaper) {
+            localStorage.setItem('wallpaper', window.backupData.wallpaper);
+        }
+        
+        if (window.backupData.wallpaperBlur) {
+            localStorage.setItem('wallpaperBlur', window.backupData.wallpaperBlur);
+        }
+        
+        if (window.backupData.profileAvatar) {
+            localStorage.setItem('profileAvatar', window.backupData.profileAvatar);
+        }
+        
+        if (window.backupData.profileName) {
+            localStorage.setItem('profileName', window.backupData.profileName);
+        }
+        
+        if (window.backupData.profileDesc) {
+            localStorage.setItem('profileDesc', window.backupData.profileDesc);
+        }
+        
+        closeRestoreConfirmDialog();
+        alert('数据恢复成功，页面将刷新');
+        // 刷新页面
+        setTimeout(() => {
+            location.reload();
+        }, 1000);
     }
 }

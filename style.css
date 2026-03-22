@@ -60,7 +60,7 @@ body {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(20px);
     border-radius: 30px;
-    padding: 12px 8px;
+    padding: 17px 8px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -104,7 +104,7 @@ body {
 
 .app-grid {
     position: absolute;
-    bottom: 150px;
+    bottom: 170px;
     right: 20px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -135,16 +135,15 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     box-sizing: border-box;
-    display: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    opacity: 1;
+    transform: translateX(100%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
     z-index: 100;
 }
 
 /* 设置页面显示状态 */
 .settings-page.show {
-    display: block;
-    opacity: 1;
+    transform: translateX(0);
 }
 
 /* 主屏幕隐藏状态 */
@@ -561,6 +560,8 @@ body {
 .settings-group {
     border-radius: 12px;
     overflow: hidden;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* 设置组标题 */
@@ -570,6 +571,138 @@ body {
     padding: 12px 16px 8px;
     background-color: #f5f5f5;
     border-radius: 12px 12px 0 0;
+    margin: 0;
+}
+
+/* 世界书管理样式 */
+.world-book-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.world-book-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
+}
+
+.add-world-book-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.add-world-book-button:hover {
+    background-color: #0056b3;
+}
+
+.world-book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+.world-book-card {
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.world-book-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.world-book-icon {
+    width: 60px;
+    height: 60px;
+    background-color: #007aff;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    font-size: 24px;
+}
+
+.world-book-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+
+.world-book-time {
+    font-size: 12px;
+    color: #8e8e93;
+    margin-bottom: 8px;
+}
+
+.world-book-global {
+    font-size: 12px;
+    color: #007aff;
+    font-weight: 500;
+}
+
+/* 长按菜单 */
+.context-menu {
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 12px;
+    color: white;
+    z-index: 10000;
+    display: none;
+}
+
+.context-menu-item {
+    padding: 12px 24px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.context-menu-item:last-child {
+    border-bottom: none;
+}
+
+.context-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 通用页面布局 */
+#general-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+#general-page .settings-group:first-child {
+    flex: 1;
+}
+
+#general-page .settings-group:last-child {
+    margin-top: auto;
+    margin-bottom: 20px;
 }
 
 /* 单选按钮 */
@@ -702,7 +835,8 @@ body {
     font-weight: 500;
 }
 
-.modal-form-item input {
+.modal-form-item input,
+.modal-form-item textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #e6e6e6;
@@ -710,6 +844,12 @@ body {
     font-size: 16px;
     color: #000;
     outline: none;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.modal-form-item textarea {
+    resize: vertical;
+    min-height: 100px;
 }
 
 .modal-actions {
@@ -877,7 +1017,7 @@ body {
         left: 15px;
         right: 15px;
         /* 图标与 Dock 栏背景上下左右都有合适内边距，不要贴边 */
-        padding: 15px 10px;
+        padding: 20px 10px;
         /* 长度缩短，图标间距保持合适 */
         gap: 15px;
     }
@@ -897,7 +1037,7 @@ body {
     /* 移动端 App 图标网格 */
     .app-grid {
         /* 整体位置再往上移动20px */
-        bottom: calc(160px + env(safe-area-inset-bottom));
+        bottom: calc(180px + env(safe-area-inset-bottom));
         right: 20px;
         /* 左右间距调整为20px */
         gap: 20px;
