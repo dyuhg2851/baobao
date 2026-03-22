@@ -49,6 +49,7 @@ if (slideContainer) {
 const settingsIcon = document.getElementById('settings-icon');
 const settingsPage = document.getElementById('settings-page');
 const wifiPage = document.getElementById('wifi-page');
+const wallpaperPage = document.getElementById('wallpaper-page');
 const mainScreen = document.querySelector('.main-screen');
 
 if (settingsIcon) {
@@ -227,12 +228,17 @@ function goBackFromWifi() {
 let models = [];
 let presets = JSON.parse(localStorage.getItem('apiPresets') || '[]');
 
+// 存储当前选择的壁纸和模糊度
+let currentWallpaper = null;
+let currentBlur = 0;
+
 // 页面加载时初始化
 window.addEventListener('load', function() {
     loadProfileInfo();
     initSwipeBack();
     loadPresets();
     loadAiConfig();
+    applySavedWallpaper();
     
     // 添加输入框变化监听，自动保存配置
     if (document.getElementById('api-url')) {
@@ -241,7 +247,187 @@ window.addEventListener('load', function() {
     if (document.getElementById('api-key')) {
         document.getElementById('api-key').addEventListener('input', saveAiConfig);
     }
+    
+    // 添加模糊度滑块监听
+    const blurSlider = document.getElementById('blur-slider');
+    if (blurSlider) {
+        blurSlider.addEventListener('input', function() {
+            currentBlur = parseFloat(this.value);
+            document.getElementById('blur-value').textContent = Math.round(currentBlur * 10) + '%';
+            updateWallpaperPreview();
+            // 实时保存模糊度设置
+            if (localStorage.getItem('wallpaper')) {
+                localStorage.setItem('wallpaperBlur', currentBlur.toString());
+            }
+        });
+    }
 });
+
+// 打开壁纸选择页面
+function openWallpaperPage() {
+    // 显示壁纸选择页面
+    wallpaperPage.style.transform = 'translateX(0)';
+    wallpaperPage.style.opacity = '1';
+    wallpaperPage.classList.add('show');
+    // 隐藏设置页面
+    settingsPage.classList.remove('show');
+}
+
+// 从壁纸选择页面返回
+function goBackFromWallpaper() {
+    // 隐藏壁纸选择页面
+    wallpaperPage.classList.remove('show');
+    // 显示设置页面
+    settingsPage.classList.add('show');
+    // 复位壁纸选择页面的样式
+    setTimeout(function() {
+        wallpaperPage.style.transform = 'translateX(0)';
+        wallpaperPage.style.opacity = '1';
+    }, 100);
+}
+
+// 打开相册选择
+function openPhotoLibrary() {
+    // 创建一个隐藏的文件输入框
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                currentWallpaper = event.target.result;
+                previewWallpaper(currentWallpaper);
+                openWallpaperConfirmDialog();
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+// 预览壁纸
+function previewWallpaper(wallpaperUrl) {
+    const previewContainer = document.getElementById('wallpaper-preview-container');
+    previewContainer.innerHTML = `<img src="${wallpaperUrl}" alt="壁纸预览">`;
+    
+    // 更新确认弹窗中的预览
+    const confirmPreview = document.querySelector('.wallpaper-confirm-preview');
+    confirmPreview.innerHTML = `<img src="${wallpaperUrl}" alt="壁纸预览">`;
+    
+    // 更新预览的模糊度
+    updateWallpaperPreview();
+}
+
+// 更新壁纸预览的模糊度
+function updateWallpaperPreview() {
+    const previewContainer = document.getElementById('wallpaper-preview-container');
+    if (previewContainer) {
+        previewContainer.style.filter = `blur(${currentBlur}px)`;
+    }
+    
+    // 更新确认弹窗中的预览模糊度
+    const confirmPreview = document.querySelector('.wallpaper-confirm-preview');
+    if (confirmPreview) {
+        confirmPreview.style.filter = `blur(${currentBlur}px)`;
+    }
+    
+    // 实时更新已应用的壁纸模糊度
+    const savedWallpaper = localStorage.getItem('wallpaper');
+    if (savedWallpaper) {
+        const wallpaperLayer = document.getElementById('wallpaper-layer');
+        if (wallpaperLayer) {
+            wallpaperLayer.style.filter = `blur(${currentBlur}px)`;
+        }
+    }
+}
+
+// 打开壁纸确认弹窗
+function openWallpaperConfirmDialog() {
+    document.getElementById('wallpaper-confirm-dialog').classList.add('show');
+}
+
+// 关闭壁纸确认弹窗
+function closeWallpaperConfirmDialog() {
+    document.getElementById('wallpaper-confirm-dialog').classList.remove('show');
+}
+
+// 设置壁纸
+function setWallpaper() {
+    if (currentWallpaper) {
+        // 保存壁纸和模糊度到localStorage
+        localStorage.setItem('wallpaper', currentWallpaper);
+        localStorage.setItem('wallpaperBlur', currentBlur.toString());
+        // 应用壁纸
+        applyWallpaper(currentWallpaper, currentBlur);
+        // 关闭弹窗
+        closeWallpaperConfirmDialog();
+        // 显示成功提示
+        alert('壁纸设置成功 ^ ^');
+    }
+}
+
+// 应用壁纸
+function applyWallpaper(wallpaperUrl, blur = 0) {
+    const slideContainer = document.querySelector('.slide-container');
+    if (slideContainer) {
+        // 移除之前的背景和模糊效果
+        slideContainer.style.backgroundImage = 'none';
+        slideContainer.style.filter = 'none';
+        slideContainer.style.backgroundColor = 'transparent';
+        
+        // 检查是否已有壁纸图层
+        let wallpaperLayer = document.getElementById('wallpaper-layer');
+        if (!wallpaperLayer) {
+            // 创建壁纸图层
+            wallpaperLayer = document.createElement('div');
+            wallpaperLayer.id = 'wallpaper-layer';
+            wallpaperLayer.style.position = 'absolute';
+            wallpaperLayer.style.top = '0';
+            wallpaperLayer.style.left = '0';
+            wallpaperLayer.style.width = '100%';
+            wallpaperLayer.style.height = '100%';
+            wallpaperLayer.style.zIndex = '-10';
+            // 添加到main-screen而不是slide-container，这样可以覆盖所有页面
+            const mainScreen = document.querySelector('.main-screen');
+            if (mainScreen) {
+                mainScreen.insertBefore(wallpaperLayer, mainScreen.firstChild);
+            } else {
+                slideContainer.insertBefore(wallpaperLayer, slideContainer.firstChild);
+            }
+        }
+        
+        // 设置壁纸和模糊效果
+        wallpaperLayer.style.backgroundImage = `url('${wallpaperUrl}')`;
+        wallpaperLayer.style.backgroundSize = 'cover';
+        wallpaperLayer.style.backgroundPosition = 'center';
+        wallpaperLayer.style.backgroundRepeat = 'no-repeat';
+        wallpaperLayer.style.filter = `blur(${blur}px)`;
+    }
+}
+
+// 应用保存的壁纸
+function applySavedWallpaper() {
+    const savedWallpaper = localStorage.getItem('wallpaper');
+    const savedBlur = localStorage.getItem('wallpaperBlur');
+    if (savedWallpaper) {
+        const blur = savedBlur ? parseFloat(savedBlur) : 0;
+        applyWallpaper(savedWallpaper, blur);
+        // 更新当前模糊度值
+        currentBlur = blur;
+        // 更新滑块的值
+        if (document.getElementById('blur-slider')) {
+            document.getElementById('blur-slider').value = blur;
+            document.getElementById('blur-value').textContent = Math.round(blur * 10) + '%';
+        }
+        // 更新预览
+        if (document.getElementById('wallpaper-preview-container')) {
+            document.getElementById('wallpaper-preview-container').innerHTML = `<img src="${savedWallpaper}" alt="壁纸预览">`;
+            document.getElementById('wallpaper-preview-container').style.filter = `blur(${blur}px)`;
+        }
+    }
+}
 
 // 拉取模型列表
 async function fetchModels() {

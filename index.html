@@ -172,7 +172,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item" onclick="openWallpaperPage()">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">壁纸</div>
                 <div class="settings-arrow">
@@ -306,6 +306,67 @@
                         <button class="modal-button cancel" onclick="closeAddPresetDialog()">取消</button>
                         <button class="modal-button confirm" onclick="saveApiPreset()">保存</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 壁纸选择页面 -->
+    <div id="wallpaper-page" class="settings-page">
+        <!-- 顶部导航栏 -->
+        <div class="settings-header">
+            <div class="back-button" onclick="goBackFromWallpaper()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </div>
+            <h1 class="settings-title">壁纸</h1>
+            <div class="header-right"></div>
+        </div>
+        
+        <!-- 壁纸选择部分 -->
+        <div class="settings-group">
+            <div class="settings-item" onclick="openPhotoLibrary()">
+                <div class="settings-label">从相册选择</div>
+                <div class="settings-arrow">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 壁纸预览部分 -->
+        <div class="wallpaper-preview">
+            <h3 class="wallpaper-preview-title">预览</h3>
+            <div class="blur-adjuster">
+                <div class="blur-label">模糊度</div>
+                <input type="range" id="blur-slider" min="0" max="10" value="0" step="0.5">
+                <div id="blur-value" class="blur-value">0%</div>
+            </div>
+            <div id="wallpaper-preview-container" class="wallpaper-preview-container">
+                <!-- 壁纸预览将在这里显示 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 壁纸确认弹窗 -->
+    <div id="wallpaper-confirm-dialog" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>设置壁纸</h3>
+                <button class="modal-close" onclick="closeWallpaperConfirmDialog()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="wallpaper-confirm-preview"></div>
+                <div class="modal-actions">
+                    <button class="modal-button cancel" onclick="closeWallpaperConfirmDialog()">取消</button>
+                    <button class="modal-button confirm" onclick="setWallpaper()">设为主屏幕</button>
                 </div>
             </div>
         </div>
