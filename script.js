@@ -48,12 +48,17 @@ if (slideContainer) {
 
 // 从主页面跳转到设置页面
 const settingsIcon = document.getElementById('settings-icon');
+const settingsPage = document.getElementById('settings-page');
+const wifiPage = document.getElementById('wifi-page');
+const wallpaperPage = document.getElementById('wallpaper-page');
 const mainScreen = document.querySelector('.main-screen');
 
 if (settingsIcon) {
     settingsIcon.addEventListener('click', function() {
-        // 打开设置页面
-        openSettingsPage();
+        // 显示设置页面
+        settingsPage.classList.add('show');
+        // 隐藏主屏幕
+        mainScreen.classList.add('hidden');
     });
 }
 
@@ -126,8 +131,10 @@ window.editDescription = function(event) {
 
 // 返回上一页
 window.goBack = function() {
-    // 从设置页面返回主屏幕
-    goBackFromSettings();
+    // 隐藏设置页面
+    settingsPage.classList.remove('show');
+    // 显示主屏幕
+    mainScreen.classList.remove('hidden');
 };
 
 // 禁用浏览器/移动端的边缘侧滑返回手势
@@ -724,46 +731,42 @@ function goBackFromDisplay() {
     settingsPage.classList.add('show');
 }
 
-// 统一页面加载函数
-function loadPage(pageName, pagePath) {
-    // 使用history.pushState()改变URL，保持在当前窗口
-    history.pushState({ page: pageName }, pageName, pagePath);
+// 打开微信页面
+function openWechatPage() {
+    // 隐藏主屏幕
+    mainScreen.classList.add('hidden');
     
-    // 获取app-container
-    const appContainer = document.getElementById('app-container');
+    // 创建微信页面容器
+    const wechatContainer = document.createElement('div');
+    wechatContainer.id = 'wechat-container';
+    wechatContainer.className = 'wechat-container';
     
-    // 加载页面内容
-    fetch(pagePath)
+    // 加载微信页面内容
+    fetch('wechat.html')
         .then(response => response.text())
         .then(html => {
-            // 提取页面的内容部分
+            // 提取微信页面的内容部分
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const pageContent = doc.querySelector('.main-screen, .wechat-container, .settings-page');
+            const wechatContent = doc.querySelector('.wechat-container');
             
-            if (pageContent) {
-                // 替换app-container的内容
-                appContainer.innerHTML = '';
-                appContainer.appendChild(pageContent);
+            if (wechatContent) {
+                wechatContainer.innerHTML = wechatContent.innerHTML;
+                document.body.appendChild(wechatContainer);
                 
-                // 重新绑定页面事件
-                if (pageName === '微信') {
-                    bindWechatEvents();
-                } else if (pageName === '设置') {
-                    bindSettingsEvents();
-                }
+                // 使用history.pushState()改变URL，保持在当前窗口
+                history.pushState({ page: 'wechat' }, '微信', 'wechat.html');
+                
+                // 重新绑定微信页面的事件
+                bindWechatEvents();
             }
         })
         .catch(error => {
-            console.error(`加载${pageName}页面失败:`, error);
-            // 如果加载失败，回退到原来的跳转方式
-            window.location.href = pagePath;
+            console.error('加载微信页面失败:', error);
+            // 如果加载失败，显示错误信息并恢复主屏幕
+            mainScreen.classList.remove('hidden');
+            alert('加载微信页面失败，请检查网络连接');
         });
-}
-
-// 打开微信页面
-function openWechatPage() {
-    loadPage('微信', 'wechat.html');
 }
 
 // 从微信页面返回主屏幕
@@ -771,8 +774,14 @@ function goBackFromWechat() {
     // 使用history.back()返回主屏幕
     history.back();
     
-    // 加载主屏幕
-    loadPage('主屏幕', 'index.html');
+    // 显示主屏幕
+    mainScreen.classList.remove('hidden');
+    
+    // 移除微信页面容器
+    const wechatContainer = document.getElementById('wechat-container');
+    if (wechatContainer) {
+        wechatContainer.remove();
+    }
 }
 
 // 绑定微信页面的事件
@@ -784,32 +793,6 @@ function bindWechatEvents() {
     }
     
     // 绑定其他微信页面事件
-    // 这里可以添加其他需要绑定的事件
-}
-
-// 打开设置页面
-function openSettingsPage() {
-    loadPage('设置', 'settings.html');
-}
-
-// 从设置页面返回主屏幕
-function goBackFromSettings() {
-    // 使用history.back()返回主屏幕
-    history.back();
-    
-    // 加载主屏幕
-    loadPage('主屏幕', 'index.html');
-}
-
-// 绑定设置页面的事件
-function bindSettingsEvents() {
-    // 绑定返回按钮事件
-    const backButton = document.querySelector('.back-button');
-    if (backButton) {
-        backButton.onclick = goBackFromSettings;
-    }
-    
-    // 绑定其他设置页面事件
     // 这里可以添加其他需要绑定的事件
 }
 
