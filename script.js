@@ -727,12 +727,26 @@ function goBackFromDisplay() {
 
 // 打开微信页面
 function openWechatPage() {
-    window.location.href = 'wechat.html';
+    const wechatPage = document.getElementById('wechat-page');
+    const mainScreen = document.querySelector('.main-screen');
+    if (wechatPage) {
+        wechatPage.style.transform = 'translateX(0)';
+    }
+    if (mainScreen) {
+        mainScreen.style.opacity = '0';
+    }
 }
 
 // 从微信页面返回主屏幕
 function goBackFromWechat() {
-    window.location.href = 'index.html';
+    const wechatPage = document.getElementById('wechat-page');
+    const mainScreen = document.querySelector('.main-screen');
+    if (wechatPage) {
+        wechatPage.style.transform = 'translateX(100%)';
+    }
+    if (mainScreen) {
+        mainScreen.style.opacity = '1';
+    }
 }
 
 // 更换头像

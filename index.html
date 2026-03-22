@@ -9,6 +9,7 @@
     <title>晕倒料理</title>
     <link rel="apple-touch-icon" href="https://i.postimg.cc/Jn63yqvs/IMG-9251.jpg">
     <link rel="icon" href="https://i.postimg.cc/Jn63yqvs/IMG-9251.jpg">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css?v=1.0.0">
 </head>
 <body>
@@ -665,6 +666,129 @@
     
     <!-- 文件输入框（用于恢复） -->
     <input type="file" id="restore-file-input" accept=".json" style="display: none;">
+    
+    <!-- 微信页面 -->
+    <div id="wechat-page" class="wechat-container" style="transform: translateX(100%); transition: transform 0.3s ease;">
+        <!-- 顶部导航栏 -->
+        <div class="wechat-header">
+            <div class="wechat-header-left" onclick="goBackFromWechat()">
+                <div class="wechat-avatar">
+                    <img src="https://i.postimg.cc/pLWZSKkg/IMG-9922.png" alt="头像" width="32" height="32">
+                </div>
+                <div class="wechat-username">好友</div>
+            </div>
+            <div class="wechat-header-center">WeChat</div>
+            <div class="wechat-header-right">
+                <button class="wechat-add-button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 页面内容区域 -->
+        <div class="wechat-content">
+            <!-- 消息列表页 -->
+            <div class="wechat-page active" data-page="message">
+                <!-- 搜索框 -->
+                <div class="wechat-search">
+                    <div class="wechat-search-container">
+                        <svg class="wechat-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" placeholder="搜索" class="wechat-search-input">
+                    </div>
+                </div>
+                
+                <!-- 分段选择器和提示栏容器 -->
+                <div class="wechat-segment-container">
+                    <!-- 分段选择器 -->
+                    <div class="wechat-segment">
+                        <div class="wechat-segment-item active" onclick="switchSegment('all')">全部</div>
+                        <div class="wechat-segment-item" onclick="switchSegment('friends')">好友</div>
+                        <div class="wechat-segment-placeholder">＞𐋣＜</div>
+                    </div>
+                    
+                    <!-- 提示栏 -->
+                    <div class="wechat-notice" onclick="editNoticeText()">
+                        <span class="wechat-notice-icon">ㅇㅅㅇ</span>
+                        <span class="wechat-notice-text">许愿像轻松熊一样轻松</span>
+                    </div>
+                </div>
+                
+                <!-- 聊天列表 -->
+                <div class="wechat-chat-list active" id="chat-list">
+                    <!-- 置顶聊天卡片 -->
+                    <div class="wechat-chat-card">
+                        <!-- 后续将通过JavaScript添加置顶聊天 -->
+                    </div>
+                    
+                    <!-- 普通聊天卡片 -->
+                    <div class="wechat-chat-card">
+                        <!-- 后续将通过JavaScript添加普通聊天 -->
+                    </div>
+                </div>
+                
+                <!-- 好友列表 -->
+                <div class="wechat-friends-list" id="friends-list">
+                    <!-- 好友列表项 -->
+                    <!-- 后续将通过JavaScript添加好友列表 -->
+                </div>
+            </div>
+            
+            <!-- 通讯录页 -->
+            <div class="wechat-page" data-page="contacts">
+                <!-- 空白页面 -->
+            </div>
+            
+            <!-- 发现页 -->
+            <div class="wechat-page" data-page="discover">
+                <!-- 空白页面 -->
+            </div>
+            
+            <!-- 我的页 -->
+            <div class="wechat-page" data-page="me">
+                <!-- 空白页面 -->
+            </div>
+        </div>
+        
+        <!-- 底部Tab栏 -->
+        <div class="wechat-tab-bar">
+            <div class="wechat-tab-item active" data-page="message" onclick="switchTab(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="wechat-tab-icon">
+                    <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M10.59 19.88A9.8 9.8 0 0 1 7.7 19L3 20l1.3-3.9C1.976 12.663 2.874 8.228 6.4 5.726c3.526-2.501 8.59-2.296 11.845.48c1.565 1.335 2.479 3.065 2.71 4.861"/>
+                        <path d="m18 22l3.35-3.284a2.143 2.143 0 0 0 .005-3.071a2.24 2.24 0 0 0-3.129-.006l-.224.22l-.223-.22a2.24 2.24 0 0 0-3.128-.006a2.143 2.143 0 0 0-.006 3.071z"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="wechat-tab-item" data-page="contacts" onclick="switchTab(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="wechat-tab-icon">
+                    <g fill="none" fill-rule="evenodd">
+                        <path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z"/>
+                        <path fill="currentColor" d="M6 7a5 5 0 1 1 10 0A5 5 0 0 1 6 7m5-3a3 3 0 1 0 0 6a3 3 0 0 0 0-6m0 9c2.396 0 4.575.694 6.178 1.672c.8.488 1.484 1.064 1.978 1.69c.486.615.844 1.351.844 2.138c0 .845-.411 1.511-1.003 1.986c-.56.45-1.299.748-2.084.956c-1.578.417-3.684.558-5.913.558s-4.335-.14-5.913-.558c-.785-.208-1.524-.506-2.084-.956C2.41 20.01 2 19.345 2 18.5c0-.787.358-1.523.844-2.139c.494-.625 1.177-1.2 1.978-1.69C6.425 13.695 8.605 13 11 13m0 2c-2.023 0-3.843.59-5.136 1.379c-.647.394-1.135.822-1.45 1.222c-.324.41-.414.72-.414.899c0 .122.037.251.255.426c.249.2.682.407 1.344.582C6.917 19.858 8.811 20 11 20c2.19 0 4.083-.143 5.4-.492c.663-.175 1.096-.382 1.345-.582c.218-.175.255-.304.255-.426c0-.18-.09-.489-.413-.899c-.316-.4-.804-.828-1.451-1.222C14.843 15.589 13.023 15 11 15m10-2a1 1 0 0 1 .117 1.993L21 15h-1a1 1 0 0 1-.117-1.993L20 13zm-3-2a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1m0-4a1 1 0 1 0 0 2h3a1 1 0 1 0 0-2z"/>
+                    </g>
+                </svg>
+            </div>
+            <div class="wechat-tab-item" data-page="discover" onclick="switchTab(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="wechat-tab-icon">
+                    <path fill="currentColor" d="M10.713 14.713Q11 14.425 11 14v-4q0-.425-.288-.712T10 9t-.712.288T9 10v4q0 .425.288.713T10 15t.713-.288m4 0Q15 14.426 15 14v-4q0-.425-.288-.712T14 9t-.712.288T13 10v4q0 .425.288.713T14 15t.713-.288M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12q0-.8.125-1.6T2.5 8.825q.125-.4.513-.537t.737.062q.375.2.538.588t.037.812q-.15.55-.238 1.113T4 12q0 3.35 2.325 5.675T12 20t5.675-2.325T20 12t-2.325-5.675T12 4q-.6 0-1.187.087T9.65 4.35q-.425.125-.8-.025T8.3 3.8t-.013-.762t.563-.513q.75-.275 1.55-.4T12 2q2.075 0 3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22M4.438 6.563Q4 6.125 4 5.5t.438-1.062T5.5 4t1.063.438T7 5.5t-.437 1.063T5.5 7t-1.062-.437M12 12"/>
+                </svg>
+            </div>
+            <div class="wechat-tab-item" data-page="me" onclick="switchTab(this)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="wechat-tab-icon">
+                    <g fill="none">
+                        <circle cx="10" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/>
+                        <path fill="currentColor" d="m18.043 12.366l.444-.605zM19 8.69l-.519.542a.75.75 0 0 0 1.038 0zm.957 3.675l-.444-.605zm-.957.462v.75zm-.514-1.067c-.417-.307-.878-.69-1.227-1.093c-.368-.426-.509-.757-.509-.971h-1.5c0 .77.441 1.45.875 1.952c.453.525 1.014.984 1.474 1.321zM16.75 9.697c0-.576.263-.827.492-.907c.25-.088.714-.06 1.24.443l1.037-1.083c-.825-.79-1.861-1.096-2.773-.776c-.933.327-1.496 1.226-1.496 2.323zm3.65 3.273c.46-.337 1.022-.796 1.475-1.32c.434-.502.875-1.183.875-1.953h-1.5c0 .214-.141.545-.51.971c-.348.403-.809.786-1.226 1.093zm2.35-3.273c0-1.097-.562-1.996-1.496-2.323c-.912-.32-1.948-.014-2.773.776l1.038 1.083c.525-.503.989-.531 1.24-.443c.228.08.491.33.491.907zM17.6 12.97c.368.27.782.608 1.4.608v-1.5c-.024 0-.04 0-.094-.03a4 4 0 0 1-.42-.287zm1.913-1.21a4 4 0 0 1-.42.289c-.053.029-.069.029-.093.029v1.5c.618 0 1.032-.337 1.4-.608z"/>
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M13 20.615c-.91.247-1.926.385-3 .385c-3.866 0-7-1.79-7-4s3.134-4 7-4s7 1.79 7 4c0 .345-.077.68-.22 1"/>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
     
     <script src="script.js?v=1.0.0"></script>
 </body>
