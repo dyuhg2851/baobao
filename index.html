@@ -96,7 +96,7 @@
         
         <!-- 第一组设置 -->
         <div class="settings-group">
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-orange" data-icon-url=""></div>
                 <div class="settings-label">飞行模式</div>
                 <div class="settings-toggle">
@@ -104,7 +104,7 @@
                     <label for="airplane-mode" class="toggle-label"></label>
                 </div>
             </div>
-            <div class="settings-item" onclick="goToWifiPage()">
+            <div class="settings-item horizontal" onclick="goToWifiPage()">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">无线局域网</div>
                 <div class="settings-value">kakashi</div>
@@ -114,7 +114,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">蓝牙</div>
                 <div class="settings-value">开启</div>
@@ -124,7 +124,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-green" data-icon-url=""></div>
                 <div class="settings-label">蜂窝网络</div>
                 <div class="settings-arrow">
@@ -133,7 +133,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-green" data-icon-url=""></div>
                 <div class="settings-label">个人热点</div>
                 <div class="settings-arrow">
@@ -142,7 +142,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-green" data-icon-url=""></div>
                 <div class="settings-label">电池</div>
                 <div class="settings-arrow">
@@ -151,7 +151,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">VPN</div>
                 <div class="settings-toggle">
@@ -163,7 +163,7 @@
         
         <!-- 第二组设置 -->
         <div class="settings-group">
-            <div class="settings-item" onclick="goToGeneralPage()">
+            <div class="settings-item horizontal" onclick="goToGeneralPage()">
                 <div class="settings-icon settings-icon-gray" data-icon-url=""></div>
                 <div class="settings-label">通用</div>
                 <div class="settings-arrow">
@@ -172,7 +172,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item" onclick="openWallpaperPage()">
+            <div class="settings-item horizontal" onclick="openWallpaperPage()">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">壁纸</div>
                 <div class="settings-arrow">
@@ -181,7 +181,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal" onclick="openDisplayPage()">
                 <div class="settings-icon settings-icon-blue" data-icon-url=""></div>
                 <div class="settings-label">显示与美化</div>
                 <div class="settings-arrow">
@@ -190,7 +190,7 @@
                     </svg>
                 </div>
             </div>
-            <div class="settings-item">
+            <div class="settings-item horizontal">
                 <div class="settings-icon settings-icon-red" data-icon-url=""></div>
                 <div class="settings-label">通知</div>
                 <div class="settings-arrow">
@@ -367,6 +367,120 @@
                 <div class="modal-actions">
                     <button class="modal-button cancel" onclick="closeWallpaperConfirmDialog()">取消</button>
                     <button class="modal-button confirm" onclick="setWallpaper()">设为主屏幕</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 显示与美化页面 -->
+    <div id="display-page" class="settings-page">
+        <!-- 顶部导航栏 -->
+        <div class="settings-header">
+            <div class="back-button" onclick="goBackFromDisplay()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </div>
+            <h1 class="settings-title">显示与美化</h1>
+            <div class="header-right"></div>
+        </div>
+        
+        <!-- 字体设置模块 -->
+        <div class="settings-group">
+            <div class="settings-group-title">字体设置</div>
+            <div class="settings-item vertical">
+                <div class="settings-label">自定义字体链接</div>
+                <div class="settings-input-container">
+                    <input type="text" id="font-url" placeholder="输入TTF/OTF字体链接" class="settings-input">
+                </div>
+            </div>
+            <div class="settings-item horizontal buttons-row">
+                <button class="settings-button" onclick="applyFont()">应用字体</button>
+                <button class="settings-button" onclick="removeFont()">移除字体</button>
+            </div>
+            
+            <!-- 字体预设部分 -->
+            <div class="settings-group-title">字体预设</div>
+            <div id="font-preset-list" class="preset-avatars">
+                <!-- 字体预设列表将动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 自定义CSS美化模块 -->
+        <div class="settings-group">
+            <div class="settings-group-title">自定义CSS美化</div>
+            <div class="settings-item vertical">
+                <div class="settings-label">CSS代码</div>
+                <div class="settings-textarea-container">
+                    <textarea id="custom-css" placeholder="输入自定义CSS代码" class="settings-textarea"></textarea>
+                </div>
+            </div>
+            <div class="settings-item horizontal buttons-row">
+                <button class="settings-button" onclick="applyCustomCSS()">应用CSS</button>
+                <button class="settings-button" onclick="removeCustomCSS()">移除CSS</button>
+            </div>
+            
+            <!-- CSS预设部分 -->
+            <div class="settings-group-title">CSS预设</div>
+            <div id="css-preset-list" class="preset-avatars">
+                <!-- CSS预设列表将动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 添加字体预设弹窗 -->
+        <div id="add-font-preset-dialog" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加字体预设</h3>
+                    <button class="modal-close" onclick="closeAddFontPresetDialog()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-form-item">
+                        <label>预设名称</label>
+                        <input type="text" id="font-preset-name" placeholder="输入预设名称">
+                    </div>
+                    <div class="modal-form-item">
+                        <label>字体链接</label>
+                        <input type="url" id="font-preset-url" placeholder="输入TTF/OTF字体链接">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-button cancel" onclick="closeAddFontPresetDialog()">取消</button>
+                        <button class="modal-button confirm" onclick="saveFontPreset()">保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 添加CSS预设弹窗 -->
+        <div id="add-css-preset-dialog" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>添加CSS预设</h3>
+                    <button class="modal-close" onclick="closeAddCssPresetDialog()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-form-item">
+                        <label>预设名称</label>
+                        <input type="text" id="css-preset-name" placeholder="输入预设名称">
+                    </div>
+                    <div class="modal-form-item">
+                        <label>CSS代码</label>
+                        <textarea id="css-preset-code" placeholder="输入CSS代码" class="modal-textarea"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="modal-button cancel" onclick="closeAddCssPresetDialog()">取消</button>
+                        <button class="modal-button confirm" onclick="saveCssPreset()">保存</button>
+                    </div>
                 </div>
             </div>
         </div>

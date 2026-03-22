@@ -195,6 +195,41 @@ window.addEventListener('load', function() {
     loadAiConfig();
     applySavedWallpaper();
     
+    // 应用保存的字体和CSS设置
+    applySavedDisplaySettings();
+});
+
+// 应用保存的显示与美化设置
+function applySavedDisplaySettings() {
+    // 应用保存的字体
+    const savedFontUrl = localStorage.getItem('customFontUrl');
+    if (savedFontUrl) {
+        const fontStyle = document.createElement('style');
+        fontStyle.id = 'custom-font-style';
+        fontStyle.textContent = `
+            @font-face {
+                font-family: 'CustomFont';
+                src: url('${savedFontUrl}');
+            }
+            * {
+                font-family: 'CustomFont', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            }
+        `;
+        document.head.appendChild(fontStyle);
+    }
+    
+    // 应用保存的CSS
+    const savedCustomCSS = localStorage.getItem('customCSS');
+    if (savedCustomCSS) {
+        const cssStyle = document.createElement('style');
+        cssStyle.id = 'custom-css-style';
+        cssStyle.textContent = savedCustomCSS;
+        document.head.appendChild(cssStyle);
+    }
+}
+
+// 页面加载时初始化（补充）
+window.addEventListener('load', function() {
     // 添加输入框变化监听，自动保存配置
     if (document.getElementById('api-url')) {
         document.getElementById('api-url').addEventListener('input', saveAiConfig);
@@ -224,6 +259,16 @@ function openWallpaperPage() {
     wallpaperPage.classList.add('show');
     // 隐藏设置页面
     settingsPage.classList.remove('show');
+}
+
+// 打开显示与美化页面
+function openDisplayPage() {
+    // 显示显示与美化页面
+    displayPage.classList.add('show');
+    // 隐藏设置页面
+    settingsPage.classList.remove('show');
+    // 加载保存的字体和CSS设置
+    loadDisplaySettings();
 }
 
 // 从壁纸选择页面返回
@@ -638,6 +683,16 @@ function deletePreset(presetId) {
     }
 }
 
+// 显示与美化页面相关功能
+const displayPage = document.getElementById('display-page');
+
+// 存储字体预设和CSS预设
+let fontPresets = JSON.parse(localStorage.getItem('fontPresets') || '[]');
+let cssPresets = JSON.parse(localStorage.getItem('cssPresets') || '[]');
+// 存储当前选中的预设
+let selectedFontPreset = null;
+let selectedCssPreset = null;
+
 // 通用页面相关功能
 const generalPage = document.getElementById('general-page');
 let worldBooks = JSON.parse(localStorage.getItem('worldBooks') || '[]');
@@ -660,6 +715,339 @@ function goBackFromGeneral() {
     generalPage.classList.remove('show');
     // 显示设置页面
     settingsPage.classList.add('show');
+}
+
+// 从显示与美化页面返回设置页面
+function goBackFromDisplay() {
+    // 隐藏显示与美化页面
+    displayPage.classList.remove('show');
+    // 显示设置页面
+    settingsPage.classList.add('show');
+}
+
+// 加载显示与美化设置
+function loadDisplaySettings() {
+    // 加载保存的字体链接
+    const savedFontUrl = localStorage.getItem('customFontUrl');
+    if (savedFontUrl) {
+        document.getElementById('font-url').value = savedFontUrl;
+    }
+    
+    // 加载保存的CSS代码
+    const savedCustomCSS = localStorage.getItem('customCSS');
+    if (savedCustomCSS) {
+        document.getElementById('custom-css').value = savedCustomCSS;
+    }
+    
+    // 加载预设列表
+    loadFontPresets();
+    loadCssPresets();
+}
+
+// 加载字体预设列表
+function loadFontPresets() {
+    const fontPresetList = document.getElementById('font-preset-list');
+    fontPresetList.innerHTML = '';
+    
+    fontPresets.forEach(preset => {
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-item' + (selectedFontPreset && selectedFontPreset.id === preset.id ? ' selected' : '');
+        presetItem.onclick = () => selectFontPreset(preset);
+        presetItem.innerHTML = `
+            <div class="preset-info">
+                <div class="preset-name">${preset.name}</div>
+                <div class="preset-url">${preset.url}</div>
+            </div>
+            <div class="preset-checkbox">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                </svg>
+            </div>
+        `;
+        fontPresetList.appendChild(presetItem);
+    });
+    
+    // 添加按钮容器
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'preset-buttons-container';
+    
+    // 添加加载按钮
+    const loadButton = document.createElement('button');
+    loadButton.className = 'load-preset-button';
+    loadButton.textContent = '加载选中预设';
+    loadButton.disabled = !selectedFontPreset;
+    loadButton.onclick = loadSelectedFontPreset;
+    buttonsContainer.appendChild(loadButton);
+    
+    // 添加添加预设按钮
+    const addButton = document.createElement('button');
+    addButton.className = 'load-preset-button';
+    addButton.textContent = '添加字体预设';
+    addButton.onclick = openAddFontPresetDialog;
+    buttonsContainer.appendChild(addButton);
+    
+    fontPresetList.appendChild(buttonsContainer);
+}
+
+// 加载CSS预设列表
+function loadCssPresets() {
+    const cssPresetList = document.getElementById('css-preset-list');
+    cssPresetList.innerHTML = '';
+    
+    cssPresets.forEach(preset => {
+        const presetItem = document.createElement('div');
+        presetItem.className = 'preset-item' + (selectedCssPreset && selectedCssPreset.id === preset.id ? ' selected' : '');
+        presetItem.onclick = () => selectCssPreset(preset);
+        presetItem.innerHTML = `
+            <div class="preset-info">
+                <div class="preset-name">${preset.name}</div>
+                <div class="preset-url">${preset.code.substring(0, 50)}${preset.code.length > 50 ? '...' : ''}</div>
+            </div>
+            <div class="preset-checkbox">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                </svg>
+            </div>
+        `;
+        cssPresetList.appendChild(presetItem);
+    });
+    
+    // 添加按钮容器
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'preset-buttons-container';
+    
+    // 添加加载按钮
+    const loadButton = document.createElement('button');
+    loadButton.className = 'load-preset-button';
+    loadButton.textContent = '加载选中预设';
+    loadButton.disabled = !selectedCssPreset;
+    loadButton.onclick = loadSelectedCssPreset;
+    buttonsContainer.appendChild(loadButton);
+    
+    // 添加添加预设按钮
+    const addButton = document.createElement('button');
+    addButton.className = 'load-preset-button';
+    addButton.textContent = '添加CSS预设';
+    addButton.onclick = openAddCssPresetDialog;
+    buttonsContainer.appendChild(addButton);
+    
+    cssPresetList.appendChild(buttonsContainer);
+}
+
+// 打开添加字体预设弹窗
+function openAddFontPresetDialog() {
+    const fontUrl = document.getElementById('font-url').value;
+    document.getElementById('font-preset-name').value = '';
+    document.getElementById('font-preset-url').value = fontUrl;
+    document.getElementById('add-font-preset-dialog').classList.add('show');
+}
+
+// 关闭添加字体预设弹窗
+function closeAddFontPresetDialog() {
+    document.getElementById('add-font-preset-dialog').classList.remove('show');
+}
+
+// 保存字体预设
+function saveFontPreset() {
+    const presetName = document.getElementById('font-preset-name').value;
+    const presetUrl = document.getElementById('font-preset-url').value;
+    
+    if (!presetName || !presetUrl) {
+        alert('请填写完整的预设信息');
+        return;
+    }
+    
+    const newPreset = {
+        id: Date.now().toString(),
+        name: presetName,
+        url: presetUrl
+    };
+    
+    fontPresets.push(newPreset);
+    localStorage.setItem('fontPresets', JSON.stringify(fontPresets));
+    loadFontPresets();
+    closeAddFontPresetDialog();
+    alert('字体预设保存成功');
+}
+
+// 打开添加CSS预设弹窗
+function openAddCssPresetDialog() {
+    const customCSS = document.getElementById('custom-css').value;
+    document.getElementById('css-preset-name').value = '';
+    document.getElementById('css-preset-code').value = customCSS;
+    document.getElementById('add-css-preset-dialog').classList.add('show');
+}
+
+// 关闭添加CSS预设弹窗
+function closeAddCssPresetDialog() {
+    document.getElementById('add-css-preset-dialog').classList.remove('show');
+}
+
+// 保存CSS预设
+function saveCssPreset() {
+    const presetName = document.getElementById('css-preset-name').value;
+    const presetCode = document.getElementById('css-preset-code').value;
+    
+    if (!presetName) {
+        alert('请填写预设名称');
+        return;
+    }
+    
+    const newPreset = {
+        id: Date.now().toString(),
+        name: presetName,
+        code: presetCode
+    };
+    
+    cssPresets.push(newPreset);
+    localStorage.setItem('cssPresets', JSON.stringify(cssPresets));
+    loadCssPresets();
+    closeAddCssPresetDialog();
+    alert('CSS预设保存成功');
+}
+
+// 选择字体预设
+function selectFontPreset(preset) {
+    selectedFontPreset = preset;
+    loadFontPresets();
+}
+
+// 选择CSS预设
+function selectCssPreset(preset) {
+    selectedCssPreset = preset;
+    loadCssPresets();
+}
+
+// 加载选中的字体预设
+function loadSelectedFontPreset() {
+    if (selectedFontPreset) {
+        document.getElementById('font-url').value = selectedFontPreset.url;
+        alert('已加载字体预设');
+    }
+}
+
+// 加载选中的CSS预设
+function loadSelectedCssPreset() {
+    if (selectedCssPreset) {
+        document.getElementById('custom-css').value = selectedCssPreset.code;
+        alert('已加载CSS预设');
+    }
+}
+
+// 删除字体预设
+function deleteFontPreset(presetId) {
+    if (confirm('确定要删除这个字体预设吗？')) {
+        fontPresets = fontPresets.filter(p => p.id !== presetId);
+        localStorage.setItem('fontPresets', JSON.stringify(fontPresets));
+        if (selectedFontPreset && selectedFontPreset.id === presetId) {
+            selectedFontPreset = null;
+        }
+        loadFontPresets();
+        alert('字体预设已删除');
+    }
+}
+
+// 删除CSS预设
+function deleteCssPreset(presetId) {
+    if (confirm('确定要删除这个CSS预设吗？')) {
+        cssPresets = cssPresets.filter(p => p.id !== presetId);
+        localStorage.setItem('cssPresets', JSON.stringify(cssPresets));
+        if (selectedCssPreset && selectedCssPreset.id === presetId) {
+            selectedCssPreset = null;
+        }
+        loadCssPresets();
+        alert('CSS预设已删除');
+    }
+}
+
+// 应用字体
+function applyFont() {
+    const fontUrl = document.getElementById('font-url').value.trim();
+    if (!fontUrl) {
+        alert('请输入字体链接');
+        return;
+    }
+    
+    // 保存字体链接到localStorage
+    localStorage.setItem('customFontUrl', fontUrl);
+    
+    // 移除之前的字体样式
+    const existingFontStyle = document.getElementById('custom-font-style');
+    if (existingFontStyle) {
+        existingFontStyle.remove();
+    }
+    
+    // 创建新的字体样式
+    const fontStyle = document.createElement('style');
+    fontStyle.id = 'custom-font-style';
+    fontStyle.textContent = `
+        @font-face {
+            font-family: 'CustomFont';
+            src: url('${fontUrl}');
+        }
+        * {
+            font-family: 'CustomFont', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+    `;
+    document.head.appendChild(fontStyle);
+    
+    alert('字体应用成功');
+}
+
+// 移除字体
+function removeFont() {
+    // 从localStorage中移除字体链接
+    localStorage.removeItem('customFontUrl');
+    
+    // 移除字体样式
+    const existingFontStyle = document.getElementById('custom-font-style');
+    if (existingFontStyle) {
+        existingFontStyle.remove();
+    }
+    
+    // 清空输入框
+    document.getElementById('font-url').value = '';
+    
+    alert('字体已移除');
+}
+
+// 应用自定义CSS
+function applyCustomCSS() {
+    const customCSS = document.getElementById('custom-css').value.trim();
+    
+    // 保存CSS代码到localStorage
+    localStorage.setItem('customCSS', customCSS);
+    
+    // 移除之前的CSS样式
+    const existingCSSStyle = document.getElementById('custom-css-style');
+    if (existingCSSStyle) {
+        existingCSSStyle.remove();
+    }
+    
+    // 创建新的CSS样式
+    const cssStyle = document.createElement('style');
+    cssStyle.id = 'custom-css-style';
+    cssStyle.textContent = customCSS;
+    document.head.appendChild(cssStyle);
+    
+    alert('CSS应用成功');
+}
+
+// 移除自定义CSS
+function removeCustomCSS() {
+    // 从localStorage中移除CSS代码
+    localStorage.removeItem('customCSS');
+    
+    // 移除CSS样式
+    const existingCSSStyle = document.getElementById('custom-css-style');
+    if (existingCSSStyle) {
+        existingCSSStyle.remove();
+    }
+    
+    // 清空文本框
+    document.getElementById('custom-css').value = '';
+    
+    alert('CSS已移除');
 }
 
 // 加载世界书列表
