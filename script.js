@@ -154,16 +154,10 @@ function disableSwipeBack() {
         }
     }, { passive: false });
     
-    // 监听popstate事件，处理页面返回
-    window.addEventListener('popstate', function(event) {
-        // 显示主屏幕
-        mainScreen.classList.remove('hidden');
-        
-        // 移除微信页面容器
-        const wechatContainer = document.getElementById('wechat-container');
-        if (wechatContainer) {
-            wechatContainer.remove();
-        }
+    // 禁用浏览器的历史记录导航
+    window.history.pushState(null, null, window.location.href);
+    window.addEventListener('popstate', function() {
+        window.history.pushState(null, null, window.location.href);
     });
 }
 
@@ -733,67 +727,12 @@ function goBackFromDisplay() {
 
 // 打开微信页面
 function openWechatPage() {
-    // 隐藏主屏幕
-    mainScreen.classList.add('hidden');
-    
-    // 创建微信页面容器
-    const wechatContainer = document.createElement('div');
-    wechatContainer.id = 'wechat-container';
-    wechatContainer.className = 'wechat-container';
-    
-    // 加载微信页面内容
-    fetch('wechat.html')
-        .then(response => response.text())
-        .then(html => {
-            // 提取微信页面的内容部分
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const wechatContent = doc.querySelector('.wechat-container');
-            
-            if (wechatContent) {
-                wechatContainer.innerHTML = wechatContent.innerHTML;
-                document.body.appendChild(wechatContainer);
-                
-                // 使用history.pushState()改变URL，保持在当前窗口
-                history.pushState({ page: 'wechat' }, '微信', 'wechat.html');
-                
-                // 重新绑定微信页面的事件
-                bindWechatEvents();
-            }
-        })
-        .catch(error => {
-            console.error('加载微信页面失败:', error);
-            // 如果加载失败，显示错误信息并恢复主屏幕
-            mainScreen.classList.remove('hidden');
-            alert('加载微信页面失败，请检查网络连接');
-        });
+    window.location.href = 'wechat.html';
 }
 
 // 从微信页面返回主屏幕
 function goBackFromWechat() {
-    // 使用history.back()返回主屏幕
-    history.back();
-    
-    // 显示主屏幕
-    mainScreen.classList.remove('hidden');
-    
-    // 移除微信页面容器
-    const wechatContainer = document.getElementById('wechat-container');
-    if (wechatContainer) {
-        wechatContainer.remove();
-    }
-}
-
-// 绑定微信页面的事件
-function bindWechatEvents() {
-    // 绑定返回按钮事件
-    const backButton = document.querySelector('.wechat-header-left');
-    if (backButton) {
-        backButton.onclick = goBackFromWechat;
-    }
-    
-    // 绑定其他微信页面事件
-    // 这里可以添加其他需要绑定的事件
+    window.location.href = 'index.html';
 }
 
 // 更换头像
