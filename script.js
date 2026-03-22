@@ -135,11 +135,6 @@ window.goBack = function() {
     settingsPage.classList.remove('show');
     // 显示主屏幕
     mainScreen.classList.remove('hidden');
-    // 复位设置页面的样式
-    setTimeout(function() {
-        settingsPage.style.transform = 'translateX(100%)';
-        settingsPage.style.opacity = '1';
-    }, 100);
 };
 
 // 禁用浏览器/移动端的边缘侧滑返回手势
