@@ -749,6 +749,239 @@ function goBackFromWechat() {
     }
 }
 
+// 打开添加角色弹窗
+function openAddCharacterDialog() {
+    const dialog = document.getElementById('add-character-dialog');
+    if (dialog) {
+        // 重置头像为默认状态
+        const avatarElement = document.querySelector('.character-avatar');
+        if (avatarElement) {
+            avatarElement.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+        }
+        
+        // 清空输入字段
+        const nameInput = document.getElementById('character-name');
+        const remarkInput = document.getElementById('character-remark');
+        if (nameInput) nameInput.value = '';
+        if (remarkInput) remarkInput.value = '';
+        
+        dialog.style.display = 'flex';
+    }
+}
+
+// 关闭添加角色弹窗
+function closeAddCharacterDialog() {
+    const dialog = document.getElementById('add-character-dialog');
+    if (dialog) {
+        // 重置头像为默认状态
+        const avatarElement = document.querySelector('.character-avatar');
+        if (avatarElement) {
+            avatarElement.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+        }
+        
+        // 清空输入字段
+        const nameInput = document.getElementById('character-name');
+        const remarkInput = document.getElementById('character-remark');
+        if (nameInput) nameInput.value = '';
+        if (remarkInput) remarkInput.value = '';
+        
+        dialog.style.display = 'none';
+    }
+}
+
+// 选择角色头像
+function selectCharacterAvatar() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const avatarElement = document.querySelector('.character-avatar');
+                if (avatarElement) {
+                    avatarElement.innerHTML = `<img src="${event.target.result}" alt="头像" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    input.click();
+}
+
+// 保存角色信息
+function saveCharacter() {
+    const nameInput = document.getElementById('character-name');
+    const remarkInput = document.getElementById('character-remark');
+    const avatarElement = document.querySelector('.character-avatar');
+    
+    if (nameInput && remarkInput) {
+        const name = nameInput.value.trim();
+        const remark = remarkInput.value.trim();
+        
+        if (name) {
+            // 获取头像URL
+            let avatarUrl = '';
+            const avatarImg = avatarElement.querySelector('img');
+            if (avatarImg) {
+                avatarUrl = avatarImg.src;
+            }
+            
+            // 创建角色对象
+            const character = {
+                id: Date.now(),
+                name: name,
+                remark: remark,
+                avatar: avatarUrl,
+                createdAt: new Date().toISOString()
+            };
+            
+            // 保存到本地存储
+            let characters = JSON.parse(localStorage.getItem('wechatCharacters') || '[]');
+            characters.push(character);
+            localStorage.setItem('wechatCharacters', JSON.stringify(characters));
+            
+            // 更新好友列表
+            updateFriendsList();
+            
+            // 关闭弹窗
+            closeAddCharacterDialog();
+            
+            // 清空输入
+            nameInput.value = '';
+            remarkInput.value = '';
+            avatarElement.innerHTML = `
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            `;
+        }
+    }
+}
+
+// 更新好友列表
+function updateFriendsList() {
+    const friendsList = document.getElementById('friends-list');
+    if (friendsList) {
+        // 清空好友列表
+        friendsList.innerHTML = '';
+        
+        // 获取角色列表
+        const characters = JSON.parse(localStorage.getItem('wechatCharacters') || '[]');
+        
+        // 添加角色到好友列表
+        characters.forEach(character => {
+            const friendItem = document.createElement('div');
+            friendItem.className = 'wechat-friend-item';
+            friendItem.style.display = 'flex';
+            friendItem.style.alignItems = 'center';
+            friendItem.style.padding = '12px 16px';
+            friendItem.style.borderBottom = '1px solid #e0e0e0';
+            
+            // 头像
+            const avatar = document.createElement('div');
+            avatar.style.width = '40px';
+            avatar.style.height = '40px';
+            avatar.style.borderRadius = '50%';
+            avatar.style.overflow = 'hidden';
+            avatar.style.marginRight = '12px';
+            
+            if (character.avatar) {
+                avatar.innerHTML = `<img src="${character.avatar}" alt="${character.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+            } else {
+                avatar.style.backgroundColor = '#f0f0f0';
+                avatar.style.display = 'flex';
+                avatar.style.alignItems = 'center';
+                avatar.style.justifyContent = 'center';
+                avatar.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                `;
+            }
+            
+            // 信息
+            const info = document.createElement('div');
+            info.style.flex = '1';
+            info.style.minWidth = '0';
+            
+            const name = document.createElement('div');
+            name.style.fontSize = '16px';
+            name.style.fontWeight = '500';
+            name.style.color = '#000';
+            name.style.marginBottom = '4px';
+            name.textContent = character.name;
+            
+            const remark = document.createElement('div');
+            remark.style.fontSize = '14px';
+            remark.style.color = '#8e8e93';
+            remark.textContent = character.remark || '无备注';
+            
+            info.appendChild(name);
+            info.appendChild(remark);
+            
+            // 箭头
+            const arrow = document.createElement('div');
+            arrow.style.color = '#c7c7cc';
+            arrow.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            `;
+            
+            friendItem.appendChild(avatar);
+            friendItem.appendChild(info);
+            friendItem.appendChild(arrow);
+            
+            friendsList.appendChild(friendItem);
+        });
+    }
+}
+
+// 切换分段选择
+function switchSegment(type) {
+    const segments = document.querySelectorAll('.wechat-segment-item');
+    segments.forEach(segment => segment.classList.remove('active'));
+    
+    if (type === 'all') {
+        segments[0].classList.add('active');
+        document.getElementById('chat-list').classList.add('active');
+        document.getElementById('friends-list').classList.remove('active');
+    } else if (type === 'friends') {
+        segments[1].classList.add('active');
+        document.getElementById('chat-list').classList.remove('active');
+        document.getElementById('friends-list').classList.add('active');
+        // 更新好友列表
+        updateFriendsList();
+    }
+}
+
+// 切换Tab
+function switchTab(tab) {
+    const tabs = document.querySelectorAll('.wechat-tab-item');
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    
+    const page = tab.dataset.page;
+    const pages = document.querySelectorAll('.wechat-page');
+    pages.forEach(p => p.classList.remove('active'));
+    document.querySelector(`.wechat-page[data-page="${page}"]`).classList.add('active');
+}
+
+// 编辑通知文本
+function editNoticeText() {
+    const newText = prompt('请输入新的通知文本：', '许愿像轻松熊一样轻松');
+    if (newText) {
+        const noticeText = document.querySelector('.wechat-notice-text');
+        if (noticeText) {
+            noticeText.textContent = newText;
+        }
+    }
+}
+
 // 更换头像
 function changeAvatar() {
     const input = document.createElement('input');
