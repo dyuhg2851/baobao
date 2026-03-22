@@ -368,14 +368,10 @@ function loadPresets() {
     presetList.innerHTML = '';
     
     presets.forEach(preset => {
-        // 生成圆形头像的首字母
-        const initial = preset.name.charAt(0).toUpperCase();
-        
         const presetItem = document.createElement('div');
         presetItem.className = 'preset-avatar';
         presetItem.innerHTML = `
             <div class="preset-avatar-icon" onclick="usePreset(${JSON.stringify(preset)})")">
-                ${initial}
             </div>
             <div class="preset-avatar-name">${preset.name}</div>
         `;
@@ -391,6 +387,21 @@ function usePreset(preset) {
     models = [];
     document.getElementById('selected-model').textContent = '请选择模型';
     alert('已切换API预设 ^ ^');
+    
+    // 更新预设的选中状态
+    const allPresetIcons = document.querySelectorAll('.preset-avatar-icon');
+    allPresetIcons.forEach(icon => {
+        icon.classList.remove('active');
+    });
+    // 找到当前点击的预设图标并添加active类
+    const currentPresetIcons = document.querySelectorAll('.preset-avatar-icon');
+    currentPresetIcons.forEach(icon => {
+        // 通过比较预设名称来找到当前点击的预设
+        const presetName = icon.nextElementSibling.textContent;
+        if (presetName === preset.name) {
+            icon.classList.add('active');
+        }
+    });
 }
 
 // 删除API预设
