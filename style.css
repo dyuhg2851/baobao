@@ -1259,6 +1259,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
+    padding-top: 56px;
     background-color: #f5f5f5;
     position: sticky;
     top: 0;
@@ -1338,6 +1339,7 @@ body {
 /* 微信搜索框 */
 .wechat-search {
     padding: 10px 16px;
+    padding-top: 16px;
     background-color: #f5f5f5;
 }
 
