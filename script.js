@@ -227,6 +227,8 @@ function goBackFromWifi() {
 // 存储模型列表和预设列表
 let models = [];
 let presets = JSON.parse(localStorage.getItem('apiPresets') || '[]');
+// 存储当前选中的预设
+let selectedPreset = null;
 
 // 存储当前选择的壁纸和模糊度
 let currentWallpaper = null;
@@ -389,6 +391,12 @@ function applyWallpaper(wallpaperUrl, blur = 0) {
             wallpaperLayer.style.width = '100%';
             wallpaperLayer.style.height = '100%';
             wallpaperLayer.style.zIndex = '-10';
+            // 确保覆盖安全区
+            wallpaperLayer.style.padding = 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)';
+            wallpaperLayer.style.boxSizing = 'border-box';
+            // 确保在视口之外也能显示
+            wallpaperLayer.style.minWidth = '100vw';
+            wallpaperLayer.style.minHeight = '100vh';
             // 添加到main-screen而不是slide-container，这样可以覆盖所有页面
             const mainScreen = document.querySelector('.main-screen');
             if (mainScreen) {
@@ -568,14 +576,50 @@ function loadPresets() {
     
     presets.forEach(preset => {
         const presetItem = document.createElement('div');
-        presetItem.className = 'preset-avatar';
+        presetItem.className = 'preset-item' + (selectedPreset && selectedPreset.id === preset.id ? ' selected' : '');
+        presetItem.onclick = () => selectPreset(preset);
         presetItem.innerHTML = `
-            <div class="preset-avatar-icon" onclick="usePreset(${JSON.stringify(preset)})")">
+            <div class="preset-info">
+                <div class="preset-name">${preset.name}</div>
+                <div class="preset-url">${preset.apiUrl}</div>
             </div>
-            <div class="preset-avatar-name">${preset.name}</div>
+            <div class="preset-checkbox">
+                <svg viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"></path>
+                </svg>
+            </div>
         `;
         presetList.appendChild(presetItem);
     });
+    
+    // 添加加载按钮
+    const loadButton = document.createElement('button');
+    loadButton.className = 'load-preset-button';
+    loadButton.textContent = '加载选中预设';
+    loadButton.disabled = !selectedPreset;
+    loadButton.onclick = loadSelectedPreset;
+    presetList.appendChild(loadButton);
+}
+
+// 选择预设
+function selectPreset(preset) {
+    selectedPreset = preset;
+    loadPresets();
+}
+
+// 加载选中的预设
+function loadSelectedPreset() {
+    if (selectedPreset) {
+        document.getElementById('api-key').value = selectedPreset.apiKey;
+        document.getElementById('api-url').value = selectedPreset.apiUrl;
+        // 清空当前模型选择
+        models = [];
+        document.getElementById('selected-model').textContent = '请先拉取模型';
+        alert('已加载API预设 ^ ^');
+        
+        // 保存配置到localStorage
+        saveAiConfig();
+    }
 }
 
 // 保存API配置到localStorage
@@ -616,7 +660,7 @@ function usePreset(preset) {
     document.getElementById('api-url').value = preset.apiUrl;
     // 清空当前模型选择
     models = [];
-    document.getElementById('selected-model').textContent = '请选择模型';
+    document.getElementById('selected-model').textContent = '请先拉取模型';
     alert('已切换API预设 ^ ^');
     
     // 保存配置到localStorage

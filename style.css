@@ -13,15 +13,14 @@ body {
     touch-action: none;
 }
 .slide-container {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    background-color: #e6f9e6;
     position: relative;
     touch-action: pan-x;
 }
@@ -149,6 +148,16 @@ body {
 }
 
 /* 主屏幕隐藏状态 */
+.main-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    box-sizing: border-box;
+}
+
 .main-screen.hidden {
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -261,6 +270,11 @@ body {
     overflow: hidden;
 }
 
+/* 当API预设为空时，隐藏整个设置组 */
+.settings-group:has(.preset-avatars:empty) {
+    display: none;
+}
+
 /* 设置项 */
 .settings-item {
     display: flex;
@@ -356,52 +370,92 @@ body {
     flex: 1;
 }
 
-/* 圆形头像样式的API预设 */
+/* 白色卡片样式的API预设 */
 .preset-avatars {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 10px 16px 16px;
+    padding: 0;
 }
 
-.preset-avatar {
+.preset-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e6e6e6;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    width: 60px;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
 }
 
-.preset-avatar-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #007aff;
-    color: white;
+.preset-item:hover {
+    background-color: #f5f5f5;
+}
+
+.preset-item:last-child {
+    border-bottom: none;
+}
+
+.preset-info {
+    flex: 1;
+}
+
+.preset-name {
+    font-size: 16px;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.preset-url {
+    font-size: 14px;
+    color: #8e8e93;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preset-checkbox {
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-bottom: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
 }
 
-.preset-avatar-icon:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+.preset-checkbox svg {
+    width: 16px;
+    height: 16px;
+    fill: #8e8e93;
+    display: block;
+    opacity: 0;
+    transition: all 0.2s ease;
 }
 
-.preset-avatar-icon.active {
+.preset-item.selected .preset-checkbox svg {
+    fill: #007aff;
+    opacity: 1;
+}
+
+/* 加载按钮 */
+.load-preset-button {
+    margin: 16px;
+    padding: 10px;
     background-color: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    width: calc(100% - 32px);
+    transition: background-color 0.2s ease;
 }
 
-.preset-avatar-name {
-    font-size: 12px;
-    color: #8e8e93;
-    text-align: center;
-    word-break: break-all;
+.load-preset-button:hover {
+    background-color: #333333;
+}
+
+.load-preset-button:disabled {
+    background-color: #c7c7cc;
+    cursor: not-allowed;
 }
 
 /* 壁纸选择页面样式 */
@@ -801,7 +855,6 @@ body {
 
 @media screen and (max-width: 430px) {
     body {
-        background-color: #e6f9e6;
         margin: 0;
         padding: 0;
         width: 100vw;
@@ -824,14 +877,14 @@ body {
         left: 15px;
         right: 15px;
         /* 图标与 Dock 栏背景上下左右都有合适内边距，不要贴边 */
-        padding: 10px;
+        padding: 15px 10px;
         /* 长度缩短，图标间距保持合适 */
         gap: 15px;
     }
     .dock-icon {
-        width: 75px;
-        height: 75px;
-        border-radius: 21px;
+        width: 72px;
+        height: 72px;
+        border-radius: 20px;
     }
     .indicator-dot {
         width: 6px;
@@ -850,9 +903,9 @@ body {
         gap: 20px;
     }
     .app-icon {
-        width: 75px;
-        height: 75px;
-        border-radius: 21px;
+        width: 70px;
+        height: 70px;
+        border-radius: 20px;
     }
     .app-label {
         font-size: 12px;
