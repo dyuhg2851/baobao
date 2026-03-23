@@ -1055,12 +1055,27 @@ function switchTab(element) {
     const pages = document.querySelectorAll('.wechat-page');
     pages.forEach(page => {
         page.classList.remove('active');
+        // 确保页面内容完全隐藏，避免卡顿显示
+        page.style.display = 'none';
     });
     
     // 显示目标页面
     const targetPageElement = document.querySelector(`.wechat-page[data-page="${targetPage}"]`);
     if (targetPageElement) {
+        targetPageElement.style.display = 'block';
         targetPageElement.classList.add('active');
+    }
+    
+    // 控制顶部导航栏的显示/隐藏
+    const wechatHeader = document.querySelector('.wechat-header');
+    if (wechatHeader) {
+        if (targetPage === 'discover' || targetPage === 'me') {
+            // 隐藏顶部导航栏
+            wechatHeader.style.display = 'none';
+        } else {
+            // 显示顶部导航栏
+            wechatHeader.style.display = 'flex';
+        }
     }
 }
 
