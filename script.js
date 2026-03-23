@@ -1094,7 +1094,6 @@ function loadFontPresets() {
         presetItem.innerHTML = `
             <div class="preset-info">
                 <div class="preset-name">${preset.name}</div>
-                <div class="preset-url">${preset.url}</div>
             </div>
             <div class="preset-checkbox">
                 <svg viewBox="0 0 24 24">

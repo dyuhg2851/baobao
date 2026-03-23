@@ -15,7 +15,24 @@ button, a, .app-item, .dock-item, .back-button, .settings-item:not(:has(input)),
     cursor: pointer;
 }
 
-button:active, a:active, .app-item:active, .dock-item:active, .back-button:active, .settings-item:not(:has(input)):active, .modal-button:active, .modal-close:active, .world-book-card:active, .wallpaper-card:active, .wechat-chat-item:active, .wechat-tab-item:active, [onclick]:not(:has(input)):active, [role="button"]:not(:has(input)):active {
+button:active, a:active, .app-item:active, .dock-item:active, .back-button:active, .modal-button:active, .modal-close:active, .world-book-card:active, .wallpaper-card:active, .wechat-chat-item:active, .wechat-tab-item:active, [onclick]:not(:has(input)):active, [role="button"]:not(:has(input)):active {
+    transform: scale(0.94);
+    opacity: 0.85;
+}
+
+/* 禁用CSS代码部分的点击动画 */
+.settings-item.vertical:active {
+    transform: none;
+    opacity: 1;
+}
+
+/* 确保按钮动画只应用到按钮本身 */
+.buttons-row:active {
+    transform: none;
+    opacity: 1;
+}
+
+.buttons-row .settings-button:active {
     transform: scale(0.94);
     opacity: 0.85;
 }
