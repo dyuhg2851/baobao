@@ -1403,6 +1403,9 @@ h1, h2, h3, h4, h5, h6 {
 .wechat-search {
     padding: 6px 16px;
     background-color: #f5f5f5;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 /* 分段选择器和提示栏容器 */
@@ -1412,6 +1415,9 @@ h1, h2, h3, h4, h5, h6 {
     border-radius: 24px;
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 52px;
+    z-index: 10;
 }
 
 /* 微信分段选择器 */
@@ -1457,17 +1463,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 聊天列表和好友列表 */
-.wechat-chat-list,
-.wechat-friends-list {
+.wechat-chat-list, .wechat-friends-list {
     flex: 1;
     overflow-y: auto;
     padding: 6px 16px;
     background-color: #f5f5f5;
     display: none;
+    max-height: calc(100vh - 200px);
 }
 
-.wechat-chat-list.active,
-.wechat-friends-list.active {
+.wechat-chat-list.active, .wechat-friends-list.active {
     display: block;
 }
 

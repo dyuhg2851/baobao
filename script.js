@@ -1276,6 +1276,8 @@ function switchSegment(segment) {
         // 显示好友列表，隐藏聊天列表
         document.getElementById('friends-list').classList.add('active');
         document.getElementById('chat-list').classList.remove('active');
+        // 更新好友列表，确保显示所有添加过的好友
+        updateFriendsList();
     }
 }
 
