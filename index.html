@@ -241,8 +241,8 @@
                 </div>
             </div>
             <div class="settings-item buttons-row">
-                <button class="settings-button" onclick="fetchModels()">拉取模型</button>
-                <button class="settings-button" onclick="openAddPresetDialog()">添加API预设</button>
+                <button class="settings-button" onclick="fetchModels()">Pull</button>
+                <button class="settings-button" onclick="openAddPresetDialog()">Add</button>
             </div>
         </div>
         
@@ -300,8 +300,8 @@
                         <input type="url" id="preset-api-url" placeholder="输入接口地址">
                     </div>
                     <div class="modal-actions">
-                        <button class="modal-button cancel" onclick="closeAddPresetDialog()">取消</button>
-                        <button class="modal-button confirm" onclick="saveApiPreset()">保存</button>
+                        <button class="modal-button cancel" onclick="closeAddPresetDialog()">Cancel</button>
+                        <button class="modal-button confirm" onclick="savePreset()">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -360,8 +360,8 @@
             <div class="modal-body">
                 <div class="wallpaper-confirm-preview"></div>
                 <div class="modal-actions">
-                    <button class="modal-button cancel" onclick="closeWallpaperConfirmDialog()">取消</button>
-                    <button class="modal-button confirm" onclick="setWallpaper()">设为主屏幕</button>
+                    <button class="modal-button cancel" onclick="closeWallpaperConfirmDialog()">Cancel</button>
+                    <button class="modal-button confirm" onclick="setWallpaper()">Confirm</button>
                 </div>
             </div>
         </div>
@@ -388,8 +388,8 @@
                 </div>
             </div>
             <div class="settings-item horizontal buttons-row">
-                <button class="settings-button" onclick="applyFont()">应用字体</button>
-                <button class="settings-button" onclick="removeFont()">移除字体</button>
+                <button class="settings-button" onclick="applyFont()">Add</button>
+                <button class="settings-button" onclick="removeFont()">Remove</button>
             </div>
             
             <!-- 字体预设部分 -->
@@ -409,8 +409,8 @@
                 </div>
             </div>
             <div class="settings-item horizontal buttons-row">
-                <button class="settings-button" onclick="applyCustomCSS()">应用CSS</button>
-                <button class="settings-button" onclick="removeCustomCSS()">移除CSS</button>
+                <button class="settings-button" onclick="applyCustomCSS()">Add</button>
+                <button class="settings-button" onclick="removeCustomCSS()">Remove</button>
             </div>
             
             <!-- CSS预设部分 -->
@@ -442,8 +442,8 @@
                         <input type="url" id="font-preset-url" placeholder="输入TTF/OTF字体链接">
                     </div>
                     <div class="modal-actions">
-                        <button class="modal-button cancel" onclick="closeAddFontPresetDialog()">取消</button>
-                        <button class="modal-button confirm" onclick="saveFontPreset()">保存</button>
+                        <button class="modal-button cancel" onclick="closeAddFontPresetDialog()">Cancel</button>
+                        <button class="modal-button confirm" onclick="saveFontPreset()">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -471,8 +471,8 @@
                         <textarea id="css-preset-code" placeholder="输入CSS代码" class="modal-textarea"></textarea>
                     </div>
                     <div class="modal-actions">
-                        <button class="modal-button cancel" onclick="closeAddCssPresetDialog()">取消</button>
-                        <button class="modal-button confirm" onclick="saveCssPreset()">保存</button>
+                        <button class="modal-button cancel" onclick="closeAddCssPresetDialog()">Cancel</button>
+                        <button class="modal-button confirm" onclick="saveCssPreset()">Confirm</button>
                     </div>
                 </div>
             </div>
@@ -500,7 +500,7 @@
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
-                    添加
+                    Add
                 </button>
             </div>
             <div id="world-book-list" class="world-book-grid">
@@ -559,8 +559,8 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button class="modal-button cancel" onclick="closeAddWorldBookDialog()">取消</button>
-                    <button class="modal-button confirm" onclick="saveWorldBook()">保存</button>
+                    <button class="modal-button cancel" onclick="closeAddWorldBookDialog()">Cancel</button>
+                    <button class="modal-button confirm" onclick="saveWorldBook()">Confirm</button>
                 </div>
             </div>
         </div>
@@ -595,8 +595,8 @@
                     </div>
                 </div>
                 <div class="modal-actions">
-                    <button class="modal-button cancel" onclick="closeEditWorldBookDialog()">取消</button>
-                    <button class="modal-button confirm" onclick="updateWorldBook()">保存</button>
+                    <button class="modal-button cancel" onclick="closeEditWorldBookDialog()">Cancel</button>
+                    <button class="modal-button confirm" onclick="updateWorldBook()">Confirm</button>
                 </div>
             </div>
         </div>
@@ -620,8 +620,8 @@
                     <input type="text" id="backup-filename" value="好好吃的料理.json" placeholder="输入备份文件名">
                 </div>
                 <div class="modal-actions">
-                    <button class="modal-button cancel" onclick="closeBackupDialog()">取消</button>
-                    <button class="modal-button confirm" onclick="downloadBackup()">确认</button>
+                    <button class="modal-button cancel" onclick="closeBackupDialog()">Cancel</button>
+                    <button class="modal-button confirm" onclick="backupData()">Confirm</button>
                 </div>
             </div>
         </div>
@@ -642,8 +642,8 @@
             <div class="modal-body">
                 <p style="margin-bottom: 20px;">恢复将覆盖当前所有数据，是否继续？</p>
                 <div class="modal-actions">
-                    <button class="modal-button cancel" onclick="closeRestoreConfirmDialog()">取消</button>
-                    <button class="modal-button confirm" onclick="restoreData()">继续</button>
+                    <button class="modal-button cancel" onclick="closeRestoreConfirmDialog()">Cancel</button>
+                    <button class="modal-button confirm" onclick="restoreData()">Confirm</button>
                 </div>
             </div>
         </div>
@@ -713,8 +713,8 @@
                     
                     <!-- 按钮 -->
                     <div class="modal-actions" style="display: flex; width: 100%; gap: 6px;">
-                        <button class="modal-button cancel" onclick="closeAddCharacterDialog()" style="flex: 1; background-color: #f0f0f0; color: #333; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer;">取消</button>
-                        <button class="modal-button confirm" onclick="saveCharacter()" style="flex: 1; background-color: #000; color: #fff; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer;">确定</button>
+                        <button class="modal-button cancel" onclick="closeAddCharacterDialog()" style="flex: 1; background-color: #f0f0f0; color: #333; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer;">Cancel</button>
+                        <button class="modal-button confirm" onclick="saveCharacter()" style="flex: 1; background-color: #000; color: #fff; border: none; padding: 6px; border-radius: 4px; font-size: 12px; cursor: pointer;">Confirm</button>
                     </div>
                 </div>
             </div>

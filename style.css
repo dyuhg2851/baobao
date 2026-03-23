@@ -44,6 +44,18 @@ body {
     min-height: 100vh;
     overflow: hidden;
     touch-action: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    color: #000;
+    line-height: 1.5;
+}
+
+/* 标题样式 */
+h1, h2, h3, h4, h5, h6 {
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+    margin: 0;
 }
 .slide-container {
     width: 100%;
@@ -266,18 +278,18 @@ body {
 
 .settings-button {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border: none;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 500;
-    color: #ffffff;
-    background-color: #007aff;
+    color: #000000;
+    background-color: transparent;
     cursor: pointer;
 }
 
 .settings-button:active {
-    background-color: #0056b3;
+    background-color: transparent;
 }
 
 .header-right {
@@ -460,12 +472,12 @@ body {
 
 /* 设置按钮 */
 .settings-button {
-    background-color: black;
-    color: #fff;
+    background-color: transparent;
+    color: #000;
     border: none;
     border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
+    padding: 8px;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
     transition: transform 0.1s ease;
@@ -473,6 +485,7 @@ body {
 
 .settings-button:active {
     transform: scale(0.94);
+    background-color: transparent;
 }
 
 .button-left {
@@ -557,12 +570,12 @@ body {
 /* 加载按钮 */
 .load-preset-button {
     margin: 16px;
-    padding: 10px;
-    background-color: black;
-    color: white;
+    padding: 8px;
+    background-color: transparent;
+    color: #000000;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
     width: calc(100% - 32px);
@@ -570,7 +583,7 @@ body {
 }
 
 .load-preset-button:hover {
-    background-color: #333;
+    background-color: transparent;
 }
 
 /* 预设按钮容器 */
@@ -587,7 +600,8 @@ body {
 }
 
 .load-preset-button:disabled {
-    background-color: #c7c7cc;
+    background-color: transparent;
+    color: #c7c7cc;
     cursor: not-allowed;
 }
 
@@ -700,7 +714,7 @@ body {
 
 /* 设置组标题 */
 .settings-group-title {
-    font-size: 14px;
+    font-size: 17px;
     color: #8e8e93;
     padding: 12px 16px 8px;
     background-color: white;
@@ -718,7 +732,7 @@ body {
 }
 
 .world-book-header h3 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     color: #000;
     margin: 0;
@@ -728,19 +742,19 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #000;
-    color: white;
+    background-color: transparent;
+    color: #000000;
     border: none;
     border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
+    padding: 6px 14px;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
 .add-world-book-button:hover {
-    background-color: #333;
+    background-color: transparent;
 }
 
 .world-book-grid {
@@ -905,12 +919,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px;
+    padding: 12px;
     border-bottom: 1px solid #e6e6e6;
 }
 
 .modal-header h3 {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     color: #000;
     margin: 0;
@@ -929,7 +943,7 @@ body {
 }
 
 .modal-body {
-    padding: 16px;
+    padding: 12px;
 }
 
 #model-list {
@@ -1006,22 +1020,22 @@ body {
 }
 
 .modal-button {
-    padding: 8px 16px;
+    padding: 6px 14px;
     border: none;
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 500;
     cursor: pointer;
 }
 
 .modal-button.cancel {
-    background-color: #000;
-    color: #fff;
+    background-color: transparent;
+    color: #000;
 }
 
 .modal-button.confirm {
-    background-color: #000;
-    color: #fff;
+    background-color: transparent;
+    color: #000;
 }
 
 /* 模态框文本区域样式 */
@@ -1307,7 +1321,7 @@ body {
 }
 
 .wechat-username {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 500;
     color: #000;
 }

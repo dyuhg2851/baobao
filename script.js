@@ -586,7 +586,7 @@ function loadPresets() {
     // 添加加载按钮
     const loadButton = document.createElement('button');
     loadButton.className = 'load-preset-button';
-    loadButton.textContent = '加载选中预设';
+    loadButton.textContent = 'Load';
     loadButton.disabled = !selectedPreset;
     loadButton.onclick = loadSelectedPreset;
     presetList.appendChild(loadButton);
@@ -1111,7 +1111,7 @@ function loadFontPresets() {
     // 添加加载按钮
     const loadButton = document.createElement('button');
     loadButton.className = 'load-preset-button';
-    loadButton.textContent = '加载选中预设';
+    loadButton.textContent = 'Load';
     loadButton.disabled = !selectedFontPreset;
     loadButton.onclick = loadSelectedFontPreset;
     buttonsContainer.appendChild(loadButton);
@@ -1119,7 +1119,7 @@ function loadFontPresets() {
     // 添加添加预设按钮
     const addButton = document.createElement('button');
     addButton.className = 'load-preset-button';
-    addButton.textContent = '添加字体预设';
+    addButton.textContent = 'Add';
     addButton.onclick = openAddFontPresetDialog;
     buttonsContainer.appendChild(addButton);
     
@@ -1138,7 +1138,6 @@ function loadCssPresets() {
         presetItem.innerHTML = `
             <div class="preset-info">
                 <div class="preset-name">${preset.name}</div>
-                <div class="preset-url">${preset.code.substring(0, 50)}${preset.code.length > 50 ? '...' : ''}</div>
             </div>
             <div class="preset-checkbox">
                 <svg viewBox="0 0 24 24">
@@ -1156,7 +1155,7 @@ function loadCssPresets() {
     // 添加加载按钮
     const loadButton = document.createElement('button');
     loadButton.className = 'load-preset-button';
-    loadButton.textContent = '加载选中预设';
+    loadButton.textContent = 'Load';
     loadButton.disabled = !selectedCssPreset;
     loadButton.onclick = loadSelectedCssPreset;
     buttonsContainer.appendChild(loadButton);
@@ -1164,7 +1163,7 @@ function loadCssPresets() {
     // 添加添加预设按钮
     const addButton = document.createElement('button');
     addButton.className = 'load-preset-button';
-    addButton.textContent = '添加CSS预设';
+    addButton.textContent = 'Add';
     addButton.onclick = openAddCssPresetDialog;
     buttonsContainer.appendChild(addButton);
     
