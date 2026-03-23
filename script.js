@@ -1223,8 +1223,8 @@ function openCharacterProfile(character) {
     avatarContainer.style.justifyContent = 'center';
     
     const profileAvatar = document.createElement('div');
-    profileAvatar.style.width = '120px';
-    profileAvatar.style.height = '120px';
+    profileAvatar.style.width = '80px'; // 缩小角色头像
+    profileAvatar.style.height = '80px'; // 缩小角色头像
     profileAvatar.style.borderRadius = '50%';
     profileAvatar.style.overflow = 'hidden';
     profileAvatar.style.border = '1px solid #e0e0e0';
@@ -1262,6 +1262,7 @@ function openCharacterProfile(character) {
     listIcon1.style.display = 'flex';
     listIcon1.style.alignItems = 'center';
     listIcon1.style.marginRight = '12px';
+    listIcon1.style.color = '#666'; // 调整svg图标颜色
     listIcon1.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -1307,6 +1308,7 @@ function openCharacterProfile(character) {
     listIcon2.style.display = 'flex';
     listIcon2.style.alignItems = 'center';
     listIcon2.style.marginRight = '12px';
+    listIcon2.style.color = '#666'; // 调整svg图标颜色
     listIcon2.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -1595,7 +1597,7 @@ function openCharacterProfile(character) {
     mbtiInfo.appendChild(mbtiLabel);
     mbtiInfo.appendChild(mbtiLine);
     
-    // Personal Signature
+    // Bio
     const signatureInfo = document.createElement('div');
     signatureInfo.style.display = 'flex';
     signatureInfo.style.alignItems = 'center';
@@ -1604,7 +1606,7 @@ function openCharacterProfile(character) {
     signatureLabel.style.fontSize = '13px';
     signatureLabel.style.color = '#666';
     signatureLabel.style.width = '100px';
-    signatureLabel.textContent = 'Personal Signature：';
+    signatureLabel.textContent = 'Bio：';
     
     const signatureLine = document.createElement('div');
     signatureLine.style.flex = '1';
@@ -1615,7 +1617,7 @@ function openCharacterProfile(character) {
     signatureLine.style.cursor = 'pointer';
     signatureLine.textContent = character.signature || '';
     signatureLine.addEventListener('click', () => {
-        const newSignature = prompt('请输入个性签名:', signatureLine.textContent);
+        const newSignature = prompt('请输入Bio:', signatureLine.textContent);
         if (newSignature) {
             signatureLine.textContent = newSignature;
             // 更新角色信息
