@@ -148,11 +148,11 @@ h1, h2, h3, h4, h5, h6 {
 
 .app-grid {
     position: absolute;
-    bottom: 195px;
-    right: 28px;
+    bottom: 205px;
+    right: 33px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
+    gap: 30px;
     z-index: 5;
 }
 .app-item {
