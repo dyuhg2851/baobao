@@ -1221,11 +1221,11 @@ h1, h2, h3, h4, h5, h6 {
     }
     /* 移动端 App 图标网格 */
     .app-grid {
-        /* 整体位置再往上移动25px */
-        bottom: calc(205px + env(safe-area-inset-bottom));
-        right: 20px;
-        /* 左右间距调整为20px */
-        gap: 20px;
+        /* 整体位置再往上移动10px */
+        bottom: calc(215px + env(safe-area-inset-bottom));
+        right: 25px;
+        /* 左右间距调整为30px */
+        gap: 30px;
     }
     
     /* 移动端世界书网格 */
