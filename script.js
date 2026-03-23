@@ -583,13 +583,34 @@ function loadPresets() {
         presetList.appendChild(presetItem);
     });
     
+    // 添加按钮容器
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'preset-buttons-container';
+    
     // 添加加载按钮
     const loadButton = document.createElement('button');
     loadButton.className = 'load-preset-button';
     loadButton.textContent = 'Load';
     loadButton.disabled = !selectedPreset;
     loadButton.onclick = loadSelectedPreset;
-    presetList.appendChild(loadButton);
+    buttonsContainer.appendChild(loadButton);
+    
+    // 添加删除按钮
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'load-preset-button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.disabled = !selectedPreset;
+    deleteButton.onclick = deleteSelectedPreset;
+    buttonsContainer.appendChild(deleteButton);
+    
+    // 添加添加预设按钮
+    const addButton = document.createElement('button');
+    addButton.className = 'load-preset-button';
+    addButton.textContent = 'Add';
+    addButton.onclick = openAddPresetDialog;
+    buttonsContainer.appendChild(addButton);
+    
+    presetList.appendChild(buttonsContainer);
 }
 
 // 选择预设
@@ -610,6 +631,19 @@ function loadSelectedPreset() {
         
         // 保存配置到localStorage
         saveAiConfig();
+    }
+}
+
+// 删除选中的预设
+function deleteSelectedPreset() {
+    if (selectedPreset) {
+        if (confirm('确定要删除这个API预设吗？')) {
+            presets = presets.filter(preset => preset.id !== selectedPreset.id);
+            localStorage.setItem('presets', JSON.stringify(presets));
+            selectedPreset = null;
+            loadPresets();
+            alert('API预设已删除');
+        }
     }
 }
 
@@ -1116,6 +1150,14 @@ function loadFontPresets() {
     loadButton.onclick = loadSelectedFontPreset;
     buttonsContainer.appendChild(loadButton);
     
+    // 添加删除按钮
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'load-preset-button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.disabled = !selectedFontPreset;
+    deleteButton.onclick = deleteSelectedFontPreset;
+    buttonsContainer.appendChild(deleteButton);
+    
     // 添加添加预设按钮
     const addButton = document.createElement('button');
     addButton.className = 'load-preset-button';
@@ -1159,6 +1201,14 @@ function loadCssPresets() {
     loadButton.disabled = !selectedCssPreset;
     loadButton.onclick = loadSelectedCssPreset;
     buttonsContainer.appendChild(loadButton);
+    
+    // 添加删除按钮
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'load-preset-button';
+    deleteButton.textContent = 'Delete';
+    deleteButton.disabled = !selectedCssPreset;
+    deleteButton.onclick = deleteSelectedCssPreset;
+    buttonsContainer.appendChild(deleteButton);
     
     // 添加添加预设按钮
     const addButton = document.createElement('button');
@@ -1262,11 +1312,37 @@ function loadSelectedFontPreset() {
     }
 }
 
+// 删除选中的字体预设
+function deleteSelectedFontPreset() {
+    if (selectedFontPreset) {
+        if (confirm('确定要删除这个字体预设吗？')) {
+            fontPresets = fontPresets.filter(preset => preset.id !== selectedFontPreset.id);
+            localStorage.setItem('fontPresets', JSON.stringify(fontPresets));
+            selectedFontPreset = null;
+            loadFontPresets();
+            alert('字体预设已删除');
+        }
+    }
+}
+
 // 加载选中的CSS预设
 function loadSelectedCssPreset() {
     if (selectedCssPreset) {
         document.getElementById('custom-css').value = selectedCssPreset.code;
         alert('已加载CSS预设');
+    }
+}
+
+// 删除选中的CSS预设
+function deleteSelectedCssPreset() {
+    if (selectedCssPreset) {
+        if (confirm('确定要删除这个CSS预设吗？')) {
+            cssPresets = cssPresets.filter(preset => preset.id !== selectedCssPreset.id);
+            localStorage.setItem('cssPresets', JSON.stringify(cssPresets));
+            selectedCssPreset = null;
+            loadCssPresets();
+            alert('CSS预设已删除');
+        }
     }
 }
 

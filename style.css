@@ -370,7 +370,7 @@ h1, h2, h3, h4, h5, h6 {
 .settings-group {
     background-color: #fff;
     border-radius: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     overflow: hidden;
 }
 
@@ -381,7 +381,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* 设置项 */
 .settings-item {
-    padding: 12px 16px;
+    padding: 8px 16px;
     border-bottom: 1px solid #e6e6e6;
     display: flex;
     align-items: center;
@@ -596,7 +596,7 @@ h1, h2, h3, h4, h5, h6 {
 .preset-buttons-container .load-preset-button {
     flex: 1;
     margin: 0;
-    width: calc(50% - 5px);
+    width: calc(33.33% - 6.66px);
 }
 
 .load-preset-button:disabled {
@@ -716,7 +716,7 @@ h1, h2, h3, h4, h5, h6 {
 .settings-group-title {
     font-size: 17px;
     color: #8e8e93;
-    padding: 12px 16px 8px;
+    padding: 8px 16px 6px;
     background-color: white;
     border-radius: 12px 12px 0 0;
     margin: 0;
@@ -919,7 +919,7 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px;
+    padding: 8px;
     border-bottom: 1px solid #e6e6e6;
 }
 
@@ -928,6 +928,10 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     color: #000;
     margin: 0;
+}
+
+.modal-body {
+    padding: 8px;
 }
 
 .modal-close {
