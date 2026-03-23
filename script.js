@@ -660,6 +660,7 @@ function saveAiConfig() {
     };
     
     localStorage.setItem('aiConfig', JSON.stringify(aiConfig));
+    alert('API配置保存成功 ^ ^');
 }
 
 // 加载API配置从localStorage
