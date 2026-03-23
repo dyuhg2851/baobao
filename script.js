@@ -919,7 +919,8 @@ function updateFriendsList() {
             
             // 创建好友项
             const friendItem = document.createElement('div');
-            friendItem.className = 'wechat-friend-item';
+            friendItem.className = 'wechat-friend-item friend-item';
+            friendItem.setAttribute('data-character-id', character.id);
             friendItem.style.display = 'flex';
             friendItem.style.alignItems = 'center';
             friendItem.style.padding = '12px 16px';
@@ -1198,6 +1199,17 @@ function openCharacterProfile(character, isSecondPage = false) {
         </svg>
     `;
     
+    // Delete按钮
+    const deleteButton = document.createElement('button');
+    deleteButton.style.background = 'none';
+    deleteButton.style.border = 'none';
+    deleteButton.style.fontSize = '14px';
+    deleteButton.style.color = 'red';
+    deleteButton.style.cursor = 'pointer';
+    deleteButton.style.marginLeft = 'auto';
+    deleteButton.style.marginRight = '16px';
+    deleteButton.textContent = 'Delete';
+    
     // Save按钮
     const saveButton = document.createElement('button');
     saveButton.style.background = 'none';
@@ -1205,7 +1217,6 @@ function openCharacterProfile(character, isSecondPage = false) {
     saveButton.style.fontSize = '14px';
     saveButton.style.color = 'blue';
     saveButton.style.cursor = 'pointer';
-    saveButton.style.marginLeft = 'auto';
     saveButton.textContent = 'Save';
     
     // Save按钮点击事件
@@ -1268,8 +1279,98 @@ function openCharacterProfile(character, isSecondPage = false) {
         document.body.appendChild(popup);
     });
     
+    // Delete按钮点击事件
+    deleteButton.addEventListener('click', () => {
+        // 创建弹窗
+        const popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '0';
+        popup.style.left = '0';
+        popup.style.width = '100%';
+        popup.style.height = '100%';
+        popup.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        popup.style.display = 'flex';
+        popup.style.alignItems = 'center';
+        popup.style.justifyContent = 'center';
+        popup.style.zIndex = '1002';
+        
+        // 弹窗内容
+        const popupContent = document.createElement('div');
+        popupContent.style.backgroundColor = 'white';
+        popupContent.style.borderRadius = '12px';
+        popupContent.style.padding = '24px';
+        popupContent.style.width = '80%';
+        popupContent.style.maxWidth = '300px';
+        popupContent.style.display = 'flex';
+        popupContent.style.flexDirection = 'column';
+        
+        // 弹窗文本
+        const popupText = document.createElement('div');
+        popupText.style.fontSize = '16px';
+        popupText.style.color = '#333';
+        popupText.style.textAlign = 'center';
+        popupText.style.marginBottom = '24px';
+        popupText.textContent = 'TA已申请离开你的世界';
+        
+        // 按钮容器
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.justifyContent = 'space-between';
+        buttonContainer.style.width = '100%';
+        
+        // Cancle按钮
+        const cancelButton = document.createElement('button');
+        cancelButton.style.background = 'none';
+        cancelButton.style.border = 'none';
+        cancelButton.style.fontSize = '14px';
+        cancelButton.style.color = '#333';
+        cancelButton.style.cursor = 'pointer';
+        cancelButton.style.flex = '1';
+        cancelButton.textContent = 'Cancle';
+        
+        // Confirm按钮
+        const confirmButton = document.createElement('button');
+        confirmButton.style.background = 'none';
+        confirmButton.style.border = 'none';
+        confirmButton.style.fontSize = '14px';
+        confirmButton.style.color = 'blue';
+        confirmButton.style.cursor = 'pointer';
+        confirmButton.style.flex = '1';
+        confirmButton.textContent = 'Confirm';
+        
+        // Cancle按钮点击事件
+        cancelButton.addEventListener('click', () => {
+            // 移除弹窗
+            document.body.removeChild(popup);
+            // 留在角色主页
+        });
+        
+        // Confirm按钮点击事件
+        confirmButton.addEventListener('click', () => {
+            // 移除弹窗
+            document.body.removeChild(popup);
+            // 移除角色主页
+            document.body.removeChild(profileContainer);
+            // 删除角色数据
+            deleteCharacter(character.id);
+            // 回到消息列表
+            document.getElementById('profile-page').style.display = 'none';
+            document.getElementById('wechat-page').style.display = 'block';
+        });
+        
+        popupContent.appendChild(popupText);
+        buttonContainer.appendChild(cancelButton);
+        buttonContainer.appendChild(confirmButton);
+        popupContent.appendChild(buttonContainer);
+        popup.appendChild(popupContent);
+        
+        // 添加弹窗到页面
+        document.body.appendChild(popup);
+    });
+    
     browserBar.appendChild(tab);
     browserBar.appendChild(addButton);
+    browserBar.appendChild(deleteButton);
     browserBar.appendChild(saveButton);
     
     // 创建主内容区域
@@ -1278,8 +1379,8 @@ function openCharacterProfile(character, isSecondPage = false) {
     mainContent.style.display = 'flex';
     mainContent.style.flexDirection = 'column';
     mainContent.style.padding = '16px';
+    mainContent.style.overflowY = 'auto'; // 允许内容滚动
     mainContent.style.gap = '16px';
-    mainContent.style.overflow = 'auto';
     mainContent.style.backgroundColor = 'white'; // 导航栏下面的背景变为白色
     
     // 左侧区域
@@ -1365,9 +1466,13 @@ function openCharacterProfile(character, isSecondPage = false) {
         </svg>
         查看
     `;
-    // 上面的按钮保持当前界面
+    // 上面的按钮回到角色主页（第一页）
     viewButton1.addEventListener('click', () => {
-        // 保持当前界面，无需操作
+        // 移除当前的角色主页
+        document.body.removeChild(profileContainer);
+        
+        // 重新打开角色主页，确保显示的是第一页
+        openCharacterProfile(character, false);
     });
     
     listItem1.appendChild(listIcon1);
@@ -1455,7 +1560,8 @@ function openCharacterProfile(character, isSecondPage = false) {
         if (chatList && character) {
             // 创建新的聊天卡片
             const chatCard = document.createElement('div');
-            chatCard.className = 'wechat-chat-card';
+            chatCard.className = 'wechat-chat-card chat-item';
+            chatCard.setAttribute('data-character-id', character.id);
             chatCard.style.display = 'flex';
             chatCard.style.alignItems = 'center';
             chatCard.style.padding = '12px';
@@ -1857,7 +1963,7 @@ function openCharacterProfile(character, isSecondPage = false) {
         // 输入框
         const settingInput = document.createElement('textarea');
         settingInput.style.width = '100%';
-        settingInput.style.height = '200px';
+        settingInput.style.height = '150px'; // 减小高度，确保在移动端屏幕上合适
         settingInput.style.border = '1px solid #e0e0e0';
         settingInput.style.borderRadius = '0'; // 直角
         settingInput.style.padding = '12px';
@@ -1893,8 +1999,8 @@ function openCharacterProfile(character, isSecondPage = false) {
         // 创建三个相框
         for (let i = 0; i < 3; i++) {
             const photoFrame = document.createElement('div');
-            photoFrame.style.width = '120px';
-            photoFrame.style.height = '160px'; // 3:4 比例（竖长方形，放大）
+            photoFrame.style.width = '90px';
+            photoFrame.style.height = '120px'; // 3:4 比例（竖长方形）
             photoFrame.style.border = '1px solid #e0e0e0';
             photoFrame.style.outline = '5px solid white';
             photoFrame.style.display = 'flex';
@@ -1943,6 +2049,43 @@ function openCharacterProfile(character, isSecondPage = false) {
     
     // 添加到页面
     document.body.appendChild(profileContainer);
+}
+
+// 删除角色
+function deleteCharacter(characterId) {
+    // 从localStorage中删除角色数据（wechatCharacters）
+    const wechatCharacters = JSON.parse(localStorage.getItem('wechatCharacters') || '[]');
+    const updatedWechatCharacters = wechatCharacters.filter(char => char.id !== characterId);
+    localStorage.setItem('wechatCharacters', JSON.stringify(updatedWechatCharacters));
+    
+    // 从localStorage中删除角色数据（characters）
+    const characters = JSON.parse(localStorage.getItem('characters') || '[]');
+    const updatedCharacters = characters.filter(char => char.id !== characterId);
+    localStorage.setItem('characters', JSON.stringify(updatedCharacters));
+    
+    // 从Friends界面中移除角色
+    const friendsList = document.getElementById('friends-list');
+    if (friendsList) {
+        const friendItem = document.querySelector(`.friend-item[data-character-id="${characterId}"]`);
+        if (friendItem) {
+            // 移除整个好友卡片，而不仅仅是好友项
+            const friendCard = friendItem.closest('.wechat-friend-card');
+            if (friendCard) {
+                friendsList.removeChild(friendCard);
+            } else {
+                friendsList.removeChild(friendItem);
+            }
+        }
+    }
+    
+    // 从Chat界面中移除角色
+    const chatList = document.getElementById('chat-list');
+    if (chatList) {
+        const chatItem = document.querySelector(`.chat-item[data-character-id="${characterId}"]`);
+        if (chatItem) {
+            chatList.removeChild(chatItem);
+        }
+    }
 }
 
 // 编辑提示词文字
