@@ -1729,6 +1729,7 @@ function deleteWorldBook() {
 // 打开添加世界书弹窗
 function openAddWorldBookDialog() {
     document.getElementById('world-book-name').value = '';
+    document.getElementById('world-book-content').value = '';
     document.getElementById('world-book-global').checked = false;
     document.getElementById('add-world-book-dialog').classList.add('show');
 }
