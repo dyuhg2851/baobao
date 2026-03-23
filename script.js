@@ -1115,9 +1115,13 @@ function openCharacterProfile(character) {
     profileHeader.style.display = 'flex';
     profileHeader.style.alignItems = 'center';
     profileHeader.style.justifyContent = 'space-between';
-    profileHeader.style.padding = '16px';
+    profileHeader.style.padding = '24px 16px 16px 16px';
+    profileHeader.style.paddingTop = 'calc(24px + env(safe-area-inset-top))';
     profileHeader.style.backgroundColor = 'white';
     profileHeader.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+    profileHeader.style.position = 'sticky';
+    profileHeader.style.top = '0';
+    profileHeader.style.zIndex = '1001';
     
     // 返回按钮
     const backButton = document.createElement('button');
@@ -1215,27 +1219,6 @@ function openCharacterProfile(character) {
     infoSection.style.borderRadius = '16px';
     infoSection.style.padding = '16px';
     infoSection.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-    
-    const infoItem = document.createElement('div');
-    infoItem.style.display = 'flex';
-    infoItem.style.justifyContent = 'space-between';
-    infoItem.style.alignItems = 'center';
-    infoItem.style.padding = '12px 0';
-    infoItem.style.borderBottom = '1px solid #f0f0f0';
-    
-    const infoLabel = document.createElement('div');
-    infoLabel.style.fontSize = '16px';
-    infoLabel.style.color = '#333';
-    infoLabel.textContent = '添加时间';
-    
-    const infoValue = document.createElement('div');
-    infoValue.style.fontSize = '14px';
-    infoValue.style.color = '#8e8e93';
-    infoValue.textContent = new Date(character.createdAt).toLocaleString();
-    
-    infoItem.appendChild(infoLabel);
-    infoItem.appendChild(infoValue);
-    infoSection.appendChild(infoItem);
     
     profileContent.appendChild(avatarSection);
     profileContent.appendChild(infoSection);
