@@ -1108,7 +1108,7 @@ function updateCharacter(character) {
 }
 
 // 打开角色主页
-function openCharacterProfile(character) {
+function openCharacterProfile(character, isSecondPage = false) {
     // 创建角色主页容器
     const profileContainer = document.createElement('div');
     profileContainer.className = 'character-profile';
@@ -1198,13 +1198,85 @@ function openCharacterProfile(character) {
         </svg>
     `;
     
+    // Save按钮
+    const saveButton = document.createElement('button');
+    saveButton.style.background = 'none';
+    saveButton.style.border = 'none';
+    saveButton.style.fontSize = '14px';
+    saveButton.style.color = 'blue';
+    saveButton.style.cursor = 'pointer';
+    saveButton.style.marginLeft = 'auto';
+    saveButton.textContent = 'Save';
+    
+    // Save按钮点击事件
+    saveButton.addEventListener('click', () => {
+        // 创建弹窗
+        const popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '0';
+        popup.style.left = '0';
+        popup.style.width = '100%';
+        popup.style.height = '100%';
+        popup.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        popup.style.display = 'flex';
+        popup.style.alignItems = 'center';
+        popup.style.justifyContent = 'center';
+        popup.style.zIndex = '1002';
+        
+        // 弹窗内容
+        const popupContent = document.createElement('div');
+        popupContent.style.backgroundColor = 'white';
+        popupContent.style.borderRadius = '12px';
+        popupContent.style.padding = '24px';
+        popupContent.style.width = '80%';
+        popupContent.style.maxWidth = '300px';
+        popupContent.style.display = 'flex';
+        popupContent.style.flexDirection = 'column';
+        popupContent.style.alignItems = 'center';
+        
+        // 弹窗文本
+        const popupText = document.createElement('div');
+        popupText.style.fontSize = '16px';
+        popupText.style.color = '#333';
+        popupText.style.textAlign = 'center';
+        popupText.style.marginBottom = '24px';
+        popupText.textContent = 'Ta已进入你的世界';
+        
+        // Confirm按钮
+        const confirmButton = document.createElement('button');
+        confirmButton.style.background = 'none';
+        confirmButton.style.border = 'none';
+        confirmButton.style.fontSize = '14px';
+        confirmButton.style.color = 'blue';
+        confirmButton.style.cursor = 'pointer';
+        confirmButton.textContent = 'Confirm';
+        
+        // Confirm按钮点击事件
+        confirmButton.addEventListener('click', () => {
+            // 移除弹窗
+            document.body.removeChild(popup);
+            // 移除角色主页
+            document.body.removeChild(profileContainer);
+            // 回到消息列表（这里假设消息列表是默认显示的）
+        });
+        
+        popupContent.appendChild(popupText);
+        popupContent.appendChild(confirmButton);
+        popup.appendChild(popupContent);
+        
+        // 添加弹窗到页面
+        document.body.appendChild(popup);
+    });
+    
     browserBar.appendChild(tab);
     browserBar.appendChild(addButton);
+    browserBar.appendChild(saveButton);
     
     // 创建主内容区域
     const mainContent = document.createElement('div');
     mainContent.style.flex = '1';
     mainContent.style.display = 'flex';
+    mainContent.style.flexDirection = 'column';
     mainContent.style.padding = '16px';
     mainContent.style.gap = '16px';
     mainContent.style.overflow = 'auto';
@@ -1293,6 +1365,10 @@ function openCharacterProfile(character) {
         </svg>
         查看
     `;
+    // 上面的按钮保持当前界面
+    viewButton1.addEventListener('click', () => {
+        // 保持当前界面，无需操作
+    });
     
     listItem1.appendChild(listIcon1);
     listItem1.appendChild(listText1);
@@ -1339,13 +1415,120 @@ function openCharacterProfile(character) {
         </svg>
         查看
     `;
+    // 下面的按钮切换到下一个页面，显示角色设定输入框
+    viewButton2.addEventListener('click', () => {
+        // 移除当前的角色主页
+        document.body.removeChild(profileContainer);
+        
+        // 打开第二个页面，显示角色设定输入框
+        openCharacterProfile(character, true);
+    });
     
     listItem2.appendChild(listIcon2);
     listItem2.appendChild(listText2);
     listItem2.appendChild(viewButton2);
     
+    // 添加Start chatting卡片
+    const chatCard = document.createElement('div');
+    chatCard.style.backgroundColor = 'white';
+    chatCard.style.border = '1px solid #e0e0e0';
+    chatCard.style.borderRadius = '0'; // 直角
+    chatCard.style.padding = '16px';
+    chatCard.style.marginTop = '12px';
+    chatCard.style.cursor = 'pointer';
+    chatCard.style.textAlign = 'center';
+    
+    const chatText = document.createElement('div');
+    chatText.style.fontSize = '14px';
+    chatText.style.color = '#333';
+    chatText.textContent = 'Start chatting';
+    
+    chatCard.appendChild(chatText);
+    
+    // 点击事件
+    chatCard.addEventListener('click', () => {
+        // 移除角色主页
+        document.body.removeChild(profileContainer);
+        
+        // 添加当前角色到消息列表
+        const chatList = document.getElementById('chat-list');
+        if (chatList && character) {
+            // 创建新的聊天卡片
+            const chatCard = document.createElement('div');
+            chatCard.className = 'wechat-chat-card';
+            chatCard.style.display = 'flex';
+            chatCard.style.alignItems = 'center';
+            chatCard.style.padding = '12px';
+            chatCard.style.borderBottom = '1px solid #f0f0f0';
+            chatCard.style.cursor = 'pointer';
+            
+            // 头像
+            const avatar = document.createElement('div');
+            avatar.style.width = '48px';
+            avatar.style.height = '48px';
+            avatar.style.borderRadius = '8px';
+            avatar.style.marginRight = '12px';
+            avatar.style.backgroundSize = 'cover';
+            avatar.style.backgroundPosition = 'center';
+            if (character.avatar) {
+                avatar.style.backgroundImage = `url(${character.avatar})`;
+            } else {
+                avatar.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" height=\"48\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"%23999\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"%3E%3Cpath d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"%3E%3C/path%3E%3Ccircle cx=12 cy=7 r=4%3E%3C/circle%3E%3C/svg%3E")';
+            }
+            
+            // 聊天信息
+            const chatInfo = document.createElement('div');
+            chatInfo.style.flex = '1';
+            chatInfo.style.minWidth = '0';
+            
+            // 用户名
+            const userName = document.createElement('div');
+            userName.style.fontSize = '16px';
+            userName.style.fontWeight = '500';
+            userName.style.color = '#333';
+            userName.style.marginBottom = '4px';
+            userName.style.whiteSpace = 'nowrap';
+            userName.style.overflow = 'hidden';
+            userName.style.textOverflow = 'ellipsis';
+            userName.textContent = character.name || '角色';
+            
+            // 最后一条消息
+            const lastMessage = document.createElement('div');
+            lastMessage.style.fontSize = '14px';
+            lastMessage.style.color = '#999';
+            lastMessage.style.whiteSpace = 'nowrap';
+            lastMessage.style.overflow = 'hidden';
+            lastMessage.style.textOverflow = 'ellipsis';
+            lastMessage.textContent = '开始聊天吧！';
+            
+            chatInfo.appendChild(userName);
+            chatInfo.appendChild(lastMessage);
+            
+            // 时间
+            const time = document.createElement('div');
+            time.style.fontSize = '12px';
+            time.style.color = '#999';
+            time.style.marginLeft = '12px';
+            time.textContent = '刚刚';
+            
+            chatCard.appendChild(avatar);
+            chatCard.appendChild(chatInfo);
+            chatCard.appendChild(time);
+            
+            // 将新的聊天卡片添加到消息列表的普通聊天部分
+            const normalChatSection = chatList.querySelector('.wechat-chat-card:nth-child(2)');
+            if (normalChatSection) {
+                normalChatSection.parentNode.insertBefore(chatCard, normalChatSection.nextSibling);
+            }
+        }
+        
+        // 显示成功提示
+        alert('TA已进入你的世界。');
+    });
+    
     listItems.appendChild(listItem1);
     listItems.appendChild(listItem2);
+    listItems.appendChild(chatCard);
     
     leftSection.appendChild(avatarContainer);
     leftSection.appendChild(listItems);
@@ -1645,8 +1828,115 @@ function openCharacterProfile(character) {
     rightSection.appendChild(labelBar);
     rightSection.appendChild(infoPanel);
     
-    mainContent.appendChild(leftSection);
-    mainContent.appendChild(rightSection);
+    // 创建内容容器，包含左侧和右侧区域
+    const contentContainer = document.createElement('div');
+    contentContainer.style.display = 'flex';
+    contentContainer.style.gap = '16px';
+    
+    // 将左侧和右侧区域添加到内容容器
+    contentContainer.appendChild(leftSection);
+    contentContainer.appendChild(rightSection);
+    
+    // 将内容容器添加到主内容区域
+    mainContent.appendChild(contentContainer);
+    
+    // 中间区域：根据是否为第二个页面显示不同内容
+    if (isSecondPage) {
+        // 第二个页面：显示角色设定输入框
+        const settingContainer = document.createElement('div');
+        settingContainer.style.padding = '24px 16px';
+        
+        // 标题
+        const settingTitle = document.createElement('div');
+        settingTitle.style.fontSize = '16px';
+        settingTitle.style.fontWeight = '500';
+        settingTitle.style.color = '#333';
+        settingTitle.style.marginBottom = '12px';
+        settingTitle.textContent = '角色设定';
+        
+        // 输入框
+        const settingInput = document.createElement('textarea');
+        settingInput.style.width = '100%';
+        settingInput.style.height = '200px';
+        settingInput.style.border = '1px solid #e0e0e0';
+        settingInput.style.borderRadius = '0'; // 直角
+        settingInput.style.padding = '12px';
+        settingInput.style.fontSize = '14px';
+        settingInput.style.color = '#333';
+        settingInput.style.resize = 'none';
+        settingInput.placeholder = '请输入角色设定...';
+        
+        // 加载角色设定（如果有）
+        if (character.settings) {
+            settingInput.value = character.settings;
+        }
+        
+        // 保存角色设定
+        settingInput.addEventListener('input', () => {
+            character.settings = settingInput.value;
+            updateCharacter(character);
+        });
+        
+        settingContainer.appendChild(settingTitle);
+        settingContainer.appendChild(settingInput);
+        
+        // 将角色设定区域添加到主内容区域
+        mainContent.appendChild(settingContainer);
+    } else {
+        // 第一个页面：显示照片相框
+        const photoContainer = document.createElement('div');
+        photoContainer.style.display = 'flex';
+        photoContainer.style.justifyContent = 'space-around';
+        photoContainer.style.alignItems = 'center';
+        photoContainer.style.padding = '24px 0';
+        
+        // 创建三个相框
+        for (let i = 0; i < 3; i++) {
+            const photoFrame = document.createElement('div');
+            photoFrame.style.width = '120px';
+            photoFrame.style.height = '160px'; // 3:4 比例（竖长方形，放大）
+            photoFrame.style.border = '1px solid #e0e0e0';
+            photoFrame.style.outline = '5px solid white';
+            photoFrame.style.display = 'flex';
+            photoFrame.style.alignItems = 'center';
+            photoFrame.style.justifyContent = 'center';
+            photoFrame.style.cursor = 'pointer';
+            photoFrame.style.position = 'relative';
+            photoFrame.style.backgroundImage = 'radial-gradient(#999 1px, transparent 1px)';
+            photoFrame.style.backgroundSize = '10px 10px';
+            
+            // 初始显示加号图标
+            photoFrame.innerHTML = `
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            `;
+            
+            // 添加点击事件
+            photoFrame.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            photoFrame.innerHTML = `<img src="${event.target.result}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1;">`;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                input.click();
+            });
+            
+            photoContainer.appendChild(photoFrame);
+        }
+        
+        // 将照片相框区域添加到主内容区域
+        mainContent.appendChild(photoContainer);
+    }
     
     profileContainer.appendChild(browserBar);
     profileContainer.appendChild(mainContent);
