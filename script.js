@@ -1379,9 +1379,11 @@ function openCharacterProfile(character, isSecondPage = false) {
     mainContent.style.display = 'flex';
     mainContent.style.flexDirection = 'column';
     mainContent.style.padding = '16px';
-    mainContent.style.overflowY = 'auto'; // 允许内容滚动
+    mainContent.style.overflow = 'hidden'; // 防止溢出，确保单屏
     mainContent.style.gap = '16px';
     mainContent.style.backgroundColor = 'white'; // 导航栏下面的背景变为白色
+    mainContent.style.alignItems = 'center'; // 页面垂直居中对齐
+    mainContent.style.height = 'calc(100vh - 60px)'; // 减去导航栏高度，确保单屏
     
     // 左侧区域
     const leftSection = document.createElement('div');
@@ -1934,17 +1936,595 @@ function openCharacterProfile(character, isSecondPage = false) {
     rightSection.appendChild(labelBar);
     rightSection.appendChild(infoPanel);
     
-    // 创建内容容器，包含左侧和右侧区域
-    const contentContainer = document.createElement('div');
-    contentContainer.style.display = 'flex';
-    contentContainer.style.gap = '16px';
+    // 重新布局：将label移到照片上面
+    // 创建顶部区域，包含label和照片
+    const topContainer = document.createElement('div');
+    topContainer.style.display = 'flex';
+    topContainer.style.flexDirection = 'column';
+    topContainer.style.alignItems = 'center';
+    topContainer.style.gap = '16px';
+    topContainer.style.marginBottom = '24px';
+    topContainer.style.width = '100%';
     
-    // 将左侧和右侧区域添加到内容容器
-    contentContainer.appendChild(leftSection);
-    contentContainer.appendChild(rightSection);
+    // Label 栏
+    const labelBar = document.createElement('div');
+    labelBar.style.display = 'flex';
+    labelBar.style.alignItems = 'center';
+    labelBar.style.gap = '12px';
+    labelBar.style.width = '100%';
+    labelBar.style.maxWidth = '300px';
     
-    // 将内容容器添加到主内容区域
-    mainContent.appendChild(contentContainer);
+    const labelText = document.createElement('div');
+    labelText.style.fontSize = '14px';
+    labelText.style.color = '#666';
+    labelText.textContent = 'Label'; // 改成Label
+    
+    // 标签容器
+    const tagsContainer = document.createElement('div');
+    tagsContainer.style.flex = '1';
+    tagsContainer.style.display = 'flex';
+    tagsContainer.style.alignItems = 'center';
+    tagsContainer.style.gap = '20px'; // 三个标签之间间隔20px
+    
+    // 标签1
+    const tag1 = document.createElement('div');
+    tag1.style.backgroundColor = '#f0f0f0';
+    tag1.style.borderRadius = '16px';
+    tag1.style.padding = '4px 12px';
+    tag1.style.fontSize = '12px';
+    tag1.style.color = '#666';
+    tag1.style.cursor = 'pointer';
+    tag1.textContent = '#Tag1';
+    tag1.addEventListener('click', () => {
+        const newTag = prompt('请输入新标签:', tag1.textContent.replace('#', ''));
+        if (newTag) {
+            tag1.textContent = '#' + newTag;
+        }
+    });
+    
+    // 标签2
+    const tag2 = document.createElement('div');
+    tag2.style.backgroundColor = '#f0f0f0';
+    tag2.style.borderRadius = '16px';
+    tag2.style.padding = '4px 12px';
+    tag2.style.fontSize = '12px';
+    tag2.style.color = '#666';
+    tag2.style.cursor = 'pointer';
+    tag2.textContent = '#Tag2';
+    tag2.addEventListener('click', () => {
+        const newTag = prompt('请输入新标签:', tag2.textContent.replace('#', ''));
+        if (newTag) {
+            tag2.textContent = '#' + newTag;
+        }
+    });
+    
+    // 标签3
+    const tag3 = document.createElement('div');
+    tag3.style.backgroundColor = '#f0f0f0';
+    tag3.style.borderRadius = '16px';
+    tag3.style.padding = '4px 12px';
+    tag3.style.fontSize = '12px';
+    tag3.style.color = '#666';
+    tag3.style.cursor = 'pointer';
+    tag3.textContent = '#Tag3';
+    tag3.addEventListener('click', () => {
+        const newTag = prompt('请输入新标签:', tag3.textContent.replace('#', ''));
+        if (newTag) {
+            tag3.textContent = '#' + newTag;
+        }
+    });
+    
+    tagsContainer.appendChild(tag1);
+    tagsContainer.appendChild(tag2);
+    tagsContainer.appendChild(tag3);
+    
+    labelBar.appendChild(labelText);
+    labelBar.appendChild(tagsContainer);
+    
+    // 头像和Bio区域
+    const avatarBioContainer = document.createElement('div');
+    avatarBioContainer.style.display = 'flex';
+    avatarBioContainer.style.flexDirection = 'column';
+    avatarBioContainer.style.alignItems = 'center';
+    avatarBioContainer.style.gap = '12px';
+    
+    // 头像
+    const profileAvatar = document.createElement('div');
+    profileAvatar.style.width = '80px'; // 缩小角色头像
+    profileAvatar.style.height = '80px'; // 缩小角色头像
+    profileAvatar.style.borderRadius = '50%';
+    profileAvatar.style.overflow = 'hidden';
+    profileAvatar.style.border = '1px solid #e0e0e0';
+    
+    if (character.avatar) {
+        profileAvatar.innerHTML = `<img src="${character.avatar}" alt="${character.name}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    } else {
+        profileAvatar.style.backgroundColor = '#f0f0f0';
+        profileAvatar.style.display = 'flex';
+        profileAvatar.style.alignItems = 'center';
+        profileAvatar.style.justifyContent = 'center';
+        profileAvatar.innerHTML = `
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        `;
+    }
+    
+    // Bio文本（浅灰色字12px）- 在白色卡片正上方
+    const bioText = document.createElement('div');
+    bioText.style.fontSize = '12px';
+    bioText.style.color = '#999';
+    bioText.style.textAlign = 'center';
+    bioText.style.cursor = 'pointer';
+    bioText.style.marginBottom = '8px';
+    bioText.textContent = character.signature || '点击添加Bio';
+    bioText.addEventListener('click', () => {
+        const newSignature = prompt('请输入Bio:', bioText.textContent === '点击添加Bio' ? '' : bioText.textContent);
+        if (newSignature) {
+            bioText.textContent = newSignature;
+            // 更新角色信息
+            character.signature = newSignature;
+            updateCharacter(character);
+        }
+    });
+    
+    // 白色卡片边框 - 直角，自适应文字长度
+    const bioCard = document.createElement('div');
+    bioCard.style.backgroundColor = 'white';
+    bioCard.style.border = '1px solid #e0e0e0';
+    bioCard.style.borderRadius = '0'; // 直角
+    bioCard.style.padding = '16px';
+    bioCard.style.width = 'fit-content'; // 自适应文字长度
+    bioCard.style.maxWidth = '80%'; // 限制最大宽度
+    bioCard.style.minWidth = '200px'; // 最小宽度，确保卡片不会太小
+    bioCard.style.display = 'flex';
+    bioCard.style.alignItems = 'center';
+    bioCard.style.justifyContent = 'center';
+    bioCard.style.textAlign = 'center';
+    bioCard.style.boxSizing = 'border-box';
+    
+    // 将头像、Bio文本和Bio卡片添加到容器（Bio在卡片正上方）
+    avatarBioContainer.appendChild(profileAvatar);
+    avatarBioContainer.appendChild(bioText);
+    avatarBioContainer.appendChild(bioCard);
+    
+    // 将label和头像Bio容器添加到顶部区域
+    topContainer.appendChild(labelBar);
+    topContainer.appendChild(avatarBioContainer);
+    
+    // 信息面板
+    const infoPanel = document.createElement('div');
+    infoPanel.style.backgroundColor = 'white';
+    infoPanel.style.border = '1px solid #e0e0e0';
+    infoPanel.style.borderRadius = '0'; // 直角
+    infoPanel.style.overflow = 'hidden';
+    infoPanel.style.width = '80%'; // 缩窄宽度
+    infoPanel.style.maxWidth = '300px';
+    infoPanel.style.margin = '0 auto'; // 居中对齐
+    
+    const infoHeader = document.createElement('div');
+    infoHeader.style.display = 'flex';
+    infoHeader.style.alignItems = 'center';
+    infoHeader.style.justifyContent = 'space-between';
+    infoHeader.style.padding = '16px';
+    
+    const infoTitle = document.createElement('div');
+    infoTitle.style.fontSize = '16px';
+    infoTitle.style.fontWeight = '600';
+    infoTitle.style.color = '#333';
+    infoTitle.textContent = 'Infermation'; // 改成Infermation
+    
+    const infoToggle = document.createElement('button');
+    infoToggle.style.background = 'none';
+    infoToggle.style.border = 'none';
+    infoToggle.style.cursor = 'pointer';
+    infoToggle.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    `;
+    
+    const infoContent = document.createElement('div');
+    infoContent.style.padding = '16px';
+    
+    // 基础信息排版
+    const basicInfo = document.createElement('div');
+    basicInfo.style.display = 'flex';
+    basicInfo.style.flexDirection = 'column';
+    basicInfo.style.gap = '12px';
+    
+    // Name
+    const nameInfo = document.createElement('div');
+    nameInfo.style.display = 'flex';
+    nameInfo.style.alignItems = 'center';
+    
+    const nameLabel = document.createElement('div');
+    nameLabel.style.fontSize = '13px';
+    nameLabel.style.color = '#666';
+    nameLabel.style.width = '100px';
+    nameLabel.textContent = 'Name：';
+    
+    const nameLine = document.createElement('div');
+    nameLine.style.flex = '1';
+    nameLine.style.borderBottom = '1px dashed #999'; // 虚线
+    nameLine.style.height = '20px';
+    nameLine.style.display = 'flex';
+    nameLine.style.alignItems = 'flex-end';
+    nameLine.style.cursor = 'pointer';
+    nameLine.textContent = character.name || '';
+    nameLine.addEventListener('click', () => {
+        const newName = prompt('请输入新名字:', nameLine.textContent);
+        if (newName) {
+            nameLine.textContent = newName;
+            // 更新角色信息
+            character.name = newName;
+            updateCharacter(character);
+        }
+    });
+    
+    nameInfo.appendChild(nameLabel);
+    nameInfo.appendChild(nameLine);
+    
+    // Age
+    const ageInfo = document.createElement('div');
+    ageInfo.style.display = 'flex';
+    ageInfo.style.alignItems = 'center';
+    
+    const ageLabel = document.createElement('div');
+    ageLabel.style.fontSize = '13px';
+    ageLabel.style.color = '#666';
+    ageLabel.style.width = '100px';
+    ageLabel.textContent = 'Age：';
+    
+    const ageLine = document.createElement('div');
+    ageLine.style.flex = '1';
+    ageLine.style.borderBottom = '1px dashed #999'; // 虚线
+    ageLine.style.height = '20px';
+    ageLine.style.display = 'flex';
+    ageLine.style.alignItems = 'flex-end';
+    ageLine.style.cursor = 'pointer';
+    ageLine.textContent = character.age || '';
+    ageLine.addEventListener('click', () => {
+        const newAge = prompt('请输入年龄:', ageLine.textContent);
+        if (newAge) {
+            ageLine.textContent = newAge;
+            // 更新角色信息
+            character.age = newAge;
+            updateCharacter(character);
+        }
+    });
+    
+    ageInfo.appendChild(ageLabel);
+    ageInfo.appendChild(ageLine);
+    
+    // Birthday
+    const birthdayInfo = document.createElement('div');
+    birthdayInfo.style.display = 'flex';
+    birthdayInfo.style.alignItems = 'center';
+    
+    const birthdayLabel = document.createElement('div');
+    birthdayLabel.style.fontSize = '13px';
+    birthdayLabel.style.color = '#666';
+    birthdayLabel.style.width = '100px';
+    birthdayLabel.textContent = 'Birthday：';
+    
+    const birthdayLine = document.createElement('div');
+    birthdayLine.style.flex = '1';
+    birthdayLine.style.borderBottom = '1px dashed #999'; // 虚线
+    birthdayLine.style.height = '20px';
+    birthdayLine.style.display = 'flex';
+    birthdayLine.style.alignItems = 'flex-end';
+    birthdayLine.style.cursor = 'pointer';
+    birthdayLine.textContent = character.birthday || '';
+    birthdayLine.addEventListener('click', () => {
+        const newBirthday = prompt('请输入生日:', birthdayLine.textContent);
+        if (newBirthday) {
+            birthdayLine.textContent = newBirthday;
+            // 更新角色信息
+            character.birthday = newBirthday;
+            updateCharacter(character);
+        }
+    });
+    
+    birthdayInfo.appendChild(birthdayLabel);
+    birthdayInfo.appendChild(birthdayLine);
+    
+    // MBTI
+    const mbtiInfo = document.createElement('div');
+    mbtiInfo.style.display = 'flex';
+    mbtiInfo.style.alignItems = 'center';
+    
+    const mbtiLabel = document.createElement('div');
+    mbtiLabel.style.fontSize = '13px';
+    mbtiLabel.style.color = '#666';
+    mbtiLabel.style.width = '100px';
+    mbtiLabel.textContent = 'MBTI：';
+    
+    const mbtiLine = document.createElement('div');
+    mbtiLine.style.flex = '1';
+    mbtiLine.style.borderBottom = '1px dashed #999'; // 虚线
+    mbtiLine.style.height = '20px';
+    mbtiLine.style.display = 'flex';
+    mbtiLine.style.alignItems = 'flex-end';
+    mbtiLine.style.cursor = 'pointer';
+    mbtiLine.textContent = character.mbti || '';
+    mbtiLine.addEventListener('click', () => {
+        const newMbti = prompt('请输入MBTI:', mbtiLine.textContent);
+        if (newMbti) {
+            mbtiLine.textContent = newMbti;
+            // 更新角色信息
+            character.mbti = newMbti;
+            updateCharacter(character);
+        }
+    });
+    
+    mbtiInfo.appendChild(mbtiLabel);
+    mbtiInfo.appendChild(mbtiLine);
+    
+    // 注意：这里删除了Bio部分，因为它现在在照片下面
+    
+    basicInfo.appendChild(nameInfo);
+    basicInfo.appendChild(ageInfo);
+    basicInfo.appendChild(birthdayInfo);
+    basicInfo.appendChild(mbtiInfo);
+    
+    infoContent.appendChild(basicInfo);
+    
+    infoHeader.appendChild(infoTitle);
+    infoHeader.appendChild(infoToggle);
+    infoPanel.appendChild(infoHeader);
+    infoPanel.appendChild(infoContent);
+    
+    // 列表项
+    const listItems = document.createElement('div');
+    listItems.style.display = 'flex';
+    listItems.style.flexDirection = 'column';
+    listItems.style.gap = '16px';
+    listItems.style.width = '100%';
+    listItems.style.maxWidth = '300px';
+    
+    // 列表项1
+    const listItem1 = document.createElement('div');
+    listItem1.style.display = 'flex';
+    listItem1.style.alignItems = 'center';
+    listItem1.style.justifyContent = 'space-between';
+    
+    const listIcon1 = document.createElement('div');
+    listIcon1.style.display = 'flex';
+    listIcon1.style.alignItems = 'center';
+    listIcon1.style.marginRight = '12px';
+    listIcon1.style.color = '#666'; // 调整svg图标颜色
+    listIcon1.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    `;
+    
+    const listText1 = document.createElement('div');
+    listText1.style.flex = '1';
+    listText1.style.fontSize = '14px';
+    listText1.style.color = '#333';
+    listText1.textContent = 'View Profile'; // 改成View Profile
+    
+    const viewButton1 = document.createElement('button');
+    viewButton1.style.background = 'none';
+    viewButton1.style.border = '1px solid #e0e0e0';
+    viewButton1.style.borderRadius = '16px';
+    viewButton1.style.padding = '4px 12px';
+    viewButton1.style.fontSize = '12px';
+    viewButton1.style.color = '#333';
+    viewButton1.style.display = 'flex';
+    viewButton1.style.alignItems = 'center';
+    viewButton1.style.gap = '4px';
+    viewButton1.innerHTML = `
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"></circle>
+        </svg>
+        查看
+    `;
+    // 上面的按钮回到角色主页（第一页）
+    viewButton1.addEventListener('click', () => {
+        // 移除当前的角色主页
+        document.body.removeChild(profileContainer);
+        
+        // 重新打开角色主页，确保显示的是第一页
+        openCharacterProfile(character, false);
+    });
+    
+    listItem1.appendChild(listIcon1);
+    listItem1.appendChild(listText1);
+    listItem1.appendChild(viewButton1);
+    
+    // 列表项2
+    const listItem2 = document.createElement('div');
+    listItem2.style.display = 'flex';
+    listItem2.style.alignItems = 'center';
+    listItem2.style.justifyContent = 'space-between';
+    
+    const listIcon2 = document.createElement('div');
+    listIcon2.style.display = 'flex';
+    listIcon2.style.alignItems = 'center';
+    listIcon2.style.marginRight = '12px';
+    listIcon2.style.color = '#666'; // 调整svg图标颜色
+    listIcon2.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    `;
+    
+    const listText2 = document.createElement('div');
+    listText2.style.flex = '1';
+    listText2.style.fontSize = '14px';
+    listText2.style.color = '#333';
+    listText2.textContent = 'Edit Info'; // 改成Edit Info
+    
+    const viewButton2 = document.createElement('button');
+    viewButton2.style.background = 'none';
+    viewButton2.style.border = '1px solid #e0e0e0';
+    viewButton2.style.borderRadius = '16px';
+    viewButton2.style.padding = '4px 12px';
+    viewButton2.style.fontSize = '12px';
+    viewButton2.style.color = '#333';
+    viewButton2.style.display = 'flex';
+    viewButton2.style.alignItems = 'center';
+    viewButton2.style.gap = '4px';
+    viewButton2.innerHTML = `
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="1"></circle>
+        </svg>
+        查看
+    `;
+    // 下面的按钮切换到下一个页面，显示角色设定输入框
+    viewButton2.addEventListener('click', () => {
+        // 移除当前的角色主页
+        document.body.removeChild(profileContainer);
+        
+        // 打开第二个页面，显示角色设定输入框
+        openCharacterProfile(character, true);
+    });
+    
+    listItem2.appendChild(listIcon2);
+    listItem2.appendChild(listText2);
+    listItem2.appendChild(viewButton2);
+    
+    // Start chatting卡片
+    const chatCard = document.createElement('div');
+    chatCard.style.backgroundColor = 'white';
+    chatCard.style.border = '1px solid #e0e0e0';
+    chatCard.style.borderRadius = '0'; // 直角
+    chatCard.style.padding = '16px';
+    chatCard.style.display = 'flex';
+    chatCard.style.alignItems = 'center';
+    chatCard.style.justifyContent = 'space-between';
+    chatCard.style.cursor = 'pointer';
+    
+    const chatIcon = document.createElement('div');
+    chatIcon.style.display = 'flex';
+    chatIcon.style.alignItems = 'center';
+    chatIcon.style.marginRight = '12px';
+    chatIcon.style.color = '#666'; // 调整svg图标颜色
+    chatIcon.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    `;
+    
+    const chatText = document.createElement('div');
+    chatText.style.flex = '1';
+    chatText.style.fontSize = '14px';
+    chatText.style.color = '#333';
+    chatText.textContent = 'Start chatting';
+    
+    chatCard.appendChild(chatIcon);
+    chatCard.appendChild(chatText);
+    
+    // 点击事件
+    chatCard.addEventListener('click', () => {
+        // 移除角色主页
+        document.body.removeChild(profileContainer);
+        
+        // 添加当前角色到消息列表
+        const chatList = document.getElementById('chat-list');
+        if (chatList && character) {
+            // 创建新的聊天卡片
+            const chatCard = document.createElement('div');
+            chatCard.className = 'wechat-chat-card chat-item';
+            chatCard.setAttribute('data-character-id', character.id);
+            chatCard.style.display = 'flex';
+            chatCard.style.alignItems = 'center';
+            chatCard.style.padding = '12px';
+            chatCard.style.borderBottom = '1px solid #f0f0f0';
+            chatCard.style.cursor = 'pointer';
+            
+            // 头像
+            const avatar = document.createElement('div');
+            avatar.style.width = '48px';
+            avatar.style.height = '48px';
+            avatar.style.borderRadius = '8px';
+            avatar.style.marginRight = '12px';
+            avatar.style.backgroundSize = 'cover';
+            avatar.style.backgroundPosition = 'center';
+            if (character.avatar) {
+                avatar.style.backgroundImage = `url(${character.avatar})`;
+            } else {
+                avatar.style.backgroundImage = 'url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"%3E%3C/path%3E%3Ccircle cx=12 cy=7 r=4%3E%3C/circle%3E%3C/svg%3E")';
+            }
+            
+            // 聊天信息
+            const chatInfo = document.createElement('div');
+            chatInfo.style.flex = '1';
+            chatInfo.style.minWidth = '0';
+            
+            // 用户名
+            const userName = document.createElement('div');
+            userName.style.fontSize = '16px';
+            userName.style.fontWeight = '500';
+            userName.style.color = '#333';
+            userName.style.marginBottom = '4px';
+            userName.style.whiteSpace = 'nowrap';
+            userName.style.overflow = 'hidden';
+            userName.style.textOverflow = 'ellipsis';
+            userName.textContent = character.name || '角色';
+            
+            // 最后一条消息
+            const lastMessage = document.createElement('div');
+            lastMessage.style.fontSize = '14px';
+            lastMessage.style.color = '#999';
+            lastMessage.style.whiteSpace = 'nowrap';
+            lastMessage.style.overflow = 'hidden';
+            lastMessage.style.textOverflow = 'ellipsis';
+            lastMessage.textContent = '开始聊天吧！';
+            
+            chatInfo.appendChild(userName);
+            chatInfo.appendChild(lastMessage);
+            
+            // 时间
+            const time = document.createElement('div');
+            time.style.fontSize = '12px';
+            time.style.color = '#999';
+            time.style.marginLeft = '12px';
+            time.textContent = '刚刚';
+            
+            chatCard.appendChild(avatar);
+            chatCard.appendChild(chatInfo);
+            chatCard.appendChild(time);
+            
+            // 将新的聊天卡片添加到消息列表的普通聊天部分
+            const normalChatSection = chatList.querySelector('.wechat-chat-card:nth-child(2)');
+            if (normalChatSection) {
+                normalChatSection.parentNode.insertBefore(chatCard, normalChatSection.nextSibling);
+            }
+        }
+        
+        // 显示成功提示
+        alert('TA已进入你的世界。');
+    });
+    
+    listItems.appendChild(listItem1);
+    listItems.appendChild(listItem2);
+    listItems.appendChild(chatCard);
+    
+    // 创建主内容布局
+    const mainLayout = document.createElement('div');
+    mainLayout.style.display = 'flex';
+    mainLayout.style.flexDirection = 'column';
+    mainLayout.style.alignItems = 'center';
+    mainLayout.style.gap = '24px';
+    mainLayout.style.width = '100%';
+    mainLayout.style.maxWidth = '400px'; // 限制最大宽度，确保在移动设备上合适
+    
+    // 添加各个部分到主布局
+    mainLayout.appendChild(topContainer);
+    mainLayout.appendChild(infoPanel);
+    mainLayout.appendChild(listItems);
+    
+    // 将主布局添加到主内容区域
+    mainContent.appendChild(mainLayout);
     
     // 中间区域：根据是否为第二个页面显示不同内容
     if (isSecondPage) {
