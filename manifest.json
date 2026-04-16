@@ -2,8 +2,9 @@
   "name": "晕倒料理",
   "short_name": "晕倒料理",
   "description": "晕倒料理应用",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f2f2f7",
   "theme_color": "#f2f2f7",
   "icons": [
@@ -18,6 +19,20 @@
       "sizes": "512x512",
       "type": "image/jpeg",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "打开应用",
+      "short_name": "打开",
+      "description": "打开晕倒料理应用",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "https://i.postimg.cc/SxcvL0Qq/IMG-9251.jpg",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
