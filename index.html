@@ -35,32 +35,61 @@
         
         .dock {
             position: absolute;
-            bottom: 30px;
+            bottom: 25px;
             left: 50%;
             transform: translateX(-50%);
-            width: 500px;
-            padding: 20px 30px;
+            width: 450px;
+            padding: 18px 26px;
             background-color: rgba(255, 255, 255, 0.7);
-            border-radius: 28px;
+            border-radius: 24px;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 36px;
+            gap: 32px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
         .app-icon {
-            width: 75px;
-            height: 75px;
+            width: 65px;
+            height: 65px;
             background-color: white;
-            border-radius: 16px;
+            border-radius: 14px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            padding: 10px;
+        }
+        
+        .app-grid {
+            position: absolute;
+            bottom: 150px;
+            right: 30px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .app-item .app-icon {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .app-label {
+            font-size: 10px;
+            font-weight: 400;
+            color: #333;
+            text-align: center;
+            width: 100%;
         }
         
         .app-icon svg {
@@ -71,6 +100,32 @@
 </head>
 <body>
     <div class="home-screen">
+        <div class="app-grid">
+            <div class="app-item">
+                <div class="app-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M12.686 18.222q.603.117 1.218.123a7.3 7.3 0 0 0 2.992-.64l3.095.455a1.03 1.03 0 0 0 1.032-1.135l-.372-3.126a7.2 7.2 0 0 0 .599-2.9a7.304 7.304 0 0 0-7.336-7.284a7.295 7.295 0 0 0-7.109 5.654"/><path d="M13.904 14.745a5.66 5.66 0 0 1-1.218 3.477a5.61 5.61 0 0 1-4.375 2.063a5.7 5.7 0 0 1-2.29-.495l-2.311.413a.754.754 0 0 1-.826-.877l.32-2.363a5.5 5.5 0 0 1-.454-2.219A5.58 5.58 0 0 1 6.805 9.37a5.2 5.2 0 0 1 1.517-.217a5.59 5.59 0 0 1 5.582 5.593"/></g></svg>
+                </div>
+                <div class="app-label">絮语</div>
+            </div>
+            <div class="app-item">
+                <div class="app-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5"><path d="M19.463 3.994c-2.682-1.645-5.023-.983-6.429.073c-.576.433-.864.65-1.034.65s-.458-.217-1.034-.65C9.56 3.011 7.219 2.35 4.537 3.994C1.018 6.152.222 13.274 8.34 19.283c1.546 1.144 2.319 1.716 3.66 1.716s2.114-.572 3.66-1.716c8.118-6.009 7.322-13.13 3.803-15.29Z"/><path stroke-linejoin="round" d="M16 13h-1c-.455 0-.934.035-1.343-.279c-.156-.12-.26-.285-.466-.615L11.5 9l-3 5l-1.557-2.168c-.256-.307-.506-.619-.845-.742C5.852 11 5.568 11 5 11H3"/></g></svg>
+                </div>
+                <div class="app-label">朝暮</div>
+            </div>
+            <div class="app-item">
+                <div class="app-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none"><path d="m12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035q-.016-.005-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093q.019.005.029-.008l.004-.014l-.034-.614q-.005-.018-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"/><path fill="#000000" d="M12.707 2.808a2 2 0 0 1 2.701-.117l.127.117l5.657 5.656a2 2 0 0 1 .117 2.702l-.117.127l-9.9 9.9a2 2 0 0 1-2.7.116l-.128-.117l-5.657-5.656a2 2 0 0 1-.116-2.702l.116-.127l9.9-9.9Zm7.071 12.728a1 1 0 0 1 1.497 1.32l-.083.094l-4.242 4.242a1 1 0 0 1-1.498-1.32l.083-.094zM14.121 4.222l-9.9 9.9l5.658 5.656l9.899-9.9zm-5.303 9.546a.5.5 0 0 1 .638-.058l.069.058l.707.707a.5.5 0 0 1 .058.638l-.058.069l-.707.707a.5.5 0 0 1-.638.058l-.07-.058l-.706-.707a.5.5 0 0 1-.058-.638l.058-.07zm-.354-10.96a1 1 0 0 1 0 1.414L4.222 8.464A1 1 0 1 1 2.807 7.05L7.05 2.808a1 1 0 0 1 1.414 0"/></g></svg>
+                </div>
+                <div class="app-label">安守</div>
+            </div>
+            <div class="app-item">
+                <div class="app-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="M2 15q.215.641.5 1.245m1.625 2.501q.476.553 1.016 1.035M9 22a11 11 0 0 1-1.304-.518"/><path d="M12 13.5a1.5 1.5 0 1 0-1.5-1.5m1.5 1.5a1.5 1.5 0 0 1-1.5-1.5m1.5 1.5V16m-1.5-4H6"/><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12"/></g></svg>
+                </div>
+                <div class="app-label">惜时</div>
+            </div>
+        </div>
         <div class="dock">
             <div class="app-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 16 16"><g fill="#000000"><path d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2"/><path d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0"/></g></svg>
