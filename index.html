@@ -13,21 +13,17 @@
     <link rel="stylesheet" href="style.css">
     <title>晕倒料理</title>
     <script>
-        // 检查是否从主屏幕启动（PWA模式）
-        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-            // 检查是否已经显示过开屏动画
-            if (!localStorage.getItem('splashShown')) {
-                // 标记开屏动画已显示
-                localStorage.setItem('splashShown', 'true');
-                // 跳转到开屏动画页面
-                window.location.href = 'splash.html';
-            }
+        // 检查是否已经显示过开屏动画
+        if (!localStorage.getItem('splashShown')) {
+            // 标记开屏动画已显示
+            localStorage.setItem('splashShown', 'true');
+            // 跳转到开屏动画页面
+            window.location.href = 'splash.html';
         }
     </script>
 </head>
 <body>
-    <div class="preview-container">
-        <div class="home-screen">
+    <div class="home-screen">
         <div class="widget">
             <div class="avatar-container">
                 <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
@@ -193,7 +189,5 @@
             });
         });
     </script>
-        </div>
-    </div>
 </body>
 </html>
