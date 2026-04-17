@@ -12,6 +12,18 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
     <title>晕倒料理</title>
+    <script>
+        // 检查是否从主屏幕启动（PWA模式）
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+            // 检查是否已经显示过开屏动画
+            if (!localStorage.getItem('splashShown')) {
+                // 标记开屏动画已显示
+                localStorage.setItem('splashShown', 'true');
+                // 跳转到开屏动画页面
+                window.location.href = 'splash.html';
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="preview-container">
@@ -151,16 +163,11 @@
                 });
             }
             
-            // 表情/图标替换功能
+            // 表情/图标固定为红苹果，禁止替换修改
             const emoji = document.getElementById('emoji');
             
             if (emoji) {
-                emoji.addEventListener('click', function() {
-                    const newContent = prompt('请输入要显示的内容（可以是emoji、文字或其他符号）：', this.textContent);
-                    if (newContent !== null && newContent.trim() !== '') {
-                        this.textContent = newContent.trim();
-                    }
-                });
+                emoji.textContent = '🍎';
             }
             
             // Dock标签编辑功能
