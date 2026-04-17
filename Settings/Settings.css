@@ -1,0 +1,207 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f2f2f7;
+    padding: 20px;
+}
+
+.settings-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 头部样式 */
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+}
+
+.back-btn:active {
+    transform: translateY(-50%) scale(0.9);
+}
+
+.back-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+}
+
+h2 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+/* 卡片样式 */
+.card {
+    background-color: white;
+    border-radius: 3px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+}
+
+/* 表单组样式 */
+.form-group {
+    margin-bottom: 12px;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 6px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 8px 0;
+    background: none;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 0;
+    font-size: 12px;
+    transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-bottom-color: #007aff;
+}
+
+/* 按钮组样式 */
+.button-group {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.btn-delete {
+    color: #ff3b30;
+}
+
+.btn-save {
+    color: #8e8e93;
+}
+
+.btn-pull {
+    color: #8e8e93;
+}
+
+.btn-add {
+    color: #000000;
+}
+
+/* 弹窗样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 3px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal-content h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: flex-end;
+}
+
+.btn-cancel {
+    color: #8e8e93;
+}
+
+.btn-confirm {
+    color: #007aff;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .button-group {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 4px;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 6px 8px;
+        font-size: 10px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 16px;
+    }
+    
+    .modal-buttons {
+        gap: 8px;
+    }
+}

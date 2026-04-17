@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="stylesheet" href="Settings.css">
+    <title>设置</title>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="header">
+            <button id="back-btn" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
+            </button>
+            <h1>Settings</h1>
+        </div>
+        
+        <!-- API配置卡片 -->
+        <div class="card">
+            <h2>API设置</h2>
+            
+            <!-- 预设选择 -->
+            <div class="form-group">
+                <label for="api-preset">API预设</label>
+                <select id="api-preset" class="form-input">
+                    <option value="">选择预设</option>
+                </select>
+            </div>
+            
+            <!-- API URL -->
+            <div class="form-group">
+                <label for="api-url">API URL</label>
+                <input type="text" id="api-url" class="form-input" placeholder="输入API地址">
+            </div>
+            
+            <!-- API Key -->
+            <div class="form-group">
+                <label for="api-key">API Key</label>
+                <input type="password" id="api-key" class="form-input" placeholder="输入API密钥">
+            </div>
+            
+            <!-- 模型列表 -->
+            <div class="form-group">
+                <label for="api-model">模型</label>
+                <select id="api-model" class="form-input">
+                    <option value="">选择模型</option>
+                </select>
+            </div>
+            
+            <!-- 按钮组 -->
+            <div class="button-group">
+                <button id="btn-delete" class="btn btn-delete">Delete</button>
+                <button id="btn-save" class="btn btn-save">Save</button>
+                <button id="btn-pull" class="btn btn-pull">Pull</button>
+                <button id="btn-add" class="btn btn-add">Add</button>
+            </div>
+        </div>
+        
+        <!-- 数据卡片 -->
+        <div class="card">
+            <h2>数据</h2>
+            
+            <!-- 导出和导入按钮 -->
+            <div class="button-group">
+                <button id="btn-export" class="btn btn-save">Export all data</button>
+                <button id="btn-import" class="btn btn-save">Import data</button>
+            </div>
+            
+            <!-- 清除数据按钮 -->
+            <div class="button-group">
+                <button id="btn-clear" class="btn btn-delete">Clear the data</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 弹窗 -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3>添加预设</h3>
+            <div class="form-group">
+                <label for="preset-name">预设名称</label>
+                <input type="text" id="preset-name" class="form-input" placeholder="输入预设名称">
+            </div>
+            <div class="modal-buttons">
+                <button id="modal-cancel" class="btn btn-cancel">Cancle</button>
+                <button id="modal-confirm" class="btn btn-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="Settings.js"></script>
+</body>
+</html>
