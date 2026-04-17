@@ -14,12 +14,26 @@
     <title>晕倒料理</title>
     <script>
         // 每次打开都显示开屏动画，但避免从splash.html或Settings页面跳转回来时的循环
-        if (!document.referrer.includes('splash.html') && !document.referrer.includes('Settings/')) {
+        if (!document.referrer.includes('splash.html') && !document.referrer.includes('Settings/') && !document.referrer.includes('Theme/')) {
             window.location.href = 'splash.html';
         }
+        
+        // 加载保存的壁纸
+        window.addEventListener('load', function() {
+            const savedWallpaperData = localStorage.getItem('wallpaperData');
+            const backgroundContainer = document.querySelector('.background-container');
+            if (savedWallpaperData && backgroundContainer) {
+                const data = JSON.parse(savedWallpaperData);
+                backgroundContainer.style.backgroundImage = `url(${data.url})`;
+                // 将百分比转换为模糊半径（0-20px）
+                const blurRadius = (data.blur || 0) / 100 * 20;
+                backgroundContainer.style.filter = `blur(${blurRadius}px)`;
+            }
+        });
     </script>
 </head>
 <body>
+    <div class="background-container"></div>
     <div class="home-screen">
         <div class="widget">
             <div class="avatar-container">
@@ -187,6 +201,18 @@
             // 为dock栏最右边图标添加点击事件，跳转到settings页面
             const dockIcons = document.querySelectorAll('.dock .app-icon');
             if (dockIcons.length > 0) {
+                // 第三个图标（从左往右）跳转到Theme界面
+                const thirdDockIcon = dockIcons[2];
+                thirdDockIcon.addEventListener('click', function() {
+                    window.location.href = 'Theme/theme.html';
+                });
+                // 添加触摸事件支持
+                thirdDockIcon.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'Theme/theme.html';
+                });
+                
+                // 最右边图标跳转到settings页面
                 const lastDockIcon = dockIcons[dockIcons.length - 1];
                 lastDockIcon.addEventListener('click', function() {
                     window.location.href = 'Settings/Settings.html';
