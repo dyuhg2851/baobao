@@ -83,7 +83,7 @@ body {
 
 .app-grid {
     position: absolute;
-    bottom: 260px;
+    bottom: 200px;
     right: 80px;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -94,7 +94,7 @@ body {
 /* 响应式设计 */
 @media (max-width: 768px) {
     .app-grid {
-        bottom: 220px;
+        bottom: 180px;
         right: 60px;
         gap: 24px;
     }
@@ -244,6 +244,11 @@ body {
 
 .emoji:active {
     transform: none;
+}
+
+/* 移除可编辑元素的焦点边框 */
+[contenteditable="true"] {
+    outline: none;
 }
 
 /* 响应式设计 */
