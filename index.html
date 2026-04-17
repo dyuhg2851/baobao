@@ -13,13 +13,8 @@
     <link rel="stylesheet" href="style.css">
     <title>晕倒料理</title>
     <script>
-        // 检查是否已经显示过开屏动画
-        if (!localStorage.getItem('splashShown')) {
-            // 标记开屏动画已显示
-            localStorage.setItem('splashShown', 'true');
-            // 跳转到开屏动画页面
-            window.location.href = 'splash.html';
-        }
+        // 每次打开都显示开屏动画
+        window.location.href = 'splash.html';
     </script>
 </head>
 <body>
