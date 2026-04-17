@@ -192,11 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             loadModels(models);
-            alert('模型列表拉取成功');
+            alert('模型列表拉取成功^ ^');
             
         } catch (error) {
             console.error('拉取模型失败:', error);
-            alert('拉取模型失败，请检查API配置');
+            alert('拉取模型失败，请检查API配置T^T');
         }
     }
     
