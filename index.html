@@ -14,7 +14,26 @@
     <title>晕倒料理</title>
 </head>
 <body>
-    <div class="home-screen">
+    <div class="preview-container">
+        <div class="home-screen">
+        <div class="widget">
+            <div class="avatar-container">
+                <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+                <div class="avatar" id="avatar">
+                    <img src="https://i.postimg.cc/SxcvL0Qq/IMG-9251.jpg" alt="头像">
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="nickname" id="nickname" contenteditable="true">晕了饱饱</div>
+                <div class="id" id="id" contenteditable="true">@Q_iian</div>
+            </div>
+            <div class="content-section">
+                <div class="content-container">
+                    <div class="content" id="content" contenteditable="true">拥有苹果时 只在意苹果</div>
+                </div>
+                <div class="emoji" id="emoji">🍎</div>
+            </div>
+        </div>
         <div class="app-grid">
             <div class="app-item">
                 <div class="app-icon">
@@ -42,6 +61,7 @@
             </div>
         </div>
         <div class="dock">
+            <div class="dock-label" id="dock-label" contenteditable="true">౿ ‧₊見えない愛ഒ ‧₊˚</div>
             <div class="app-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 16 16"><g fill="#000000"><path d="M5 0h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1H1a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v9a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1H3a2 2 0 0 1 2-2"/><path d="M1 6v-.5a.5.5 0 0 1 1 0V6h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 3v-.5a.5.5 0 0 1 1 0V9h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1zm0 2.5v.5H.5a.5.5 0 0 0 0 1h2a.5.5 0 0 0 0-1H2v-.5a.5.5 0 0 0-1 0"/></g></svg>
             </div>
@@ -76,7 +96,97 @@
                     this.classList.remove('touch-active');
                 });
             });
+            
+            // 小组件功能
+            // 头像上传功能
+            const avatar = document.getElementById('avatar');
+            const avatarUpload = document.getElementById('avatar-upload');
+            
+            if (avatar && avatarUpload) {
+                avatar.addEventListener('click', function() {
+                    avatarUpload.click();
+                });
+                
+                avatarUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = avatar.querySelector('img');
+                            img.src = e.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // 昵称和ID编辑功能
+            const nickname = document.getElementById('nickname');
+            const id = document.getElementById('id');
+            
+            if (nickname) {
+                nickname.addEventListener('blur', function() {
+                    if (!this.textContent.trim()) {
+                        this.textContent = '晕了饱饱';
+                    }
+                });
+            }
+            
+            if (id) {
+                id.addEventListener('blur', function() {
+                    if (!this.textContent.trim()) {
+                        this.textContent = '@Q_iian';
+                    }
+                });
+            }
+            
+            // 内容编辑功能
+            const content = document.getElementById('content');
+            
+            if (content) {
+                content.addEventListener('blur', function() {
+                    if (!this.textContent.trim()) {
+                        this.textContent = '拥有苹果时 只在意苹果';
+                    }
+                });
+            }
+            
+            // 表情/图标替换功能
+            const emoji = document.getElementById('emoji');
+            
+            if (emoji) {
+                emoji.addEventListener('click', function() {
+                    const newContent = prompt('请输入要显示的内容（可以是emoji、文字或其他符号）：', this.textContent);
+                    if (newContent !== null && newContent.trim() !== '') {
+                        this.textContent = newContent.trim();
+                    }
+                });
+            }
+            
+            // Dock标签编辑功能
+            const dockLabel = document.getElementById('dock-label');
+            
+            if (dockLabel) {
+                dockLabel.addEventListener('blur', function() {
+                    if (!this.textContent.trim()) {
+                        this.textContent = '౿ ‧₊見えない愛ഒ ‧₊˚';
+                    }
+                });
+            }
+            
+            // 阻止编辑时的默认行为
+            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            editableElements.forEach(element => {
+                element.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.blur();
+                    }
+                });
+            });
         });
     </script>
+        </div>
+    </div>
 </body>
 </html>
