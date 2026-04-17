@@ -1,3 +1,12 @@
+// 加载API配置管理模块
+let APIConfig;
+if (typeof module !== 'undefined' && module.exports) {
+    APIConfig = require('../api-config');
+} else {
+    // 浏览器环境
+    APIConfig = window.APIConfig;
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // 元素引用
     const apiPresetSelect = document.getElementById('api-preset');
@@ -67,9 +76,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return false;
     }
     
-    // 存储键名
-    const PRESETS_KEY = 'api_presets';
-    
     // 加载预设列表
     function loadPresets() {
         const presets = getPresets();
@@ -85,13 +91,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 获取预设列表
     function getPresets() {
-        const presets = localStorage.getItem(PRESETS_KEY);
-        return presets ? JSON.parse(presets) : [];
+        return APIConfig.getPresets();
     }
     
     // 保存预设列表
     function savePresets(presets) {
-        localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+        return APIConfig.savePresets(presets);
     }
     
     // 加载预设配置
@@ -115,6 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     pullModels();
                 }
             }
+            // 设置当前预设
+            APIConfig.setCurrentPreset(presetName);
         }
     }
     
@@ -373,7 +380,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 清除数据
     function clearData() {
         if (confirm('确定要清除所有数据吗？')) {
+            // 使用APIConfig清除数据
             localStorage.removeItem('apiPresets');
+            localStorage.removeItem('currentApiPreset');
             loadPresets();
             // 清空输入框
             apiUrlInput.value = '';
