@@ -81,7 +81,7 @@ h2 {
     padding: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     margin-bottom: 16px;
-    max-height: 250px;
+    max-height: 220px;
     overflow: hidden;
 }
 
@@ -91,15 +91,15 @@ h2 {
     align-items: flex-end;
     justify-content: flex-start;
     gap: 16px;
-    height: 210px;
+    height: 180px;
 }
 
 .wallpaper-thumbnail {
     width: 115px;
-    height: 210px;
-    border-radius: 8px;
+    height: 180px;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     cursor: pointer;
     transition: transform 0.2s ease;
     background-color: transparent;
@@ -129,22 +129,21 @@ h2 {
 /* 手机端适配 */
 @media only screen and (max-width: 768px) {
     .wallpaper-section {
-        flex-direction: column;
+        flex-direction: row;
         align-items: flex-start;
-        height: auto;
+        height: 180px;
     }
     
     .wallpaper-thumbnail {
-        width: 100%;
-        height: 50vh;
-        margin-bottom: 20px;
+        width: 115px;
+        height: 180px;
         border-radius: 0;
         box-shadow: none;
         background-color: transparent;
     }
     
     .wallpaper-actions {
-        transform: translateY(0);
+        transform: translateY(-85px);
         align-items: flex-start;
         width: 100%;
     }
@@ -161,8 +160,8 @@ h2 {
     }
     
     .card {
-        max-height: none;
-        overflow: visible;
+        max-height: 280px;
+        overflow: hidden;
         padding: 20px;
     }
 }
