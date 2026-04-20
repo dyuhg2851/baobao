@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Listen together</title>
+    <link rel="stylesheet" href="music.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <div class="top-nav">
+        <button class="back-btn" id="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
+        </button>
+        <h1 class="nav-title">Listen</h1>
+        <button class="add-btn" id="add-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.5 15.8V8.2a1.91 1.91 0 0 0-.944-1.645l-6.612-3.8a1.88 1.88 0 0 0-1.888 0l-6.612 3.8A1.9 1.9 0 0 0 3.5 8.2v7.602a1.91 1.91 0 0 0 .944 1.644l6.612 3.8a1.88 1.88 0 0 0 1.888 0l6.612-3.8A1.9 1.9 0 0 0 20.5 15.8m-5-3.8H12m0 0H8.5m3.5 0V8.5m0 3.5v3.5"/></svg>
+        </button>
+    </div>
+
+    <!-- 添加歌曲弹窗 -->
+    <div class="add-song-modal" id="add-song-modal">
+        <div class="add-song-content">
+            <div class="add-song-header">
+                <h3>添加歌曲</h3>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="song-name">歌曲名</label>
+                    <input type="text" id="song-name">
+                </div>
+                <div class="input-group">
+                    <label for="artist-name">歌手名</label>
+                    <input type="text" id="artist-name">
+                </div>
+            </div>
+            <div class="input-group">
+                <label for="music-url">音乐URL</label>
+                <input type="text" id="music-url">
+            </div>
+            <div class="input-group">
+                <label for="lyrics-file">歌词LRC</label>
+                <input type="file" id="lyrics-file" accept=".lrc,.txt">
+            </div>
+            <div class="input-group">
+                <label for="cover-url">封面URL</label>
+                <input type="text" id="cover-url">
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" id="cancel-add-song">Cancel</button>
+                <button class="save-btn" id="save-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 顶部互动区 -->
+    <div class="interaction-section">
+        <div class="avatars">
+            <div class="avatar">
+                <img src="https://via.placeholder.com/50" alt="用户头像">
+            </div>
+            <div class="avatar">
+                <img src="https://via.placeholder.com/50" alt="联系人头像">
+            </div>
+        </div>
+        <p class="listen-time">一起听歌 <span id="listen-minutes">0</span> 分钟</p>
+    </div>
+
+    <!-- 唱片封面区 -->
+    <div class="album-section">
+        <div class="vinyl-record" id="vinyl-record">
+            <div class="album-cover" id="album-cover">
+                <img src="https://via.placeholder.com/200" alt="专辑封面" id="cover-image">
+            </div>
+        </div>
+    </div>
+
+    <!-- 歌曲信息区 -->
+    <div class="song-info-section">
+        <h2 class="song-title" id="song-title">歌曲标题</h2>
+        <h3 class="artist-name" id="artist-name-display">歌手名</h3>
+        <div class="lyrics-section">
+            <p class="current-lyric" id="current-lyric">当前播放的歌词</p>
+            <p class="next-lyric" id="next-lyric">下一句歌词</p>
+        </div>
+    </div>
+
+    <!-- 播放进度条区 -->
+    <div class="progress-section">
+        <span class="current-time" id="current-time">0:00</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+                <div class="progress-handle" id="progress-handle"></div>
+            </div>
+        </div>
+        <span class="total-time" id="total-time">0:00</span>
+    </div>
+
+    <!-- 底部播放控制栏 -->
+    <div class="player-controls">
+        <button class="control-btn prev-btn" id="prev-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linejoin="round" d="M8.065 12.626c.254 1.211 1.608 2.082 4.315 3.822c2.945 1.893 4.417 2.84 5.61 2.475c.403-.124.775-.34 1.088-.635C20 17.418 20 15.612 20 12s0-5.418-.922-6.288a2.8 2.8 0 0 0-1.088-.635c-1.193-.365-2.665.582-5.61 2.475c-2.707 1.74-4.06 2.61-4.315 3.822c-.087.412-.087.84 0 1.252Z"/><path stroke-linecap="round" d="M4 4v16"/></g></svg>
+        </button>
+        <button class="control-btn play-btn" id="play-btn">
+            <svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path d="M13.888 9.935C14.963 10.812 15.5 11.25 15.5 12s-.537 1.188-1.612 2.065c-.297.242-.591.47-.862.66c-.237.167-.506.339-.784.508c-1.073.652-1.609.978-2.09.617c-.48-.36-.524-1.116-.612-2.628c-.024-.427-.04-.846-.04-1.222s.016-.795.04-1.222c.088-1.512.132-2.267.612-2.628c.481-.361 1.018-.035 2.09.617c.278.169.547.341.784.508c.27.19.565.418.862.66Z"/><path stroke-linecap="round" d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg>
+            <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path d="M8 9.5c0-.466 0-.699.076-.883a1 1 0 0 1 .541-.54C8.801 8 9.034 8 9.5 8s.699 0 .883.076a1 1 0 0 1 .54.541c.077.184.077.417.077.883v5c0 .466 0 .699-.076.883a1 1 0 0 1-.541.54C10.199 16 9.966 16 9.5 16s-.699 0-.883-.076a1 1 0 0 1-.54-.541C8 15.199 8 14.966 8 14.5zm5 0c0-.466 0-.699.076-.883a1 1 0 0 1 .541-.54C13.801 8 14.034 8 14.5 8s.699 0 .883.076a1 1 0 0 1 .54.541c.077.184.077.417.077.883v5c0 .466 0 .699-.076.883a1 1 0 0 1-.541.54c-.184.077-.417.077-.883.077s-.699 0-.883-.076a1 1 0 0 1-.54-.541C13 15.199 13 14.966 13 14.5z"/><path stroke-linecap="round" d="M7 3.338A9.95 9.95 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5"/></g></svg>
+        </button>
+        <button class="control-btn next-btn" id="next-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linejoin="round" d="M15.935 12.626c-.254 1.211-1.608 2.082-4.315 3.822c-2.945 1.893-4.417 2.84-5.61 2.475a2.8 2.8 0 0 1-1.088-.635C4 17.418 4 15.612 4 12s0-5.418.922-6.288a2.8 2.8 0 0 1 1.089-.635c1.192-.365 2.664.582 5.609 2.475c2.707 1.74 4.06 2.61 4.315 3.822c.087.412.087.84 0 1.252Z"/><path stroke-linecap="round" d="M20 5v14"/></g></svg>
+        </button>
+        <button class="control-btn playlist-btn" id="playlist-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#000000" fill-rule="evenodd" d="M2.25 5A.75.75 0 0 1 3 4.25h12a.75.75 0 0 1 0 1.5H3A.75.75 0 0 1 2.25 5m17.613 2.4c-.196.073-.455.196-.863.392l-1.755.842c-.18.086-.282.136-.356.178l-.068.043a.3.3 0 0 0-.056.088l-.009.08a7 7 0 0 0-.006.398c0 .453 0 .74.02.948a1 1 0 0 0 .034.197a.25.25 0 0 0 .14.088a1 1 0 0 0 .193-.054c.196-.073.455-.196.863-.392l1.755-.842c.18-.086.282-.136.356-.178l.068-.043a.3.3 0 0 0 .056-.088l.009-.08c.006-.085.006-.199.006-.398c0-.453 0-.74-.02-.948a1 1 0 0 0-.034-.197a.25.25 0 0 0-.14-.088a1 1 0 0 0-.193.054m-3.097 1.541v.002zm.053-.085l.002-.001zm2.526-2.863c.278-.103.61-.19.97-.125c.442.08.836.329 1.1.692c.215.296.28.634.308.93c.027.287.027.646.027 1.055v.11c0 .3.002.62-.106.915a1.75 1.75 0 0 1-.392.623c-.22.225-.509.363-.78.492l-.068.033l-1.785.857c-.369.177-.692.332-.964.432c-.261.097-.57.18-.905.136v4.286c0 1.814-1.435 3.321-3.25 3.321s-3.25-1.507-3.25-3.321s1.435-3.322 3.25-3.322a3.2 3.2 0 0 1 1.75.522V10h.003q-.004-.254-.003-.545v-.11c0-.3-.002-.62.106-.915c.085-.234.219-.446.392-.623c.22-.225.509-.363.78-.492l.068-.033l1.785-.857c.369-.177.692-.332.964-.432M15.25 16.429c0-1.026-.803-1.822-1.75-1.822s-1.75.796-1.75 1.822s.803 1.821 1.75 1.821s1.75-.795 1.75-1.821M2.25 9A.75.75 0 0 1 3 8.25h10a.75.75 0 0 1 0 1.5H3A.75.75 0 0 1 2.25 9m0 4a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75m0 4a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5H3a.75.75 0 0 1-.75-.75" clip-rule="evenodd"/></svg>
+        </button>
+    </div>
+
+    <!-- 播放列表弹窗 -->
+    <div class="playlist-modal" id="playlist-modal">
+        <div class="playlist-content">
+            <div class="playlist-header">
+                <h3>播放列表</h3>
+                <button class="close-btn" id="close-playlist">×</button>
+            </div>
+            <div class="playlist-items" id="playlist-items">
+                <!-- 播放列表项将通过JS动态添加 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="delete-modal" id="delete-modal">
+        <div class="delete-content">
+            <h3>确认删除</h3>
+            <p>确定要删除这首歌吗？</p>
+            <div class="modal-buttons">
+                <button class="btn cancel-btn" id="cancel-delete">取消</button>
+                <button class="btn confirm-btn" id="confirm-delete">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="music.js"></script>
+</body>
+</html>

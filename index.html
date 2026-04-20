@@ -236,9 +236,20 @@
                 });
             });
             
-            // 为dock栏最右边图标添加点击事件，跳转到settings页面
+            // 为dock栏图标添加点击事件
             const dockIcons = document.querySelectorAll('.dock .app-icon');
             if (dockIcons.length > 0) {
+                // 第二个图标（从左往右）跳转到Music界面
+                const secondDockIcon = dockIcons[1];
+                secondDockIcon.addEventListener('click', function() {
+                    window.location.href = 'Music/music.html';
+                });
+                // 添加触摸事件支持
+                secondDockIcon.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    window.location.href = 'Music/music.html';
+                });
+                
                 // 第三个图标（从左往右）跳转到Theme界面
                 const thirdDockIcon = dockIcons[2];
                 thirdDockIcon.addEventListener('click', function() {
