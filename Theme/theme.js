@@ -197,9 +197,6 @@ document.addEventListener('DOMContentLoaded', function() {
         function loadFont(url, family) {
             if (!url) return;
             
-            // 显示加载状态
-            alert('正在加载字体...');
-            
             // 移除旧的字体样式
             const oldFontStyle = document.getElementById('custom-font-style');
             if (oldFontStyle) {
@@ -238,9 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const computedFontFamily = window.getComputedStyle(testElement).fontFamily;
                 if (computedFontFamily.includes(fontName)) {
                     applyFontFamily(fontName);
-                    alert('字体加载成功^ ^');
-                } else {
-                    alert('字体加载失败T^T，请检查链接是否正确');
                 }
                 document.body.removeChild(testElement);
             }, 1000);
