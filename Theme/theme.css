@@ -89,7 +89,7 @@ h2 {
 .wallpaper-section {
     display: flex;
     align-items: flex-end;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 16px;
     height: 210px;
 }
@@ -111,7 +111,8 @@ h2 {
 .wallpaper-thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
+    background-color: #f2f2f7;
 }
 
 .wallpaper-actions {
@@ -191,7 +192,108 @@ h2 {
     color: #ff3b30;
 }
 
+.btn-add {
+    color: #000;
+}
 
+/* 字体模块样式 */
+.font-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.font-input-group,
+.font-preset-group,
+.font-copy-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.font-input-group label,
+.font-preset-group label,
+.font-copy-group label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+}
+
+.font-input-group input,
+.font-preset-group select,
+.font-copy-group input {
+    width: 100%;
+    padding: 4px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 0;
+    font-size: 12px;
+    outline: none;
+    background: transparent;
+}
+
+.input-hint {
+    font-size: 10px;
+    color: #999;
+    margin-top: 2px;
+}
+
+.font-actions {
+    margin: 8px 0;
+}
+
+/* 弹窗样式 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 3px;
+    padding: 24px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-content h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 0;
+    font-size: 12px;
+    margin-bottom: 24px;
+    outline: none;
+    background: transparent;
+}
+
+.modal-buttons .btn-add {
+    color: #007aff;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
 
 /* 响应式设计 */
 @media (max-width: 480px) {

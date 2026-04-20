@@ -111,4 +111,278 @@ document.addEventListener('DOMContentLoaded', function() {
             updateThumbnailBlur();
         });
     }
+    
+    // 字体模块功能
+    initFontModule();
+    
+    function initFontModule() {
+        // 元素引用
+        const fontUrlInput = document.getElementById('font-url');
+        const fontPresetSelect = document.getElementById('font-preset');
+        const fontDeleteBtn = document.getElementById('font-delete');
+        const fontLoadBtn = document.getElementById('font-load');
+        const fontAddBtn = document.getElementById('font-add');
+        
+        // 弹窗元素
+        const fontModal = document.getElementById('font-modal');
+        const fontPresetNameInput = document.getElementById('font-preset-name');
+        const fontModalCancel = document.getElementById('font-modal-cancel');
+        const fontModalConfirm = document.getElementById('font-modal-confirm');
+        
+        // 存储键名
+        const FONTS_KEY = 'font_presets';
+        const CURRENT_FONT_KEY = 'current_font';
+        
+        // 预设字体列表（空，让用户自己上传）
+        const defaultFonts = [];
+        
+        // 初始化
+        function init() {
+            loadFontPresets();
+            loadCurrentFont();
+        }
+        
+        // 加载字体预设
+        function loadFontPresets() {
+            // 确保预设列表为空，让用户自己添加
+            saveFontPresets([]);
+            
+            // 加载预设到下拉框
+            const presetsToLoad = getFontPresets();
+            fontPresetSelect.innerHTML = '<option value="">选择预设</option>';
+            
+            presetsToLoad.forEach(font => {
+                const option = document.createElement('option');
+                option.value = font.name;
+                option.textContent = font.name;
+                fontPresetSelect.appendChild(option);
+            });
+        }
+        
+        // 获取字体预设
+        function getFontPresets() {
+            const presets = localStorage.getItem(FONTS_KEY);
+            return presets ? JSON.parse(presets) : [];
+        }
+        
+        // 保存字体预设
+        function saveFontPresets(presets) {
+            localStorage.setItem(FONTS_KEY, JSON.stringify(presets));
+        }
+        
+        // 加载当前字体
+        function loadCurrentFont() {
+            const savedFont = localStorage.getItem(CURRENT_FONT_KEY);
+            if (savedFont) {
+                const font = JSON.parse(savedFont);
+                if (font.url) {
+                    loadFont(font.url, font.family || font.name);
+                } else if (font.family) {
+                    applyFontFamily(font.family);
+                }
+                // 不填充字体链接到输入框，保持空白
+                fontUrlInput.value = '';
+                
+                // 选择对应的预设
+                fontPresetSelect.value = font.name || '';
+            }
+        }
+        
+        // 保存当前字体
+        function saveCurrentFont(font) {
+            localStorage.setItem(CURRENT_FONT_KEY, JSON.stringify(font));
+        }
+        
+        // 加载字体
+        function loadFont(url, family) {
+            if (!url) return;
+            
+            // 显示加载状态
+            alert('正在加载字体...');
+            
+            // 动态创建link标签加载字体
+            let fontLink = document.getElementById('custom-font-link');
+            if (!fontLink) {
+                fontLink = document.createElement('link');
+                fontLink.id = 'custom-font-link';
+                fontLink.rel = 'stylesheet';
+                document.head.appendChild(fontLink);
+            }
+            
+            fontLink.href = url;
+            
+            // 字体加载完成后应用
+            fontLink.onload = function() {
+                applyFontFamily(family);
+                alert('字体加载成功^ ^');
+            };
+            
+            fontLink.onerror = function() {
+                alert('字体加载失败T^T，请检查链接是否正确');
+            };
+        }
+        
+        // 应用字体
+        function applyFontFamily(family) {
+            document.body.style.fontFamily = family;
+        }
+        
+
+        
+        // 显示弹窗
+        function showFontModal() {
+            fontPresetNameInput.value = '';
+            fontModal.style.display = 'flex';
+        }
+        
+        // 隐藏弹窗
+        function hideFontModal() {
+            fontModal.style.display = 'none';
+        }
+        
+        // 添加新字体预设
+        function addFontPreset() {
+            const url = fontUrlInput.value;
+            if (!url) {
+                alert('请输入字体链接');
+                return;
+            }
+            
+            showFontModal();
+        }
+        
+        // 确认添加预设
+        function confirmAddFontPreset() {
+            const url = fontUrlInput.value;
+            const presetName = fontPresetNameInput.value;
+            
+            if (!presetName || !presetName.trim()) {
+                return;
+            }
+            
+            const presets = getFontPresets();
+            const existingPreset = presets.find(p => p.name === presetName.trim());
+            
+            if (existingPreset) {
+                alert('预设名称已存在');
+                return;
+            }
+            
+            // 添加新预设
+            presets.push({
+                name: presetName.trim(),
+                url: url,
+                family: presetName.trim()
+            });
+            
+            saveFontPresets(presets);
+            loadFontPresets();
+            fontPresetSelect.value = presetName.trim();
+            hideFontModal();
+            alert('预设添加成功');
+        }
+        
+        // 删除字体预设
+        function deleteFontPreset() {
+            const selectedPreset = fontPresetSelect.value;
+            if (!selectedPreset) {
+                alert('请选择要删除的预设');
+                return;
+            }
+            
+            if (confirm(`确定要删除预设 "${selectedPreset}" 吗？`)) {
+                const presets = getFontPresets();
+                const filteredPresets = presets.filter(p => p.name !== selectedPreset);
+                saveFontPresets(filteredPresets);
+                loadFontPresets();
+                fontPresetSelect.value = '';
+                fontUrlInput.value = '';
+                alert('预设删除成功');
+            }
+        }
+        
+        // 事件监听器
+        if (fontLoadBtn) {
+            fontLoadBtn.addEventListener('click', function() {
+                const url = fontUrlInput.value;
+                const selectedPreset = fontPresetSelect.value;
+                
+                if (url) {
+                    // 从输入框加载
+                    loadFont(url, url);
+                    saveCurrentFont({ url: url, name: '自定义字体' });
+                } else if (selectedPreset) {
+                    // 从预设加载
+                    const presets = getFontPresets();
+                    const font = presets.find(p => p.name === selectedPreset);
+                    if (font) {
+                        loadFont(font.url, font.family);
+                        saveCurrentFont(font);
+                    }
+                } else {
+                    alert('请输入字体链接或选择预设');
+                }
+            });
+        }
+        
+        if (fontAddBtn) {
+            fontAddBtn.addEventListener('click', addFontPreset);
+        }
+        
+        if (fontDeleteBtn) {
+            fontDeleteBtn.addEventListener('click', deleteFontPreset);
+        }
+        
+        if (fontPresetSelect) {
+            fontPresetSelect.addEventListener('change', function() {
+                const selectedPreset = this.value;
+                if (selectedPreset) {
+                    const presets = getFontPresets();
+                    const font = presets.find(p => p.name === selectedPreset);
+                    if (font) {
+                        // 不填充字体链接到输入框，保持空白
+                        fontUrlInput.value = '';
+                        // 自动加载字体
+                        loadFont(font.url, font.family);
+                        saveCurrentFont(font);
+                    }
+                } else {
+                    fontUrlInput.value = '';
+                }
+            });
+        }
+        
+        // 字体链接输入框事件 - 当输入完成后自动加载
+        if (fontUrlInput) {
+            fontUrlInput.addEventListener('blur', function() {
+                const url = this.value.trim();
+                if (url) {
+                    // 自动加载字体
+                    loadFont(url, url);
+                    saveCurrentFont({ url: url, name: '自定义字体' });
+                }
+            });
+        }
+        
+        // 弹窗事件
+        if (fontModalCancel) {
+            fontModalCancel.addEventListener('click', hideFontModal);
+        }
+        
+        if (fontModalConfirm) {
+            fontModalConfirm.addEventListener('click', confirmAddFontPreset);
+        }
+        
+        // 点击遮罩层关闭弹窗
+        if (fontModal) {
+            fontModal.addEventListener('click', function(e) {
+                if (e.target === fontModal) {
+                    hideFontModal();
+                }
+            });
+        }
+        
+        // 初始化
+        init();
+    }
 });

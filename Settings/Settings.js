@@ -240,8 +240,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         savePresets(presets);
+        
+        // 保存当前预设为全局默认
+        localStorage.setItem('default_api_preset', JSON.stringify(config));
+        
         loadPresets(); // 重新加载预设列表
-        alert('配置保存成功');
+        alert('配置保存成功，已设置为全局默认');
     }
     
 

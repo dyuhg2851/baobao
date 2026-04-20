@@ -36,6 +36,46 @@
                 </div>
             </div>
         </div>
+        
+        <!-- 字体卡片 -->
+        <div class="card">
+            <h2>字体</h2>
+            
+            <div class="font-section">
+                <div class="font-preset-group">
+                    <label for="font-preset">预设字体</label>
+                    <select id="font-preset">
+                        <option value="">选择预设</option>
+                        <!-- 预设字体将通过JS动态添加 -->
+                    </select>
+                </div>
+                
+                <div class="font-input-group">
+                    <label for="font-url">字体链接</label>
+                    <input type="text" id="font-url" placeholder="">
+                </div>
+                
+                <div class="font-actions">
+                    <div class="button-group">
+                        <button id="font-delete" class="btn btn-delete">Delete</button>
+                        <button id="font-load" class="btn btn-save">Load</button>
+                        <button id="font-add" class="btn btn-add">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 字体预设弹窗 -->
+    <div id="font-modal" class="modal">
+        <div class="modal-content">
+            <h3>添加字体预设</h3>
+            <input type="text" id="font-preset-name" placeholder="输入预设名称">
+            <div class="modal-buttons">
+                <button id="font-modal-cancel" class="btn btn-save">Cancel</button>
+                <button id="font-modal-confirm" class="btn btn-add">Confirm</button>
+            </div>
+        </div>
     </div>
     
     <script src="theme.js"></script>
