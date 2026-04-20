@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fontUrlInput = document.getElementById('font-url');
         const fontPresetSelect = document.getElementById('font-preset');
         const fontDeleteBtn = document.getElementById('font-delete');
-        const fontLoadBtn = document.getElementById('font-load');
+        const fontSaveBtn = document.getElementById('font-save');
         const fontAddBtn = document.getElementById('font-add');
         
         // 弹窗元素
@@ -329,8 +329,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // 事件监听器
-        if (fontLoadBtn) {
-            fontLoadBtn.addEventListener('click', function() {
+        if (fontSaveBtn) {
+            fontSaveBtn.addEventListener('click', function() {
                 const url = fontUrlInput.value;
                 const selectedPreset = fontPresetSelect.value;
                 
