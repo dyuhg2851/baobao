@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="style.css">
     <title>晕倒料理</title>
     <script>
-        // 每次打开都显示开屏动画，但避免从splash.html或Settings页面跳转回来时的循环
-        if (!document.referrer.includes('splash.html') && !document.referrer.includes('Settings/') && !document.referrer.includes('Theme/')) {
+        // 每次打开都显示开屏动画，但避免从splash.html或Settings、Theme、Music页面跳转回来时的循环
+        if (!document.referrer.includes('splash.html') && !document.referrer.includes('Settings/') && !document.referrer.includes('Theme/') && !document.referrer.includes('Music/')) {
             window.location.href = 'splash.html';
         }
         
