@@ -125,6 +125,44 @@ h2 {
     transform: translateY(-85px);
 }
 
+/* 手机端适配 */
+@media only screen and (max-width: 768px) {
+    .wallpaper-section {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto;
+    }
+    
+    .wallpaper-thumbnail {
+        width: 180px;
+        height: 320px;
+        margin-bottom: 20px;
+    }
+    
+    .wallpaper-actions {
+        transform: translateY(0);
+        align-items: flex-start;
+        width: 100%;
+    }
+    
+    .button-group {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .blur-control {
+        justify-content: flex-start;
+        width: 100%;
+        max-width: none;
+    }
+    
+    .card {
+        max-height: none;
+        overflow: visible;
+        padding: 20px;
+    }
+}
+
 .button-group {
     display: flex;
     gap: 12px;

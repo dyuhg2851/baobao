@@ -24,6 +24,33 @@ body {
     background-repeat: no-repeat;
 }
 
+/* 手机端适配 */
+@media only screen and (max-width: 768px) {
+    .background-container {
+        /* 确保在手机端也能正确显示 */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-size: cover;
+        background-position: center;
+    }
+    
+    body {
+        overflow: hidden;
+        height: 100vh;
+        width: 100vw;
+    }
+    
+    .home-screen {
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+    }
+}
+
 .home-screen {
     position: relative;
     width: 100%;
