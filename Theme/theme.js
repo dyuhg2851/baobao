@@ -144,9 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 加载字体预设
         function loadFontPresets() {
-            // 确保预设列表为空，让用户自己添加
-            saveFontPresets([]);
-            
             // 加载预设到下拉框
             const presetsToLoad = getFontPresets();
             fontPresetSelect.innerHTML = '<option value="">选择预设</option>';
@@ -177,11 +174,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const font = JSON.parse(savedFont);
                 if (font.url) {
                     loadFont(font.url, font.family || font.name);
+                    // 填充字体链接到输入框，保留用户输入
+                    fontUrlInput.value = font.url;
                 } else if (font.family) {
                     applyFontFamily(font.family);
+                    // 清空输入框，因为没有URL
+                    fontUrlInput.value = '';
                 }
-                // 不填充字体链接到输入框，保持空白
-                fontUrlInput.value = '';
                 
                 // 选择对应的预设
                 fontPresetSelect.value = font.name || '';
@@ -196,6 +195,16 @@ document.addEventListener('DOMContentLoaded', function() {
         // 加载字体
         function loadFont(url, family) {
             if (!url) return;
+            
+            // 检查字体是否已经加载
+            const existingFontStyle = document.getElementById('custom-font-style');
+            if (existingFontStyle) {
+                // 检查当前字体是否与要加载的字体相同
+                if (existingFontStyle.textContent.includes(url)) {
+                    // 字体已经加载，不需要重新加载
+                    return;
+                }
+            }
             
             // 移除旧的字体样式
             const oldFontStyle = document.getElementById('custom-font-style');
