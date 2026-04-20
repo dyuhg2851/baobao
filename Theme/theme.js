@@ -200,26 +200,50 @@ document.addEventListener('DOMContentLoaded', function() {
             // 显示加载状态
             alert('正在加载字体...');
             
-            // 动态创建link标签加载字体
-            let fontLink = document.getElementById('custom-font-link');
-            if (!fontLink) {
-                fontLink = document.createElement('link');
-                fontLink.id = 'custom-font-link';
-                fontLink.rel = 'stylesheet';
-                document.head.appendChild(fontLink);
+            // 移除旧的字体样式
+            const oldFontStyle = document.getElementById('custom-font-style');
+            if (oldFontStyle) {
+                oldFontStyle.remove();
             }
             
-            fontLink.href = url;
+            // 创建新的样式标签，使用@font-face加载TTF字体
+            const fontStyle = document.createElement('style');
+            fontStyle.id = 'custom-font-style';
             
-            // 字体加载完成后应用
-            fontLink.onload = function() {
-                applyFontFamily(family);
-                alert('字体加载成功^ ^');
-            };
+            // 生成唯一的字体名称
+            const fontName = family || 'CustomFont' + Date.now();
             
-            fontLink.onerror = function() {
-                alert('字体加载失败T^T，请检查链接是否正确');
-            };
+            // 构建@font-face规则
+            const fontFaceRule = `
+                @font-face {
+                    font-family: '${fontName}';
+                    src: url('${url}') format('truetype');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+            `;
+            
+            fontStyle.textContent = fontFaceRule;
+            document.head.appendChild(fontStyle);
+            
+            // 测试字体是否加载成功
+            const testElement = document.createElement('span');
+            testElement.style.fontFamily = fontName;
+            testElement.style.fontSize = '0';
+            testElement.textContent = 'test';
+            document.body.appendChild(testElement);
+            
+            // 检查字体是否加载成功
+            setTimeout(function() {
+                const computedFontFamily = window.getComputedStyle(testElement).fontFamily;
+                if (computedFontFamily.includes(fontName)) {
+                    applyFontFamily(fontName);
+                    alert('字体加载成功^ ^');
+                } else {
+                    alert('字体加载失败T^T，请检查链接是否正确');
+                }
+                document.body.removeChild(testElement);
+            }, 1000);
         }
         
         // 应用字体
