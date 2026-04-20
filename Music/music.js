@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 防止双击放大页面
+    let lastTap = 0;
+    document.addEventListener('touchstart', function(e) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
+            e.preventDefault();
+        }
+        lastTap = currentTime;
+    });
+
+    // 禁用双击缩放
+    document.addEventListener('dblclick', function(e) {
+        e.preventDefault();
+    });
+
     // 元素引用
     const backBtn = document.getElementById('back-btn');
     const addBtn = document.getElementById('add-btn');
