@@ -122,6 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fontDeleteBtn = document.getElementById('font-delete');
         const fontSaveBtn = document.getElementById('font-save');
         const fontAddBtn = document.getElementById('font-add');
+        const fontClearBtn = document.getElementById('font-clear');
         
         // 弹窗元素
         const fontModal = document.getElementById('font-modal');
@@ -409,6 +410,29 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        // 清空字体（恢复默认）
+        function clearFont() {
+            if (confirm('确定要恢复默认字体吗？')) {
+                localStorage.removeItem(CURRENT_FONT_KEY);
+                // 移除字体样式
+                const oldFontStyle = document.getElementById('custom-font-style');
+                if (oldFontStyle) {
+                    oldFontStyle.remove();
+                }
+                // 恢复默认字体
+                document.body.style.fontFamily = '';
+                // 清空输入框和选择
+                fontUrlInput.value = '';
+                fontPresetSelect.value = '';
+                alert('字体已恢复默认^ ^');
+            }
+        }
+
+        // 事件监听器
+        if (fontClearBtn) {
+            fontClearBtn.addEventListener('click', clearFont);
+        }
+
         // 初始化
         init();
     }

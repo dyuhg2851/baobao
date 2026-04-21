@@ -30,7 +30,6 @@ body {
     left: 0;
     right: 0;
     z-index: 100;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .back-btn, .add-btn {
@@ -107,14 +106,21 @@ body {
     border: none;
     background: none;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
-    color: #000000;
     outline: none;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
     transition: opacity 0.2s ease;
+}
+
+.cancel-btn {
+    color: #8e8e93;
+}
+
+.save-btn {
+    color: #000000;
 }
 
 .cancel-btn:hover, .save-btn:hover {
@@ -138,7 +144,7 @@ body {
 
 .input-group label {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
     margin-bottom: 4px;
     color: #666;
@@ -150,7 +156,7 @@ body {
     border: none;
     border-bottom: 1px solid #e0e0e0;
     background: transparent;
-    font-size: 16px;
+    font-size: 14px;
     outline: none;
 }
 
@@ -347,7 +353,7 @@ body {
     align-items: center;
     gap: 12px;
     padding: 0 20px 16px;
-    margin-bottom: 16px;
+    margin-bottom: 32px;
     margin-top: 40px;
 }
 

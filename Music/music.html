@@ -5,6 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Listen together</title>
     <link rel="stylesheet" href="music.css">
+    <script>
+        // 加载保存的字体
+        window.addEventListener('load', function() {
+            const savedFont = localStorage.getItem('current_font');
+            if (savedFont) {
+                const font = JSON.parse(savedFont);
+                if (font.url) {
+                    // 移除旧的字体样式
+                    const oldFontStyle = document.getElementById('custom-font-style');
+                    if (oldFontStyle) {
+                        oldFontStyle.remove();
+                    }
+                    
+                    // 创建新的样式标签，使用@font-face加载TTF字体
+                    const fontStyle = document.createElement('style');
+                    fontStyle.id = 'custom-font-style';
+                    
+                    // 使用保存的字体名称或生成唯一名称
+                    const fontName = font.family || font.name || 'CustomFont';
+                    
+                    // 构建@font-face规则
+                    const fontFaceRule = `
+                        @font-face {
+                            font-family: '${fontName}';
+                            src: url('${font.url}') format('truetype');
+                            font-weight: normal;
+                            font-style: normal;
+                        }
+                    `;
+                    
+                    fontStyle.textContent = fontFaceRule;
+                    document.head.appendChild(fontStyle);
+                    
+                    // 应用字体
+                    document.body.style.fontFamily = fontName;
+                } else if (font.family) {
+                    document.body.style.fontFamily = font.family;
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <!-- 顶部导航栏 -->
