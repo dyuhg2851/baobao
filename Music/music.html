@@ -185,5 +185,34 @@
     </div>
 
     <script src="music.js"></script>
+    <script>
+        // 右滑返回支持
+        let startX, startY;
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+            
+            // 检测右滑手势
+            if (Math.abs(diffX) > Math.abs(diffY) && diffX > 50) {
+                // 执行与返回按钮相同的逻辑
+                const audioState = {
+                    currentSong: window.currentSong || {},
+                    currentTime: window.audio ? window.audio.currentTime : 0,
+                    isPlaying: window.isPlaying || false,
+                    listenTime: window.listenTime || 0,
+                    showFloat: true
+                };
+                localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+                window.location.href = '../index.html';
+            }
+        });
+    </script>
 </body>
 </html>

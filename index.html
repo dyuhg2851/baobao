@@ -128,6 +128,7 @@
                             const floatLyric = document.getElementById('float-lyric');
                             const floatCover = document.getElementById('float-cover');
                             const floatVinylRecord = document.getElementById('float-vinyl-record');
+                            const floatClose = document.getElementById('float-close');
                             
                             floatSongName.textContent = state.currentSong.name + ' - ' + state.currentSong.artist;
                             floatLyric.textContent = '正在播放...';
@@ -137,8 +138,26 @@
                             musicFloat.style.display = 'block';
                             
                             // 单击悬浮窗歌曲图片跳转到music页面
-                            floatCover.addEventListener('click', function() {
+                            const floatVinyl = document.querySelector('.float-vinyl');
+                            floatVinyl.addEventListener('click', function() {
                                 window.location.href = 'Music/music.html';
+                            });
+                            
+                            // 关闭按钮事件
+                            floatClose.addEventListener('click', function() {
+                                // 暂停音乐并清除状态
+                                const audio = new Audio();
+                                audio.pause();
+                                audio.src = '';
+                                musicFloat.style.display = 'none';
+                                localStorage.removeItem('music_audio_state');
+                                
+                                // 通知Service Worker停止播放
+                                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                                    navigator.serviceWorker.controller.postMessage({
+                                        type: 'STOP_MUSIC'
+                                    });
+                                }
                             });
                             
                             // 延迟创建音频对象，避免阻塞页面渲染
@@ -149,21 +168,7 @@
                                 audio.loop = true;
                                 audio.play().catch(e => console.log('音频播放失败:', e));
                                 
-                                // 关闭按钮事件
-                                const floatClose = document.getElementById('float-close');
-                                floatClose.addEventListener('click', function() {
-                                    audio.pause();
-                                    audio.src = '';
-                                    musicFloat.style.display = 'none';
-                                    localStorage.removeItem('music_audio_state');
-                                    
-                                    // 通知Service Worker停止播放
-                                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                                        navigator.serviceWorker.controller.postMessage({
-                                            type: 'STOP_MUSIC'
-                                        });
-                                    }
-                                });
+
                                 
                                 // 拖拽功能
                                 let isDragging = false;

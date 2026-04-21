@@ -77,19 +77,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelAddSongBtn = document.getElementById('cancel-add-song');
 
     // 音乐播放器相关变量
-    let audio = new Audio();
-    let isPlaying = false;
+    window.audio = new Audio();
+    window.isPlaying = false;
     let currentSongIndex = 0;
     let songs = [];
     let currentLyrics = [];
     let currentLyricIndex = 0;
-    let listenTime = 0; // 单位：分钟
+    window.listenTime = 0; // 单位：分钟
     let progressInterval;
     
     // 保存音频状态到localStorage
     function saveAudioState() {
         if (songs.length > 0) {
             const currentSong = songs[currentSongIndex];
+            window.currentSong = currentSong;
             const audioState = {
                 currentSong: currentSong,
                 currentTime: audio.currentTime,
