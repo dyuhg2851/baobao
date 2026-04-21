@@ -272,6 +272,7 @@ body {
     padding: 12px;
     z-index: 9999;
     width: 300px;
+    max-height: 84px;
     cursor: grab;
 }
 
