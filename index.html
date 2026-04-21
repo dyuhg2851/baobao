@@ -108,146 +108,167 @@
         });
         
         // 音乐悬浮窗逻辑
-        window.addEventListener('load', function() {
-            const savedAudioState = localStorage.getItem('music_audio_state');
-            if (savedAudioState) {
-                const state = JSON.parse(savedAudioState);
-                if (state.currentSong && state.isPlaying && state.showFloat) {
-                    // 创建音频对象
-                    const audio = new Audio();
-                    audio.src = state.currentSong.url;
-                    audio.currentTime = state.currentTime;
-                    audio.loop = true;
-                    audio.play();
-                    
-                    // 显示悬浮窗
-                    const musicFloat = document.getElementById('music-float');
-                    const floatSongName = document.getElementById('float-song-name');
-                    const floatLyric = document.getElementById('float-lyric');
-                    const floatCover = document.getElementById('float-cover');
-                    const floatVinylRecord = document.getElementById('float-vinyl-record');
-                    
-                    floatSongName.textContent = state.currentSong.name + ' - ' + state.currentSong.artist;
-                    floatLyric.textContent = '正在播放...';
-                    floatCover.src = state.currentSong.cover || 'https://via.placeholder.com/60';
-                    floatVinylRecord.classList.add('playing');
-                    
-                    musicFloat.style.display = 'block';
-                    
-                    // 关闭按钮事件
-                    const floatClose = document.getElementById('float-close');
-                    floatClose.addEventListener('click', function() {
-                        audio.pause();
-                        audio.src = '';
-                        musicFloat.style.display = 'none';
-                        localStorage.removeItem('music_audio_state');
-                        
-                        // 通知Service Worker停止播放
-                        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.controller.postMessage({
-                                type: 'STOP_MUSIC'
-                            });
-                        }
-                    });
-                    
-                    // 拖拽功能
-                    let isDragging = false;
-                    let startX, startY, initialX, initialY;
-                    
-                    // 鼠标事件
-                    musicFloat.addEventListener('mousedown', startDrag);
-                    document.addEventListener('mousemove', drag);
-                    document.addEventListener('mouseup', endDrag);
-                    
-                    // 触摸事件
-                    musicFloat.addEventListener('touchstart', startDrag);
-                    document.addEventListener('touchmove', drag);
-                    document.addEventListener('touchend', endDrag);
-                    
-                    function startDrag(e) {
-                        // 阻止默认行为
-                        e.preventDefault();
-                        
-                        // 获取初始位置
-                        if (e.type === 'touchstart') {
-                            startX = e.touches[0].clientX;
-                            startY = e.touches[0].clientY;
-                        } else {
-                            startX = e.clientX;
-                            startY = e.clientY;
-                        }
-                        
-                        // 获取悬浮窗当前位置
-                        const rect = musicFloat.getBoundingClientRect();
-                        initialX = rect.left;
-                        initialY = rect.top;
-                        
-                        // 开始拖拽
-                        isDragging = true;
-                        
-                        // 添加拖拽样式
-                        musicFloat.style.cursor = 'grabbing';
-                    }
-                    
-                    function drag(e) {
-                        if (!isDragging) return;
-                        
-                        // 阻止默认行为
-                        e.preventDefault();
-                        
-                        // 计算移动距离
-                        let clientX, clientY;
-                        if (e.type === 'touchmove') {
-                            clientX = e.touches[0].clientX;
-                            clientY = e.touches[0].clientY;
-                        } else {
-                            clientX = e.clientX;
-                            clientY = e.clientY;
-                        }
-                        
-                        const dx = clientX - startX;
-                        const dy = clientY - startY;
-                        
-                        // 更新悬浮窗位置
-                        musicFloat.style.left = (initialX + dx) + 'px';
-                        musicFloat.style.top = (initialY + dy) + 'px';
-                        musicFloat.style.transform = 'none';
-                    }
-                    
-                    function endDrag() {
-                        if (!isDragging) return;
-                        
-                        // 结束拖拽
-                        isDragging = false;
-                        
-                        // 恢复默认样式
-                        musicFloat.style.cursor = 'grab';
-                    }
-                    
-                    // 定期保存音频状态
-                    setInterval(function() {
-                        if (!audio.paused) {
-                            const audioState = {
-                                currentSong: state.currentSong,
-                                currentTime: audio.currentTime,
-                                isPlaying: true,
-                                listenTime: state.listenTime,
-                                showFloat: true
-                            };
-                            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+        (function() {
+            // 等待DOM加载完成
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initFloatWindow);
+            } else {
+                initFloatWindow();
+            }
+            
+            function initFloatWindow() {
+                const savedAudioState = localStorage.getItem('music_audio_state');
+                if (savedAudioState) {
+                    try {
+                        const state = JSON.parse(savedAudioState);
+                        if (state.currentSong && state.isPlaying && state.showFloat) {
+                            // 显示悬浮窗
+                            const musicFloat = document.getElementById('music-float');
+                            const floatSongName = document.getElementById('float-song-name');
+                            const floatLyric = document.getElementById('float-lyric');
+                            const floatCover = document.getElementById('float-cover');
+                            const floatVinylRecord = document.getElementById('float-vinyl-record');
                             
-                            // 发送到Service Worker
-                            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                                navigator.serviceWorker.controller.postMessage({
-                                    type: 'PLAY_MUSIC',
-                                    state: audioState
+                            floatSongName.textContent = state.currentSong.name + ' - ' + state.currentSong.artist;
+                            floatLyric.textContent = '正在播放...';
+                            floatCover.src = state.currentSong.cover || 'https://via.placeholder.com/60';
+                            floatVinylRecord.classList.add('playing');
+                            
+                            musicFloat.style.display = 'block';
+                            
+                            // 单击悬浮窗歌曲图片跳转到music页面
+                            floatCover.addEventListener('click', function() {
+                                window.location.href = 'Music/music.html';
+                            });
+                            
+                            // 延迟创建音频对象，避免阻塞页面渲染
+                            setTimeout(function() {
+                                const audio = new Audio();
+                                audio.src = state.currentSong.url;
+                                audio.currentTime = state.currentTime;
+                                audio.loop = true;
+                                audio.play().catch(e => console.log('音频播放失败:', e));
+                                
+                                // 关闭按钮事件
+                                const floatClose = document.getElementById('float-close');
+                                floatClose.addEventListener('click', function() {
+                                    audio.pause();
+                                    audio.src = '';
+                                    musicFloat.style.display = 'none';
+                                    localStorage.removeItem('music_audio_state');
+                                    
+                                    // 通知Service Worker停止播放
+                                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                                        navigator.serviceWorker.controller.postMessage({
+                                            type: 'STOP_MUSIC'
+                                        });
+                                    }
                                 });
-                            }
+                                
+                                // 拖拽功能
+                                let isDragging = false;
+                                let startX, startY, initialX, initialY;
+                                
+                                // 鼠标事件
+                                musicFloat.addEventListener('mousedown', startDrag);
+                                document.addEventListener('mousemove', drag);
+                                document.addEventListener('mouseup', endDrag);
+                                
+                                // 触摸事件
+                                musicFloat.addEventListener('touchstart', startDrag);
+                                document.addEventListener('touchmove', drag);
+                                document.addEventListener('touchend', endDrag);
+                                
+                                function startDrag(e) {
+                                    // 阻止默认行为
+                                    e.preventDefault();
+                                    
+                                    // 获取初始位置
+                                    if (e.type === 'touchstart') {
+                                        startX = e.touches[0].clientX;
+                                        startY = e.touches[0].clientY;
+                                    } else {
+                                        startX = e.clientX;
+                                        startY = e.clientY;
+                                    }
+                                    
+                                    // 获取悬浮窗当前位置
+                                    const rect = musicFloat.getBoundingClientRect();
+                                    initialX = rect.left;
+                                    initialY = rect.top;
+                                    
+                                    // 开始拖拽
+                                    isDragging = true;
+                                    
+                                    // 添加拖拽样式
+                                    musicFloat.style.cursor = 'grabbing';
+                                }
+                                
+                                function drag(e) {
+                                    if (!isDragging) return;
+                                    
+                                    // 阻止默认行为
+                                    e.preventDefault();
+                                    
+                                    // 计算移动距离
+                                    let clientX, clientY;
+                                    if (e.type === 'touchmove') {
+                                        clientX = e.touches[0].clientX;
+                                        clientY = e.touches[0].clientY;
+                                    } else {
+                                        clientX = e.clientX;
+                                        clientY = e.clientY;
+                                    }
+                                    
+                                    const dx = clientX - startX;
+                                    const dy = clientY - startY;
+                                    
+                                    // 更新悬浮窗位置
+                                    musicFloat.style.left = (initialX + dx) + 'px';
+                                    musicFloat.style.top = (initialY + dy) + 'px';
+                                    musicFloat.style.transform = 'none';
+                                }
+                                
+                                function endDrag() {
+                                    if (!isDragging) return;
+                                    
+                                    // 结束拖拽
+                                    isDragging = false;
+                                    
+                                    // 恢复默认样式
+                                    musicFloat.style.cursor = 'grab';
+                                }
+                                
+                                // 定期保存音频状态
+                                setInterval(function() {
+                                    if (!audio.paused) {
+                                        const audioState = {
+                                            currentSong: state.currentSong,
+                                            currentTime: audio.currentTime,
+                                            isPlaying: true,
+                                            listenTime: state.listenTime,
+                                            showFloat: true
+                                        };
+                                        localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+                                        
+                                        // 发送到Service Worker
+                                        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                                            navigator.serviceWorker.controller.postMessage({
+                                                type: 'PLAY_MUSIC',
+                                                state: audioState
+                                            });
+                                        }
+                                    }
+                                }, 1000);
+                            }, 100);
                         }
-                    }, 1000);
+                    } catch (e) {
+                        console.log('解析音频状态失败:', e);
+                        localStorage.removeItem('music_audio_state');
+                    }
                 }
             }
-        });
+        })();
     </script>
 </head>
 <body>

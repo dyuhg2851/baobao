@@ -51,9 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 localStorage.setItem('wallpaperData', JSON.stringify(wallpaperData));
                 alert('壁纸保存成功^ ^');
-                
-                // 提示用户返回主屏幕查看效果
-                alert('壁纸已保存，请返回主屏幕查看效果');
             } else {
                 alert('请先选择壁纸T^T');
             }
@@ -368,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     const presets = getFontPresets();
                     const font = presets.find(p => p.name === selectedPreset);
                     if (font) {
-                        // 不填充字体链接到输入框，保持空白
-                        fontUrlInput.value = '';
+                        // 填充字体链接到输入框
+                        fontUrlInput.value = font.url;
                         // 自动加载字体
                         loadFont(font.url, font.family);
                         saveCurrentFont(font);

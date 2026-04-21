@@ -182,6 +182,29 @@ document.addEventListener('DOMContentLoaded', function() {
             loadSong(currentSongIndex);
         }
     }
+    
+    // 保存音频状态到localStorage
+    function saveAudioState() {
+        if (songs.length > 0) {
+            const currentSong = songs[currentSongIndex];
+            const audioState = {
+                currentSong: currentSong,
+                currentTime: audio.currentTime,
+                isPlaying: isPlaying,
+                listenTime: listenTime,
+                showFloat: true
+            };
+            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+            
+            // 发送到Service Worker
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PLAY_MUSIC',
+                    state: audioState
+                });
+            }
+        }
+    }
 
     // 保存数据到本地存储
     function saveData() {
@@ -216,8 +239,22 @@ document.addEventListener('DOMContentLoaded', function() {
         artistNameDisplay.textContent = song.artist;
         coverImage.src = song.cover || 'https://via.placeholder.com/200';
 
+        // 验证音频URL
+        if (!song.musicUrl) {
+            console.error('音频URL为空');
+            alert('音频URL为空，请检查歌曲信息');
+            return;
+        }
+
         // 加载音频
         audio.src = song.musicUrl;
+        
+        // 重置音频状态
+        audio.currentTime = 0;
+        isPlaying = false;
+        vinylRecord.classList.remove('playing');
+        playBtn.classList.remove('playing');
+        clearInterval(progressInterval);
 
         // 加载歌词
         if (song.lyricsContent) {
@@ -458,6 +495,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!name || !artist || !musicUrl) {
             alert('请填写歌曲名、歌手名和音乐文件URL');
+            return;
+        }
+
+        // 验证音频URL格式
+        try {
+            new URL(musicUrl);
+        } catch (e) {
+            alert('音频URL格式不正确，请输入有效的URL');
             return;
         }
 
