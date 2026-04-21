@@ -23,11 +23,16 @@
             const savedWallpaperData = localStorage.getItem('wallpaperData');
             if (savedWallpaperData) {
                 const data = JSON.parse(savedWallpaperData);
-                const style = document.createElement('style');
-                // 将百分比转换为模糊半径（0-20px）
-                const blurRadius = (data.blur || 0) / 100 * 20;
-                style.textContent = `.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); }`;
-                document.head.appendChild(style);
+                // 检查是否已经存在壁纸样式
+                const existingStyle = document.getElementById('wallpaper-style');
+                if (!existingStyle) {
+                    const style = document.createElement('style');
+                    style.id = 'wallpaper-style';
+                    // 将百分比转换为模糊半径（0-20px）
+                    const blurRadius = (data.blur || 0) / 100 * 20;
+                    style.textContent = `.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); }`;
+                    document.head.appendChild(style);
+                }
             }
         })();
         
@@ -70,10 +75,198 @@
                 }
             }
         });
+        
+        // 注册Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                    console.log('Service Worker 注册成功:', registration.scope);
+                }, function(error) {
+                    console.log('Service Worker 注册失败:', error);
+                });
+            });
+        }
+        
+        // 监听Service Worker的消息
+        navigator.serviceWorker.addEventListener('message', function(event) {
+            if (event.data.type === 'UPDATE_AUDIO_STATE') {
+                // 更新本地音频状态
+                localStorage.setItem('music_audio_state', JSON.stringify(event.data.state));
+                
+                // 更新悬浮窗
+                const musicFloat = document.getElementById('music-float');
+                if (musicFloat.style.display === 'block') {
+                    const floatSongName = document.getElementById('float-song-name');
+                    const floatLyric = document.getElementById('float-lyric');
+                    const floatCover = document.getElementById('float-cover');
+                    
+                    floatSongName.textContent = event.data.state.currentSong.name + ' - ' + event.data.state.currentSong.artist;
+                    floatLyric.textContent = '正在播放...';
+                    floatCover.src = event.data.state.currentSong.cover || 'https://via.placeholder.com/60';
+                }
+            }
+        });
+        
+        // 音乐悬浮窗逻辑
+        window.addEventListener('load', function() {
+            const savedAudioState = localStorage.getItem('music_audio_state');
+            if (savedAudioState) {
+                const state = JSON.parse(savedAudioState);
+                if (state.currentSong && state.isPlaying && state.showFloat) {
+                    // 创建音频对象
+                    const audio = new Audio();
+                    audio.src = state.currentSong.url;
+                    audio.currentTime = state.currentTime;
+                    audio.loop = true;
+                    audio.play();
+                    
+                    // 显示悬浮窗
+                    const musicFloat = document.getElementById('music-float');
+                    const floatSongName = document.getElementById('float-song-name');
+                    const floatLyric = document.getElementById('float-lyric');
+                    const floatCover = document.getElementById('float-cover');
+                    const floatVinylRecord = document.getElementById('float-vinyl-record');
+                    
+                    floatSongName.textContent = state.currentSong.name + ' - ' + state.currentSong.artist;
+                    floatLyric.textContent = '正在播放...';
+                    floatCover.src = state.currentSong.cover || 'https://via.placeholder.com/60';
+                    floatVinylRecord.classList.add('playing');
+                    
+                    musicFloat.style.display = 'block';
+                    
+                    // 关闭按钮事件
+                    const floatClose = document.getElementById('float-close');
+                    floatClose.addEventListener('click', function() {
+                        audio.pause();
+                        audio.src = '';
+                        musicFloat.style.display = 'none';
+                        localStorage.removeItem('music_audio_state');
+                        
+                        // 通知Service Worker停止播放
+                        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({
+                                type: 'STOP_MUSIC'
+                            });
+                        }
+                    });
+                    
+                    // 拖拽功能
+                    let isDragging = false;
+                    let startX, startY, initialX, initialY;
+                    
+                    // 鼠标事件
+                    musicFloat.addEventListener('mousedown', startDrag);
+                    document.addEventListener('mousemove', drag);
+                    document.addEventListener('mouseup', endDrag);
+                    
+                    // 触摸事件
+                    musicFloat.addEventListener('touchstart', startDrag);
+                    document.addEventListener('touchmove', drag);
+                    document.addEventListener('touchend', endDrag);
+                    
+                    function startDrag(e) {
+                        // 阻止默认行为
+                        e.preventDefault();
+                        
+                        // 获取初始位置
+                        if (e.type === 'touchstart') {
+                            startX = e.touches[0].clientX;
+                            startY = e.touches[0].clientY;
+                        } else {
+                            startX = e.clientX;
+                            startY = e.clientY;
+                        }
+                        
+                        // 获取悬浮窗当前位置
+                        const rect = musicFloat.getBoundingClientRect();
+                        initialX = rect.left;
+                        initialY = rect.top;
+                        
+                        // 开始拖拽
+                        isDragging = true;
+                        
+                        // 添加拖拽样式
+                        musicFloat.style.cursor = 'grabbing';
+                    }
+                    
+                    function drag(e) {
+                        if (!isDragging) return;
+                        
+                        // 阻止默认行为
+                        e.preventDefault();
+                        
+                        // 计算移动距离
+                        let clientX, clientY;
+                        if (e.type === 'touchmove') {
+                            clientX = e.touches[0].clientX;
+                            clientY = e.touches[0].clientY;
+                        } else {
+                            clientX = e.clientX;
+                            clientY = e.clientY;
+                        }
+                        
+                        const dx = clientX - startX;
+                        const dy = clientY - startY;
+                        
+                        // 更新悬浮窗位置
+                        musicFloat.style.left = (initialX + dx) + 'px';
+                        musicFloat.style.top = (initialY + dy) + 'px';
+                        musicFloat.style.transform = 'none';
+                    }
+                    
+                    function endDrag() {
+                        if (!isDragging) return;
+                        
+                        // 结束拖拽
+                        isDragging = false;
+                        
+                        // 恢复默认样式
+                        musicFloat.style.cursor = 'grab';
+                    }
+                    
+                    // 定期保存音频状态
+                    setInterval(function() {
+                        if (!audio.paused) {
+                            const audioState = {
+                                currentSong: state.currentSong,
+                                currentTime: audio.currentTime,
+                                isPlaying: true,
+                                listenTime: state.listenTime,
+                                showFloat: true
+                            };
+                            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+                            
+                            // 发送到Service Worker
+                            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                                navigator.serviceWorker.controller.postMessage({
+                                    type: 'PLAY_MUSIC',
+                                    state: audioState
+                                });
+                            }
+                        }
+                    }, 1000);
+                }
+            }
+        });
     </script>
 </head>
 <body>
     <div class="background-container"></div>
+    <!-- 音乐悬浮窗 -->
+    <div class="music-float" id="music-float" style="display: none;">
+        <div class="float-content">
+            <div class="float-vinyl">
+                <div class="float-vinyl-record" id="float-vinyl-record">
+                    <img src="https://via.placeholder.com/60" alt="封面" id="float-cover">
+                </div>
+            </div>
+            <div class="float-info">
+                <div class="float-song-name" id="float-song-name"></div>
+                <div class="float-lyric" id="float-lyric"></div>
+            </div>
+            <div class="float-close" id="float-close">×</div>
+        </div>
+    </div>
     <div class="home-screen">
         <div class="widget">
             <div class="avatar-container">

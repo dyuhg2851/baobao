@@ -16,32 +16,40 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 防止双指缩放
-    let touchStartDistance = 0;
     document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) {
-            const touch1 = e.touches[0];
-            const touch2 = e.touches[1];
-            touchStartDistance = Math.sqrt(
-                Math.pow(touch2.clientX - touch1.clientX, 2) +
-                Math.pow(touch2.clientY - touch1.clientY, 2)
-            );
+            e.preventDefault();
         }
-    });
+    }, { passive: false });
 
     document.addEventListener('touchmove', function(e) {
         if (e.touches.length > 1) {
             e.preventDefault();
         }
+    }, { passive: false });
+
+    document.addEventListener('gesturestart', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('gesturechange', function(e) {
+        e.preventDefault();
+    });
+
+    document.addEventListener('gestureend', function(e) {
+        e.preventDefault();
     });
 
     // 元素引用
     const backBtn = document.getElementById('back-btn');
     const addBtn = document.getElementById('add-btn');
+    const floatBtn = document.getElementById('float-btn');
     const saveBtn = document.getElementById('save-btn');
     const songNameInput = document.getElementById('song-name');
     const artistNameInput = document.getElementById('artist-name');
     const musicUrlInput = document.getElementById('music-url');
     const lyricsFileInput = document.getElementById('lyrics-file');
+    const lyricsFileName = document.getElementById('lyrics-file-name');
     const coverUrlInput = document.getElementById('cover-url');
     const listenMinutesElement = document.getElementById('listen-minutes');
     const vinylRecord = document.getElementById('vinyl-record');
@@ -77,6 +85,77 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentLyricIndex = 0;
     let listenTime = 0; // 单位：分钟
     let progressInterval;
+    
+    // 保存音频状态到localStorage
+    function saveAudioState() {
+        if (songs.length > 0) {
+            const currentSong = songs[currentSongIndex];
+            const audioState = {
+                currentSong: currentSong,
+                currentTime: audio.currentTime,
+                isPlaying: isPlaying,
+                listenTime: listenTime,
+                showFloat: true
+            };
+            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+            
+            // 发送到Service Worker
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PLAY_MUSIC',
+                    state: audioState
+                });
+            }
+        }
+    }
+    
+    // 从localStorage加载音频状态
+    function loadAudioState() {
+        const savedState = localStorage.getItem('music_audio_state');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            if (state.currentSong) {
+                // 检查歌曲是否已存在于歌曲列表中
+                let songIndex = songs.findIndex(song => song.name === state.currentSong.name && song.artist === state.currentSong.artist);
+                if (songIndex === -1) {
+                    // 如果歌曲不存在，添加到歌曲列表
+                    songs.push(state.currentSong);
+                    songIndex = songs.length - 1;
+                }
+                currentSongIndex = songIndex;
+                loadSong(songIndex);
+                audio.currentTime = state.currentTime;
+                isPlaying = state.isPlaying;
+                listenTime = state.listenTime;
+                updateListenTimeDisplay();
+                if (isPlaying) {
+                    audio.play();
+                    vinylRecord.classList.add('playing');
+                    playBtn.classList.add('playing');
+                    progressInterval = setInterval(updateProgress, 100);
+                }
+            }
+        }
+    }
+    
+    // 注册Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+                console.log('Service Worker 注册成功:', registration.scope);
+            }, function(error) {
+                console.log('Service Worker 注册失败:', error);
+            });
+        });
+    }
+    
+    // 监听Service Worker的消息
+    navigator.serviceWorker.addEventListener('message', function(event) {
+        if (event.data.type === 'UPDATE_AUDIO_STATE') {
+            // 更新本地音频状态
+            localStorage.setItem('music_audio_state', JSON.stringify(event.data.state));
+        }
+    });
 
     // 从本地存储加载数据
     function loadData() {
@@ -520,6 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 事件监听器
     backBtn.addEventListener('click', function() {
+        saveAudioState();
         window.location.href = '../index.html';
     });
 
@@ -528,9 +608,32 @@ document.addEventListener('DOMContentLoaded', function() {
         addSongModal.style.display = 'flex';
     });
 
+    floatBtn.addEventListener('click', function() {
+        // 保存音频状态
+        saveAudioState();
+        // 退出到主屏幕
+        window.location.href = '../index.html';
+    });
+
     cancelAddSongBtn.addEventListener('click', function() {
         // 隐藏添加歌曲弹窗
         addSongModal.style.display = 'none';
+        // 清空输入
+        songNameInput.value = '';
+        artistNameInput.value = '';
+        musicUrlInput.value = '';
+        lyricsFileInput.value = '';
+        lyricsFileName.textContent = '';
+        coverUrlInput.value = '';
+    });
+
+    // 监听歌词文件选择
+    lyricsFileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            lyricsFileName.textContent = this.files[0].name;
+        } else {
+            lyricsFileName.textContent = '';
+        }
     });
 
     saveBtn.addEventListener('click', addSong);
