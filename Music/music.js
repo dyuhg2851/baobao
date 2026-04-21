@@ -646,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 事件监听器
     backBtn.addEventListener('click', function() {
         saveAudioState();
-        window.location.href = '../index.html';
+        window.location.replace('../index.html');
     });
 
     addBtn.addEventListener('click', function() {

@@ -232,6 +232,9 @@
                                     musicFloat.style.left = (initialX + dx) + 'px';
                                     musicFloat.style.top = (initialY + dy) + 'px';
                                     musicFloat.style.transform = 'none';
+                                    // 确保悬浮窗保持固定大小
+                                    musicFloat.style.width = '300px';
+                                    musicFloat.style.height = 'auto';
                                 }
                                 
                                 function endDrag() {

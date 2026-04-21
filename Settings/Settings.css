@@ -45,9 +45,7 @@ body {
     transition: transform 0.2s ease;
 }
 
-.back-btn:active {
-    transform: translateY(-50%) scale(0.9);
-}
+
 
 .back-btn svg {
     width: 24px;
@@ -134,9 +132,7 @@ label {
     transition: transform 0.2s ease;
 }
 
-.btn:active {
-    transform: scale(0.95);
-}
+
 
 
 

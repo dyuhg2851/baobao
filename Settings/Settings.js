@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 返回按钮点击事件
     if (backBtn) {
         backBtn.addEventListener('click', function() {
-            window.location.href = '../index.html';
+            window.location.replace('../index.html');
         });
     }
     

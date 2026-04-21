@@ -48,10 +48,6 @@ body {
     user-select: none;
 }
 
-.back-btn:active {
-    transform: translateY(-50%) scale(0.9);
-}
-
 .back-btn svg {
     width: 24px;
     height: 24px;
@@ -106,9 +102,7 @@ h2 {
     background-color: transparent;
 }
 
-.wallpaper-thumbnail:active {
-    transform: scale(0.95);
-}
+
 
 .wallpaper-thumbnail img {
     width: 100%;
@@ -222,9 +216,7 @@ h2 {
     transition: transform 0.2s ease;
 }
 
-.btn:active {
-    transform: scale(0.95);
-}
+
 
 .btn-save {
     color: #8e8e93;
