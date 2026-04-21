@@ -19,18 +19,20 @@
         }
         
         // 加载保存的壁纸
-        window.addEventListener('load', function() {
+        (function() {
             const savedWallpaperData = localStorage.getItem('wallpaperData');
-            const backgroundContainer = document.querySelector('.background-container');
-            if (savedWallpaperData && backgroundContainer) {
+            if (savedWallpaperData) {
                 const data = JSON.parse(savedWallpaperData);
-                backgroundContainer.style.backgroundImage = `url(${data.url})`;
+                const style = document.createElement('style');
                 // 将百分比转换为模糊半径（0-20px）
                 const blurRadius = (data.blur || 0) / 100 * 20;
-                backgroundContainer.style.filter = `blur(${blurRadius}px)`;
+                style.textContent = `.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); }`;
+                document.head.appendChild(style);
             }
-            
-            // 加载保存的字体
+        })();
+        
+        // 加载保存的字体
+        window.addEventListener('load', function() {
             const savedFont = localStorage.getItem('current_font');
             if (savedFont) {
                 const font = JSON.parse(savedFont);

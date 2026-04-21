@@ -41,11 +41,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.1s ease;
-}
-
-.back-btn:active, .add-btn:active {
-    transform: scale(0.95);
 }
 
 .nav-title {
@@ -399,26 +394,23 @@ body {
     border-radius: 50%;
     cursor: pointer;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    transition: transform 0.1s ease;
 }
 
-.progress-handle:active {
-    transform: translate(-50%, -50%) scale(1.2);
-}
+
 
 /* 底部播放控制栏 */
 .player-controls {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 16px 20px;
+    padding: 8px 20px;
     background-color: #ffffff;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
 }
 
 .control-btn {
@@ -430,12 +422,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.1s ease;
 }
 
-.control-btn:active {
-    transform: scale(0.95);
-}
+
 
 .play-btn {
     width: 56px;
@@ -626,14 +615,7 @@ body {
     color: white;
 }
 
-.cancel-btn:active {
-    background: none;
-    opacity: 0.7;
-}
 
-.confirm-btn:active {
-    background-color: #ff2d1f;
-}
 
 /* 响应式设计 */
 @media (max-width: 768px) {

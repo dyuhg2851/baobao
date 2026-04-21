@@ -15,6 +15,25 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
     });
 
+    // 防止双指缩放
+    let touchStartDistance = 0;
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            const touch1 = e.touches[0];
+            const touch2 = e.touches[1];
+            touchStartDistance = Math.sqrt(
+                Math.pow(touch2.clientX - touch1.clientX, 2) +
+                Math.pow(touch2.clientY - touch1.clientY, 2)
+            );
+        }
+    });
+
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    });
+
     // 元素引用
     const backBtn = document.getElementById('back-btn');
     const addBtn = document.getElementById('add-btn');
