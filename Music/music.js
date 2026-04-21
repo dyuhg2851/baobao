@@ -56,8 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const coverImage = document.getElementById('cover-image');
     const songTitleElement = document.getElementById('song-title');
     const artistNameDisplay = document.getElementById('artist-name-display');
+    const prevLyricElement = document.getElementById('prev-lyric');
     const currentLyricElement = document.getElementById('current-lyric');
     const nextLyricElement = document.getElementById('next-lyric');
+    const nextNextLyricElement = document.getElementById('next-next-lyric');
     const currentTimeElement = document.getElementById('current-time');
     const totalTimeElement = document.getElementById('total-time');
     const progressBar = document.getElementById('progress-bar');
@@ -336,11 +338,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 初始化歌词显示
         if (lyrics.length > 0) {
+            prevLyricElement.textContent = '';
             currentLyricElement.textContent = lyrics[0].lyric;
             nextLyricElement.textContent = lyrics[1] ? lyrics[1].lyric : '';
+            nextNextLyricElement.textContent = lyrics[2] ? lyrics[2].lyric : '';
         } else {
+            prevLyricElement.textContent = '';
             currentLyricElement.textContent = '暂无歌词';
             nextLyricElement.textContent = '';
+            nextNextLyricElement.textContent = '';
         }
     }
 
@@ -361,8 +367,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (index !== currentLyricIndex) {
             currentLyricIndex = index;
+            prevLyricElement.textContent = currentLyrics[index - 1] ? currentLyrics[index - 1].lyric : '';
             currentLyricElement.textContent = currentLyrics[index].lyric;
             nextLyricElement.textContent = currentLyrics[index + 1] ? currentLyrics[index + 1].lyric : '';
+            nextNextLyricElement.textContent = currentLyrics[index + 2] ? currentLyrics[index + 2].lyric : '';
         }
     }
 

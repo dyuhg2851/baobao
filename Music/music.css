@@ -247,7 +247,7 @@ h1 {
 .avatars {
     display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 25px;
     margin-bottom: 12px;
 }
 
@@ -399,6 +399,12 @@ h1 {
     margin: 20px auto 0;
 }
 
+.prev-lyric {
+    font-size: 12px;
+    color: #ccc;
+    margin-bottom: 4px;
+}
+
 .current-lyric {
     font-size: 16px;
     font-weight: 500;
@@ -409,6 +415,12 @@ h1 {
 .next-lyric {
     font-size: 14px;
     color: #999;
+    margin-bottom: 4px;
+}
+
+.next-next-lyric {
+    font-size: 12px;
+    color: #ccc;
 }
 
 /* 播放进度条区 */
@@ -417,8 +429,8 @@ h1 {
     align-items: center;
     gap: 12px;
     padding: 0 20px 16px;
-    margin-bottom: 32px;
-    margin-top: 40px;
+    margin-bottom: 16px;
+    margin-top: 20px;
 }
 
 .current-time, .total-time {
