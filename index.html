@@ -121,7 +121,7 @@
                 if (savedAudioState) {
                     try {
                         const state = JSON.parse(savedAudioState);
-                        if (state.currentSong && state.isPlaying && state.showFloat) {
+                        if (state.currentSong && state.showFloat) {
                             // 显示悬浮窗
                             const musicFloat = document.getElementById('music-float');
                             const floatSongName = document.getElementById('float-song-name');

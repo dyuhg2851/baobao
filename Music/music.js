@@ -663,8 +663,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     floatBtn.addEventListener('click', function() {
-        // 保存音频状态
-        saveAudioState();
+        // 保存音频状态，强制显示悬浮窗
+        if (songs.length > 0) {
+            const currentSong = songs[currentSongIndex];
+            const audioState = {
+                currentSong: currentSong,
+                currentTime: audio.currentTime,
+                isPlaying: isPlaying,
+                listenTime: listenTime,
+                showFloat: true
+            };
+            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+            
+            // 发送到Service Worker
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PLAY_MUSIC',
+                    state: audioState
+                });
+            }
+        }
         // 退出到主屏幕
         window.location.href = '../index.html';
     });
