@@ -308,6 +308,9 @@ body {
 
 .float-vinyl-record.playing {
     animation: spin 20s linear infinite;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
 
 @keyframes spin {

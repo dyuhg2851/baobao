@@ -1,4 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 右滑返回阻止变量
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const SWIPE_THRESHOLD = 50;
+    const EDGE_MARGIN = 50;
+    
+    // 阻止右滑返回
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+            return;
+        }
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+            return;
+        }
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const deltaX = currentX - touchStartX;
+        const deltaY = Math.abs(currentY - touchStartY);
+        
+        if (touchStartX < EDGE_MARGIN && deltaX > SWIPE_THRESHOLD && deltaY < 100) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
     // 元素引用
     const apiPresetSelect = document.getElementById('api-preset');
     const apiUrlInput = document.getElementById('api-url');

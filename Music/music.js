@@ -1,33 +1,60 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 防止双击放大页面
     let lastTap = 0;
+    
+    // 右滑返回阻止变量
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const SWIPE_THRESHOLD = 50; // 滑动阈值
+    const EDGE_MARGIN = 50; // 边缘检测距离
+    
+    // 合并的touchstart事件处理
     document.addEventListener('touchstart', function(e) {
+        // 防止双击放大
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTap;
         if (tapLength < 300 && tapLength > 0) {
             e.preventDefault();
         }
         lastTap = currentTime;
-    });
+        
+        // 防止双指缩放
+        if (e.touches.length > 1) {
+            e.preventDefault();
+            return;
+        }
+        
+        // 记录触摸起始位置，用于检测右滑返回
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: false });
+
+    // 合并的touchmove事件处理
+    document.addEventListener('touchmove', function(e) {
+        // 防止双指缩放
+        if (e.touches.length > 1) {
+            e.preventDefault();
+            return;
+        }
+        
+        // 阻止右滑返回（从左边缘滑动）
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const deltaX = currentX - touchStartX;
+        const deltaY = Math.abs(currentY - touchStartY);
+        
+        // 检测是否是从左边缘向右滑动（右滑返回手势）
+        if (touchStartX < EDGE_MARGIN && deltaX > SWIPE_THRESHOLD && deltaY < 100) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 
     // 禁用双击缩放
     document.addEventListener('dblclick', function(e) {
         e.preventDefault();
     });
 
-    // 防止双指缩放
-    document.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 1) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
-    document.addEventListener('touchmove', function(e) {
-        if (e.touches.length > 1) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
+    // 禁用手势事件
     document.addEventListener('gesturestart', function(e) {
         e.preventDefault();
     });
