@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmDeleteBtn = document.getElementById('confirm-delete');
     const addSongModal = document.getElementById('add-song-modal');
     const cancelAddSongBtn = document.getElementById('cancel-add-song');
+    const repeatBtn = document.getElementById('repeat-btn');
 
     // 音乐播放器相关变量
     window.audio = new Audio();
@@ -114,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentLyricIndex = 0;
     window.listenTime = 0; // 单位：分钟
     let progressInterval;
+    let repeatMode = 'order'; // order: 顺序播放, random: 随机播放, single: 单曲循环
     
     // 保存音频状态到localStorage
     function saveAudioState() {
@@ -430,11 +432,49 @@ document.addEventListener('DOMContentLoaded', function() {
     // 下一首
     function playNext() {
         if (songs.length === 0) return;
-        currentSongIndex = (currentSongIndex + 1) % songs.length;
+        
+        if (repeatMode === 'single') {
+            // 单曲循环，不切换歌曲
+            audio.currentTime = 0;
+            audio.play();
+            return;
+        } else if (repeatMode === 'random') {
+            // 随机播放
+            currentSongIndex = Math.floor(Math.random() * songs.length);
+        } else {
+            // 顺序播放
+            currentSongIndex = (currentSongIndex + 1) % songs.length;
+        }
+        
         loadSong(currentSongIndex);
         if (isPlaying) {
             audio.play();
         }
+    }
+    
+    // 切换循环模式
+    function toggleRepeatMode() {
+        const modes = ['order', 'random', 'single'];
+        const currentIndex = modes.indexOf(repeatMode);
+        repeatMode = modes[(currentIndex + 1) % modes.length];
+        updateRepeatButton();
+    }
+    
+    // 更新循环按钮图标
+    function updateRepeatButton() {
+        let svgContent = '';
+        switch (repeatMode) {
+            case 'order':
+                svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="m19 5l2 2m0 0l-2 2m2-2H7M5 19l-2-2m0 0l2-2m-2 2h14"/><path d="M3 11a4 4 0 0 1 4-4m14 6a4 4 0 0 1-4 4"/></g></svg>';
+                break;
+            case 'random':
+                svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="#000000" fill-rule="evenodd" d="M19.47 4.47a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 1 1-1.06-1.06l.72-.72h-1.793c-.844 0-1.424 0-1.88.045c-.44.043-.706.122-.927.247c-.22.125-.426.313-.689.668c-.272.368-.572.865-1.006 1.589l-2.523 4.205c-.41.685-.747 1.245-1.068 1.679c-.335.453-.688.816-1.155 1.08s-.96.38-1.52.435c-.538.052-1.191.052-1.99.052H2a.75.75 0 0 1 0-1.5h3.603c.844 0 1.424 0 1.88-.045c.44-.043.706-.122.927-.247c.22-.125.426-.313.689-.668c.272-.368.571-.865 1.006-1.589l2.523-4.205c.41-.685.747-1.245 1.068-1.679c.335-.453.688-.816 1.155-1.08s.96-.38 1.52-.435c.538-.052 1.191-.052 1.99-.052h1.828l-.72-.72a.75.75 0 0 1 0-1.06M7.73 7.79c-.196-.038-.418-.041-1.063-.041H2a.75.75 0 0 1 0-1.5h4.74c.546 0 .922 0 1.278.07a3.75 3.75 0 0 1 2.071 1.172c.243.27.436.592.717 1.06l.037.062a.75.75 0 1 1-1.286.772c-.332-.554-.45-.742-.583-.89a2.25 2.25 0 0 0-1.243-.705m5.683 6.566a.75.75 0 0 1 1.03.257c.331.554.448.742.582.89c.327.364.763.611 1.243.705c.196.038.418.041 1.063.041h2.857l-.72-.72a.75.75 0 1 1 1.061-1.06l2 2a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 1 1-1.06-1.06l.72-.72h-2.931c-.545 0-.92 0-1.277-.07a3.75 3.75 0 0 1-2.071-1.172c-.243-.27-.436-.592-.717-1.06l-.037-.062a.75.75 0 0 1 .257-1.03" clip-rule="evenodd"/></svg>';
+                break;
+            case 'single':
+                svgContent = '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-width="1.5"><path stroke-linejoin="round" d="M21 9V4l-2 1m-4 2H7M5 19l-2-2m0 0l2-2m-2 2h14"/><path d="M3 11a4 4 0 0 1 4-4m14 6a4 4 0 0 1-4 4"/></g><path fill="#000000" d="M12 15.5a1 1 0 0 0-1-1v-3a1 1 0 0 0 2 0v3a1 1 0 0 0-1 1Z"/></svg>';
+                break;
+        }
+        repeatBtn.innerHTML = svgContent;
     }
 
     // 更新进度条
@@ -740,6 +780,7 @@ document.addEventListener('DOMContentLoaded', function() {
     playBtn.addEventListener('click', togglePlay);
     prevBtn.addEventListener('click', playPrev);
     nextBtn.addEventListener('click', playNext);
+    repeatBtn.addEventListener('click', toggleRepeatMode);
 
     playlistBtn.addEventListener('click', function() {
         updatePlaylist();
