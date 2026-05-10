@@ -606,6 +606,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // 隐藏添加歌曲弹窗
                 addSongModal.style.display = 'none';
+                // 显示底部播放器栏
+                bottomPlayerBar.style.display = 'flex';
 
                 alert('歌曲添加成功');
             };
@@ -624,6 +626,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 隐藏添加歌曲弹窗
             addSongModal.style.display = 'none';
+            // 显示底部播放器栏
+            bottomPlayerBar.style.display = 'flex';
 
             alert('歌曲添加成功');
         }
@@ -727,6 +731,8 @@ document.addEventListener('DOMContentLoaded', function() {
     addBtn.addEventListener('click', function() {
         // 显示添加歌曲弹窗
         addSongModal.style.display = 'flex';
+        // 隐藏底部播放器栏
+        bottomPlayerBar.style.display = 'none';
     });
 
     floatBtn.addEventListener('click', function() {
@@ -750,13 +756,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         }
-        // 退出到主屏幕
-        window.location.href = '../index.html';
+        // 退出到主屏幕，强制刷新确保悬浮窗显示
+        window.location.href = '../index.html?refresh=' + Date.now();
     });
 
     cancelAddSongBtn.addEventListener('click', function() {
         // 隐藏添加歌曲弹窗
         addSongModal.style.display = 'none';
+        // 显示底部播放器栏
+        bottomPlayerBar.style.display = 'flex';
         // 清空输入
         songNameInput.value = '';
         artistNameInput.value = '';
