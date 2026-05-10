@@ -724,8 +724,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 事件监听器
     backBtn.addEventListener('click', function() {
-        saveAudioState();
-        window.location.replace('../index.html');
+        // 保存音频状态，确保返回主屏幕后音乐继续播放
+        if (songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
+            const currentSong = songs[currentSongIndex];
+            const audioState = {
+                currentSong: currentSong,
+                currentTime: audio.currentTime,
+                isPlaying: isPlaying,
+                listenTime: listenTime,
+                showFloat: true
+            };
+            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+            localStorage.setItem('float_visible', 'true');
+            
+            // 发送到Service Worker继续播放
+            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PLAY_MUSIC',
+                    state: audioState
+                });
+            }
+        }
+        // 跳转到主屏幕，不暂停音乐
+        window.location.href = '../index.html';
     });
 
     addBtn.addEventListener('click', function() {
@@ -756,7 +777,7 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('float_visible', 'true');
             console.log('状态已保存到localStorage');
             
-            // 发送到Service Worker
+            // 发送到Service Worker继续播放
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({
                     type: 'PLAY_MUSIC',
@@ -764,16 +785,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         } else {
-            // 如果没有歌曲，也设置float_visible标志（用于调试）
             localStorage.setItem('float_visible', 'true');
             console.log('没有歌曲，但已设置float_visible标志');
         }
-        // 确保localStorage写入完成后再跳转
-        setTimeout(function() {
-            console.log('跳转到主屏幕');
-            // 使用replace确保不会回到music页面
-            window.location.replace('../index.html?refresh=' + Date.now());
-        }, 100);
+        // 跳转到主屏幕，不暂停音乐
+        window.location.href = '../index.html';
     });
 
     cancelAddSongBtn.addEventListener('click', function() {
