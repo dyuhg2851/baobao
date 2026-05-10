@@ -263,16 +263,16 @@ body {
 /* 音乐悬浮窗 */
 .music-float {
     position: fixed;
-    bottom: 100px;
+    bottom: calc(120px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 12px;
+    padding: 10px;
     z-index: 9999;
-    width: 300px;
-    max-height: 84px;
+    width: 260px;
+    height: 60px;
     cursor: grab;
     display: flex;
     align-items: center;
@@ -287,8 +287,8 @@ body {
 }
 
 .float-vinyl {
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -319,8 +319,8 @@ body {
 }
 
 .float-vinyl-record img {
-    width: 45px;
-    height: 45px;
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     object-fit: cover;
 }

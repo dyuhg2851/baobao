@@ -102,7 +102,7 @@
                     
                     floatSongName.textContent = event.data.state.currentSong.name + ' - ' + event.data.state.currentSong.artist;
                     floatLyric.textContent = '正在播放...';
-                    floatCover.src = event.data.state.currentSong.cover || 'https://via.placeholder.com/60';
+                    floatCover.src = event.data.state.currentSong.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"%3E%3Crect fill="%23e0e0e0" width="60" height="60"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EAlbum%3C/text%3E%3C/svg%3E';
                 }
             }
         });
@@ -117,22 +117,40 @@
             }
             
             function initFloatWindow() {
+                const musicFloat = document.getElementById('music-float');
+                const floatClose = document.getElementById('float-close');
+                
+                // 关闭按钮事件（提前绑定）
+                floatClose.addEventListener('click', function() {
+                    // 暂停音乐并清除状态
+                    const audio = new Audio();
+                    audio.pause();
+                    audio.src = '';
+                    musicFloat.style.display = 'none';
+                    localStorage.removeItem('music_audio_state');
+                    
+                    // 通知Service Worker停止播放
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                        navigator.serviceWorker.controller.postMessage({
+                            type: 'STOP_MUSIC'
+                        });
+                    }
+                });
+                
                 const savedAudioState = localStorage.getItem('music_audio_state');
                 if (savedAudioState) {
                     try {
                         const state = JSON.parse(savedAudioState);
                         if (state.currentSong && state.showFloat) {
                             // 显示悬浮窗
-                            const musicFloat = document.getElementById('music-float');
                             const floatSongName = document.getElementById('float-song-name');
                             const floatLyric = document.getElementById('float-lyric');
                             const floatCover = document.getElementById('float-cover');
                             const floatVinylRecord = document.getElementById('float-vinyl-record');
-                            const floatClose = document.getElementById('float-close');
                             
                             floatSongName.textContent = state.currentSong.name + ' - ' + state.currentSong.artist;
                             floatLyric.textContent = '正在播放...';
-                            floatCover.src = state.currentSong.cover || 'https://via.placeholder.com/60';
+                            floatCover.src = state.currentSong.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"%3E%3Crect fill="%23e0e0e0" width="60" height="60"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EAlbum%3C/text%3E%3C/svg%3E';
                             floatVinylRecord.classList.add('playing');
                             
                             musicFloat.style.display = 'block';
@@ -141,23 +159,6 @@
                             const floatVinyl = document.querySelector('.float-vinyl');
                             floatVinyl.addEventListener('click', function() {
                                 window.location.href = 'Music/music.html';
-                            });
-                            
-                            // 关闭按钮事件
-                            floatClose.addEventListener('click', function() {
-                                // 暂停音乐并清除状态
-                                const audio = new Audio();
-                                audio.pause();
-                                audio.src = '';
-                                musicFloat.style.display = 'none';
-                                localStorage.removeItem('music_audio_state');
-                                
-                                // 通知Service Worker停止播放
-                                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                                    navigator.serviceWorker.controller.postMessage({
-                                        type: 'STOP_MUSIC'
-                                    });
-                                }
                             });
                             
                             // 延迟创建音频对象，避免阻塞页面渲染
@@ -286,7 +287,7 @@
         <div class="float-content">
             <div class="float-vinyl">
                 <div class="float-vinyl-record" id="float-vinyl-record">
-                    <img src="https://via.placeholder.com/60" alt="封面" id="float-cover">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext fill='%23999' font-family='Arial' font-size='12' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EAlbum%3C/text%3E%3C/svg%3E" alt="封面" id="float-cover">
                 </div>
             </div>
             <div class="float-info">
