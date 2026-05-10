@@ -275,13 +275,13 @@ body {
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    padding: 8px;
+    padding: 10px;
     width: 220px;
-    height: 50px;
+    height: 65px;
     min-width: 220px;
-    min-height: 50px;
+    min-height: 65px;
     max-width: 220px;
-    max-height: 50px;
+    max-height: 65px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -293,8 +293,9 @@ body {
 .float-content {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .float-vinyl {

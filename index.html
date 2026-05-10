@@ -109,6 +109,27 @@
         
         // 音乐悬浮窗逻辑
         (function() {
+            const musicFloat = document.getElementById('music-float');
+            const floatClose = document.getElementById('float-close');
+            
+            // 关闭按钮事件（立即绑定）
+            floatClose.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // 暂停音乐并清除状态
+                const audio = new Audio();
+                audio.pause();
+                audio.src = '';
+                musicFloat.style.display = 'none';
+                localStorage.removeItem('music_audio_state');
+                
+                // 通知Service Worker停止播放
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'STOP_MUSIC'
+                    });
+                }
+            });
+            
             // 等待DOM加载完成
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', initFloatWindow);
@@ -117,25 +138,6 @@
             }
             
             function initFloatWindow() {
-                const musicFloat = document.getElementById('music-float');
-                const floatClose = document.getElementById('float-close');
-                
-                // 关闭按钮事件（提前绑定）
-                floatClose.addEventListener('click', function() {
-                    // 暂停音乐并清除状态
-                    const audio = new Audio();
-                    audio.pause();
-                    audio.src = '';
-                    musicFloat.style.display = 'none';
-                    localStorage.removeItem('music_audio_state');
-                    
-                    // 通知Service Worker停止播放
-                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                        navigator.serviceWorker.controller.postMessage({
-                            type: 'STOP_MUSIC'
-                        });
-                    }
-                });
                 
                 const savedAudioState = localStorage.getItem('music_audio_state');
                 if (savedAudioState) {
