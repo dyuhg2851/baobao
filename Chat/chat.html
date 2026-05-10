@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="stylesheet" href="chat.css">
+    <link rel="stylesheet" href="../style.css">
+    <title>Chat</title>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <button id="back-btn" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
+            </button>
+            <h1>Chat</h1>
+        </div>
+        
+        <!-- 聊天内容 -->
+        <div class="chat-content">
+            <p>聊天界面</p>
+        </div>
+    </div>
+    
+    <!-- 音乐悬浮窗 -->
+    <div class="music-float" id="music-float" style="display: none;">
+        <div class="fixed-player-card">
+            <div class="float-content">
+                <div class="float-vinyl">
+                    <div class="float-vinyl-record" id="float-vinyl-record">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext fill='%23999' font-family='Arial' font-size='12' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EAlbum%3C/text%3E%3C/svg%3E" alt="封面" id="float-cover">
+                    </div>
+                </div>
+                <div class="float-info">
+                    <div class="float-song-name" id="float-song-name"></div>
+                    <div class="float-lyric" id="float-lyric"></div>
+                </div>
+                <div class="float-close" id="float-close">×</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="chat.js"></script>
+    <script>
+        // 音乐悬浮窗逻辑
+        (function() {
+            const musicFloat = document.getElementById('music-float');
+            const floatClose = document.getElementById('float-close');
+            
+            floatClose.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const audio = new Audio();
+                audio.pause();
+                audio.src = '';
+                musicFloat.style.display = 'none';
+                localStorage.removeItem('music_audio_state');
+                localStorage.removeItem('float_visible');
+            });
+            
+            function initFloatWindow() {
+                const savedAudioState = localStorage.getItem('music_audio_state');
+                const floatVisible = localStorage.getItem('float_visible');
+                
+                if (savedAudioState && floatVisible === 'true') {
+                    try {
+                        const state = JSON.parse(savedAudioState);
+                        if (state.currentSong) {
+                            const floatSongName = document.getElementById('float-song-name');
+                            const floatLyric = document.getElementById('float-lyric');
+                            const floatCover = document.getElementById('float-cover');
+                            const floatVinylRecord = document.getElementById('float-vinyl-record');
+                            
+                            floatSongName.textContent = state.currentSong.name + ' - ' + state.currentSong.artist;
+                            floatLyric.textContent = '正在播放...';
+                            floatCover.src = state.currentSong.cover || 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"%3E%3Crect fill="%23e0e0e0" width="60" height="60"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EAlbum%3C/text%3E%3C/svg%3E';
+                            floatVinylRecord.classList.add('playing');
+                            
+                            musicFloat.style.display = 'block';
+                            
+                            const floatVinyl = document.querySelector('.float-vinyl');
+                            floatVinyl.addEventListener('click', function() {
+                                window.location.href = '../Music/music.html';
+                            });
+                            
+                            let isDragging = false;
+                            let startX, startY, initialX, initialY;
+                            
+                            const startDrag = function(e) {
+                                isDragging = true;
+                                const touch = e.touches ? e.touches[0] : e;
+                                startX = touch.clientX;
+                                startY = touch.clientY;
+                                initialX = musicFloat.offsetLeft;
+                                initialY = musicFloat.offsetTop;
+                                musicFloat.style.cursor = 'grabbing';
+                                e.preventDefault();
+                            };
+                            
+                            const drag = function(e) {
+                                if (!isDragging) return;
+                                const touch = e.touches ? e.touches[0] : e;
+                                const deltaX = touch.clientX - startX;
+                                const deltaY = touch.clientY - startY;
+                                musicFloat.style.left = (initialX + deltaX) + 'px';
+                                musicFloat.style.top = (initialY + deltaY) + 'px';
+                                musicFloat.style.bottom = 'auto';
+                                musicFloat.style.transform = 'none';
+                            };
+                            
+                            const endDrag = function() {
+                                isDragging = false;
+                                musicFloat.style.cursor = 'grab';
+                            };
+                            
+                            musicFloat.addEventListener('mousedown', startDrag);
+                            document.addEventListener('mousemove', drag);
+                            document.addEventListener('mouseup', endDrag);
+                            musicFloat.addEventListener('touchstart', startDrag);
+                            document.addEventListener('touchmove', drag);
+                            document.addEventListener('touchend', endDrag);
+                        }
+                    } catch (e) {
+                        console.error('解析音乐状态失败:', e);
+                    }
+                }
+            }
+            
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initFloatWindow);
+            } else {
+                initFloatWindow();
+            }
+        })();
+    </script>
+</body>
+</html>

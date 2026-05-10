@@ -509,12 +509,12 @@ h1 {
     padding: 8px 20px;
     background-color: #ffffff;
     position: fixed;
-    bottom: 0;
+    bottom: -20px;
     left: 0;
     right: 0;
     z-index: 999;
     height: 60px;
-    padding-bottom: calc(30px + env(safe-area-inset-bottom));
+    padding-bottom: calc(50px + env(safe-area-inset-bottom));
 }
 
 .control-btn {

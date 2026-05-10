@@ -3,80 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="family.css">
     <link rel="stylesheet" href="../style.css">
-    <title>Theme</title>
+    <title>Family</title>
 </head>
 <body>
-    <div class="theme-container">
+    <div class="family-container">
         <div class="header">
             <button id="back-btn" class="back-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
             </button>
-            <h1>Beautiful</h1>
+            <h1>Family</h1>
         </div>
         
-        <!-- 壁纸卡片 -->
-        <div class="card">
-            <h2>壁纸</h2>
-            
-            <div class="wallpaper-section">
-                <div class="wallpaper-thumbnail" id="wallpaper-thumbnail">
-                    <img id="current-wallpaper" src="" alt="当前壁纸">
-                </div>
-                <div class="wallpaper-actions">
-                    <div class="blur-control">
-                        <label for="blur-input">模糊度</label>
-                        <input type="number" id="blur-input" min="0" max="100" value="0" placeholder="0">
-                        <span class="percentage-sign">%</span>
-                    </div>
-                    <div class="button-group">
-                        <button id="btn-save" class="btn btn-save">Save</button>
-                        <button id="btn-delete" class="btn btn-delete">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 字体卡片 -->
-        <div class="card">
-            <h2>字体</h2>
-            
-            <div class="font-section">
-                <div class="font-preset-group">
-                    <label for="font-preset">预设字体</label>
-                    <select id="font-preset">
-                        <option value="">选择预设</option>
-                        <!-- 预设字体将通过JS动态添加 -->
-                    </select>
-                </div>
-                
-                <div class="font-input-group">
-                    <label for="font-url">字体链接</label>
-                    <input type="text" id="font-url" placeholder="">
-                </div>
-                
-                <div class="font-actions">
-                    <div class="button-group">
-                        <button id="font-delete" class="btn btn-delete">Delete</button>
-                        <button id="font-save" class="btn btn-save">Save</button>
-                        <button id="font-add" class="btn btn-add">Add</button>
-                        <button id="font-clear" class="btn btn-add">Clear</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 字体预设弹窗 -->
-    <div id="font-modal" class="modal">
-        <div class="modal-content">
-            <h3>添加字体预设</h3>
-            <input type="text" id="font-preset-name" placeholder="输入预设名称">
-            <div class="modal-buttons">
-                <button id="font-modal-cancel" class="btn btn-save">Cancel</button>
-                <button id="font-modal-confirm" class="btn btn-add">Confirm</button>
-            </div>
+        <!-- 家庭内容 -->
+        <div class="family-content">
+            <p>家庭界面</p>
         </div>
     </div>
     
@@ -98,14 +40,13 @@
         </div>
     </div>
     
-    <script src="theme.js"></script>
+    <script src="family.js"></script>
     <script>
         // 音乐悬浮窗逻辑
         (function() {
             const musicFloat = document.getElementById('music-float');
             const floatClose = document.getElementById('float-close');
             
-            // 关闭按钮事件
             floatClose.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const audio = new Audio();
@@ -136,13 +77,11 @@
                             
                             musicFloat.style.display = 'block';
                             
-                            // 点击悬浮窗跳转到music页面
                             const floatVinyl = document.querySelector('.float-vinyl');
                             floatVinyl.addEventListener('click', function() {
                                 window.location.href = '../Music/music.html';
                             });
                             
-                            // 拖拽功能
                             let isDragging = false;
                             let startX, startY, initialX, initialY;
                             

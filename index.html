@@ -121,6 +121,7 @@
                 audio.src = '';
                 musicFloat.style.display = 'none';
                 localStorage.removeItem('music_audio_state');
+                localStorage.removeItem('float_visible');
                 
                 // 通知Service Worker停止播放
                 if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -140,10 +141,12 @@
             function initFloatWindow() {
                 
                 const savedAudioState = localStorage.getItem('music_audio_state');
-                if (savedAudioState) {
+                const floatVisible = localStorage.getItem('float_visible');
+                
+                if (savedAudioState && floatVisible === 'true') {
                     try {
                         const state = JSON.parse(savedAudioState);
-                        if (state.currentSong && state.showFloat) {
+                        if (state.currentSong) {
                             // 显示悬浮窗
                             const floatSongName = document.getElementById('float-song-name');
                             const floatLyric = document.getElementById('float-lyric');

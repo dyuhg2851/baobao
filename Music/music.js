@@ -746,7 +746,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 listenTime: listenTime,
                 showFloat: true
             };
+            // 同步保存到localStorage
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+            localStorage.setItem('float_visible', 'true');
             
             // 发送到Service Worker
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -756,8 +758,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         }
-        // 退出到主屏幕，强制刷新确保悬浮窗显示
-        window.location.href = '../index.html?refresh=' + Date.now();
+        // 退出到主屏幕
+        window.location.href = '../index.html';
     });
 
     cancelAddSongBtn.addEventListener('click', function() {
