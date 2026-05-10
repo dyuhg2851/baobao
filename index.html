@@ -139,9 +139,13 @@
             }
             
             function initFloatWindow() {
+                console.log('initFloatWindow 被调用');
                 
                 const savedAudioState = localStorage.getItem('music_audio_state');
                 const floatVisible = localStorage.getItem('float_visible');
+                
+                console.log('savedAudioState:', savedAudioState ? '存在' : '不存在');
+                console.log('floatVisible:', floatVisible);
                 
                 if (savedAudioState && floatVisible === 'true') {
                     try {
