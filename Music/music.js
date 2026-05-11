@@ -724,18 +724,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 事件监听器
     backBtn.addEventListener('click', function() {
-        // 保存音频状态，确保返回主屏幕后音乐继续播放
+        console.log('返回按钮被点击');
+        console.log('songs.length:', songs.length);
+        console.log('currentSongIndex:', currentSongIndex);
+        console.log('isPlaying:', isPlaying);
+        
+        // 保存音频状态，确保返回主屏幕后音乐继续播放（不显示卡片）
         if (songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
             const currentSong = songs[currentSongIndex];
+            console.log('当前歌曲:', currentSong);
+            
             const audioState = {
                 currentSong: currentSong,
                 currentTime: audio.currentTime,
                 isPlaying: isPlaying,
                 listenTime: listenTime,
-                showFloat: true
+                showFloat: false  // 不显示卡片
             };
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            localStorage.setItem('float_visible', 'true');
+            // 不设置 float_visible = true，这样音乐卡片不会显示
+            console.log('返回键: 状态已保存到localStorage（不显示卡片）');
             
             // 发送到Service Worker继续播放
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -744,11 +752,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     state: audioState
                 });
             }
+        } else {
+            console.log('返回键: 没有有效的歌曲');
         }
         // 跳转到主屏幕，不暂停音乐
         window.location.href = '../index.html';
     });
-
+    
     addBtn.addEventListener('click', function() {
         // 显示添加歌曲弹窗
         addSongModal.style.display = 'flex';
