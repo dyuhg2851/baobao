@@ -13,6 +13,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
             </button>
             <div class="header-center">
+                <div class="header-avatar" id="chat-header-avatar"></div>
                 <div class="character-name">Shayna</div>
                 <div class="character-status">Online</div>
             </div>
@@ -80,20 +81,28 @@
                 }
             });
             
-            // 加载Char资料
-            const loadCharProfile = () => {
-                const savedData = localStorage.getItem('profile_char');
-                if (savedData) {
-                    const data = JSON.parse(savedData);
-                    const nameElement = document.querySelector('.chat-header .character-name');
-                    
-                    if (data.name && nameElement) {
-                        nameElement.textContent = data.name;
+            // 加载档案资料
+            const loadProfileData = () => {
+                const charData = localStorage.getItem('profile_char');
+                const nameElement = document.querySelector('.chat-header .character-name');
+                const avatarElement = document.getElementById('chat-header-avatar');
+
+                if (charData) {
+                    try {
+                        const data = JSON.parse(charData);
+                        if (data.name && nameElement) {
+                            nameElement.textContent = data.name;
+                        }
+                        if (data.avatar && avatarElement) {
+                            avatarElement.style.backgroundImage = `url(${data.avatar})`;
+                        }
+                    } catch (e) {
+                        console.error('解析 profile_char 失败', e);
                     }
                 }
             };
             
-            loadCharProfile();
+            loadProfileData();
             
             const sendBtn = document.getElementById('send-btn');
             const messageInput = document.getElementById('message-input');

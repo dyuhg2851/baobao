@@ -62,6 +62,17 @@ body {
     align-items: center;
 }
 
+.header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    margin-bottom: 8px;
+}
+
 .character-name {
     font-size: 17px;
     font-weight: 600;
