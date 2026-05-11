@@ -56,6 +56,21 @@
                 });
             }
             
+            // 加载Char资料
+            const loadCharProfile = () => {
+                const savedData = localStorage.getItem('profile_char');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    const nameElement = document.querySelector('.chat-header .character-name');
+                    
+                    if (data.name && nameElement) {
+                        nameElement.textContent = data.name;
+                    }
+                }
+            };
+            
+            loadCharProfile();
+            
             const sendBtn = document.getElementById('send-btn');
             const messageInput = document.getElementById('message-input');
             const chatMessages = document.getElementById('chat-messages');

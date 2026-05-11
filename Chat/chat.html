@@ -112,6 +112,30 @@
                 });
             }
             
+            // 加载Char资料
+            const loadCharProfile = () => {
+                const savedData = localStorage.getItem('profile_char');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    const avatarPlaceholder = document.querySelector('.character-card .avatar-placeholder');
+                    const nameElement = document.querySelector('.character-card .character-name');
+                    const signatureElement = document.querySelector('.character-card .last-message');
+                    
+                    if (data.name && nameElement) {
+                        nameElement.textContent = data.name;
+                    }
+                    if (data.signature && signatureElement) {
+                        signatureElement.textContent = data.signature;
+                    }
+                    if (data.avatar && avatarPlaceholder) {
+                        avatarPlaceholder.style.backgroundImage = `url(${data.avatar})`;
+                        avatarPlaceholder.innerHTML = '';
+                    }
+                }
+            };
+            
+            loadCharProfile();
+            
             // 日历功能
             initCalendar();
             

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="stylesheet" href="edit-profile.css">
+    <title>Edit Profile</title>
+</head>
+<body>
+    <div class="page-container">
+        <div class="header">
+            <button id="back-btn" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
+            </button>
+            <h1>Edit</h1>
+            <div class="save-btn" id="save-btn">Save</div>
+        </div>
+        
+        <div class="page-content">
+            <!-- 头像上传区域 -->
+            <div class="avatar-section">
+                <div class="avatar-wrapper">
+                    <div class="avatar-preview" id="avatar-preview">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#ffffff" d="M23 9A7 7 0 1 1 9 9a7 7 0 0 1 14 0m-2 0a5 5 0 1 0-10 0a5 5 0 0 0 10 0M7.5 18A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5zM6 21.5A1.5 1.5 0 0 1 7.5 20h17a1.5 1.5 0 0 1 1.5 1.5v.5c0 1.473-.94 2.949-2.759 4.106C21.434 27.256 18.877 28 16 28s-5.434-.744-7.241-1.894C6.939 24.95 6 23.472 6 22z"/></svg>
+                    </div>
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    <button class="upload-btn" id="upload-btn">Change Avatar</button>
+                </div>
+            </div>
+            
+            <!-- 表单区域 -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Character Name</label>
+                    <input type="text" id="character-name" placeholder="Enter character name" class="form-input">
+                </div>
+                
+                <div class="form-group">
+                    <label>Signature</label>
+                    <textarea id="signature" placeholder="Enter signature" class="form-textarea"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Character Settings</label>
+                    <textarea id="settings" placeholder="Enter character settings" class="form-textarea"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取URL参数
+            const urlParams = new URLSearchParams(window.location.search);
+            const characterType = urlParams.get('type') || 'user';
+            
+            // 加载保存的数据
+            const savedData = localStorage.getItem('profile_' + characterType);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('character-name').value = data.name || '';
+                document.getElementById('signature').value = data.signature || '';
+                document.getElementById('settings').value = data.settings || '';
+                if (data.avatar) {
+                    document.getElementById('avatar-preview').style.backgroundImage = `url(${data.avatar})`;
+                    document.getElementById('avatar-preview').innerHTML = '';
+                }
+            }
+            
+            // 返回按钮
+            document.getElementById('back-btn').addEventListener('click', function() {
+                window.location.replace('profile.html');
+            });
+            
+            // 保存按钮
+            document.getElementById('save-btn').addEventListener('click', function() {
+                const data = {
+                    name: document.getElementById('character-name').value,
+                    signature: document.getElementById('signature').value,
+                    settings: document.getElementById('settings').value,
+                    avatar: document.getElementById('avatar-preview').style.backgroundImage.replace('url(', '').replace(')', '').replace(/"/g, '')
+                };
+                
+                localStorage.setItem('profile_' + characterType, JSON.stringify(data));
+                
+                // 更新全局头像和名字
+                localStorage.setItem(characterType + '_name', data.name);
+                localStorage.setItem(characterType + '_avatar', data.avatar);
+                
+                alert('Profile saved successfully!');
+                window.location.replace('profile.html');
+            });
+            
+            // 头像上传
+            document.getElementById('upload-btn').addEventListener('click', function() {
+                document.getElementById('avatar-input').click();
+            });
+            
+            document.getElementById('avatar-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('avatar-preview').style.backgroundImage = `url(${event.target.result})`;
+                        document.getElementById('avatar-preview').innerHTML = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
