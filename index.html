@@ -13,88 +13,63 @@
     <link rel="stylesheet" href="style.css">
     <title>晕倒料理</title>
     <script>
-        // 每次打开都显示开屏动画，但避免从子页面跳转回来时的循环
-        const referrer = document.referrer;
-        if (!referrer.includes('splash.html') && 
-            !referrer.includes('Settings/') && 
-            !referrer.includes('Theme/') && 
-            !referrer.includes('Music/') &&
-            !referrer.includes('Chat/') &&
-            !referrer.includes('Family/') &&
-            !referrer.includes('Focus/') &&
-            !referrer.includes('Search/') &&
-            !referrer.includes('Secret/')) {
-            window.location.href = 'splash.html';
-        }
-        
-        // 加载保存的壁纸
-        (function() {
-            const savedWallpaperData = localStorage.getItem('wallpaperData');
-            if (savedWallpaperData) {
-                const data = JSON.parse(savedWallpaperData);
-                // 检查是否已经存在壁纸样式
-                const existingStyle = document.getElementById('wallpaper-style');
-                if (!existingStyle) {
-                    const style = document.createElement('style');
-                    style.id = 'wallpaper-style';
-                    // 将百分比转换为模糊半径（0-20px）
-                    const blurRadius = (data.blur || 0) / 100 * 20;
-                    style.textContent = `.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); }`;
-                    document.head.appendChild(style);
-                }
-            }
-        })();
-        
-        // 加载保存的字体
-        window.addEventListener('load', function() {
-            const savedFont = localStorage.getItem('current_font');
-            if (savedFont) {
-                const font = JSON.parse(savedFont);
-                if (font.url) {
-                    // 移除旧的字体样式
-                    const oldFontStyle = document.getElementById('custom-font-style');
-                    if (oldFontStyle) {
-                        oldFontStyle.remove();
-                    }
-                    
-                    // 创建新的样式标签，使用@font-face加载TTF字体
-                    const fontStyle = document.createElement('style');
-                    fontStyle.id = 'custom-font-style';
-                    
-                    // 使用保存的字体名称或生成唯一名称
-                    const fontName = font.family || font.name || 'CustomFont';
-                    
-                    // 构建@font-face规则
-                    const fontFaceRule = `
-                        @font-face {
-                            font-family: '${fontName}';
-                            src: url('${font.url}') format('truetype');
-                            font-weight: normal;
-                            font-style: normal;
+        // 延迟加载非关键资源，提升首屏性能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 延迟加载壁纸
+            setTimeout(function() {
+                const savedWallpaperData = localStorage.getItem('wallpaperData');
+                if (savedWallpaperData) {
+                    try {
+                        const data = JSON.parse(savedWallpaperData);
+                        const existingStyle = document.getElementById('wallpaper-style');
+                        if (!existingStyle && data.url) {
+                            const style = document.createElement('style');
+                            style.id = 'wallpaper-style';
+                            const blurRadius = Math.min((data.blur || 0) / 100 * 20, 20);
+                            style.textContent = `.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); }`;
+                            document.head.appendChild(style);
                         }
-                    `;
-                    
-                    fontStyle.textContent = fontFaceRule;
-                    document.head.appendChild(fontStyle);
-                    
-                    // 应用字体
-                    document.body.style.fontFamily = fontName;
-                } else if (font.family) {
-                    document.body.style.fontFamily = font.family;
+                    } catch(e) {
+                        console.error('Failed to load wallpaper:', e);
+                    }
                 }
+            }, 300);
+            
+            // 延迟加载字体
+            setTimeout(function() {
+                const savedFont = localStorage.getItem('current_font');
+                if (savedFont) {
+                    try {
+                        const font = JSON.parse(savedFont);
+                        if (font.url) {
+                            const oldFontStyle = document.getElementById('custom-font-style');
+                            if (oldFontStyle) {
+                                oldFontStyle.remove();
+                            }
+                            
+                            const fontStyle = document.createElement('style');
+                            fontStyle.id = 'custom-font-style';
+                            const fontName = font.family || font.name || 'CustomFont';
+                            
+                            fontStyle.textContent = `@font-face { font-family: '${fontName}'; src: url('${font.url}') format('truetype'); font-weight: normal; font-style: normal; }`;
+                            document.head.appendChild(fontStyle);
+                            document.body.style.fontFamily = fontName;
+                        } else if (font.family) {
+                            document.body.style.fontFamily = font.family;
+                        }
+                    } catch(e) {
+                        console.error('Failed to load font:', e);
+                    }
+                }
+            }, 500);
+            
+            // 延迟注册Service Worker
+            if ('serviceWorker' in navigator) {
+                setTimeout(function() {
+                    navigator.serviceWorker.register('/service-worker.js').catch(function() {});
+                }, 1000);
             }
         });
-        
-        // 注册Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
-                    console.log('Service Worker 注册成功:', registration.scope);
-                }, function(error) {
-                    console.log('Service Worker 注册失败:', error);
-                });
-            });
-        }
     </script>
 </head>
 <body>
@@ -161,146 +136,88 @@
         </div>
     </div>
     <script>
-        // 添加触摸事件支持，确保在手机端也能正常触发动画
-        document.addEventListener('DOMContentLoaded', function() {
-            const appIcons = document.querySelectorAll('.app-icon');
-            
-            appIcons.forEach(icon => {
-                icon.addEventListener('touchstart', function() {
-                    this.classList.add('touch-active');
-                });
-                
-                icon.addEventListener('touchend', function() {
-                    setTimeout(() => {
-                        this.classList.remove('touch-active');
-                    }, 100);
-                });
-                
-                icon.addEventListener('touchcancel', function() {
-                    this.classList.remove('touch-active');
-                });
-            });
-            
-            // 小组件功能
-            // 头像上传功能
-            const avatar = document.getElementById('avatar');
-            const avatarUpload = document.getElementById('avatar-upload');
-            
-            if (avatar && avatarUpload) {
-                avatar.addEventListener('click', function() {
-                    avatarUpload.click();
-                });
-                
-                avatarUpload.addEventListener('change', function(e) {
-                    const file = e.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = avatar.querySelector('img');
-                            img.src = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-            
-            // 昵称和ID编辑功能
-            const nickname = document.getElementById('nickname');
-            const id = document.getElementById('id');
-            
-            if (nickname) {
-                nickname.addEventListener('blur', function() {
-                    if (!this.textContent.trim()) {
-                        this.textContent = '晕了饱饱';
-                    }
-                });
-            }
-            
-            if (id) {
-                id.addEventListener('blur', function() {
-                    if (!this.textContent.trim()) {
-                        this.textContent = '@Q_iian';
-                    }
-                });
-            }
-            
-            // 内容编辑功能
-            const content = document.getElementById('content');
-            
-            if (content) {
-                content.addEventListener('blur', function() {
-                    if (!this.textContent.trim()) {
-                        this.textContent = '拥有苹果时 只在意苹果';
-                    }
-                });
-            }
-            
-            // 表情/图标固定为红苹果，禁止替换修改
-            const emoji = document.getElementById('emoji');
-            
-            if (emoji) {
-                emoji.textContent = '🍎';
-            }
-            
-            // Dock标签编辑功能
-            const dockLabel = document.getElementById('dock-label');
-            
-            if (dockLabel) {
-                dockLabel.addEventListener('blur', function() {
-                    if (!this.textContent.trim()) {
-                        this.textContent = '౿ ‧₊見えない愛ഒ ‧₊˚';
-                    }
-                });
-            }
-            
-            // 阻止编辑时的默认行为
-            const editableElements = document.querySelectorAll('[contenteditable="true"]');
-            editableElements.forEach(element => {
-                element.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                    }
-                });
-            });
+        // 使用requestAnimationFrame优化动画性能
+        function raf(callback) {
+            return new Promise(resolve => requestAnimationFrame(() => {
+                callback();
+                resolve();
+            }));
+        }
+        
+        // 延迟初始化非关键功能
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 立即初始化图标点击事件（关键功能）
+            const gridLinks = ['Chat/chat.html', 'Family/family.html', 'Search/search.html', 'Focus/focus.html'];
+            const dockLinks = ['Secret/secret.html', 'Music/music.html', 'Theme/theme.html', 'Settings/Settings.html'];
             
             // 为app-grid图标添加点击事件
-            const gridIcons = document.querySelectorAll('.app-grid .app-icon');
-            const gridLinks = [
-                'Chat/chat.html',      // 絮语
-                'Family/family.html', // 朝暮
-                'Search/search.html', // 安守
-                'Focus/focus.html'    // 惜时
-            ];
-            gridIcons.forEach((icon, index) => {
+            document.querySelectorAll('.app-grid .app-icon').forEach((icon, index) => {
                 if (gridLinks[index]) {
-                    icon.addEventListener('click', function() {
-                        window.location.href = gridLinks[index];
-                    });
-                    icon.addEventListener('touchend', function(e) {
-                        e.preventDefault();
-                        window.location.href = gridLinks[index];
-                    });
+                    icon.addEventListener('click', () => window.location.href = gridLinks[index]);
                 }
             });
             
             // 为dock栏图标添加点击事件
-            const dockIcons = document.querySelectorAll('.dock .app-icon');
-            const dockLinks = [
-                'Secret/secret.html',     // 第一个图标（最左边）：secret
-                'Music/music.html',       // 第二个图标：音乐
-                'Theme/theme.html',       // 第三个图标：主题
-                'Settings/Settings.html'  // 第四个图标：设置
-            ];
-            dockIcons.forEach((icon, index) => {
+            document.querySelectorAll('.dock .app-icon').forEach((icon, index) => {
                 if (dockLinks[index]) {
-                    icon.addEventListener('click', function() {
-                        window.location.href = dockLinks[index];
+                    icon.addEventListener('click', () => window.location.href = dockLinks[index]);
+                }
+            });
+            
+            // 延迟初始化触摸反馈和其他非关键功能
+            await raf(() => {
+                document.querySelectorAll('.app-icon').forEach(icon => {
+                    icon.addEventListener('touchstart', function() {
+                        this.classList.add('touch-active');
                     });
-                    icon.addEventListener('touchend', function(e) {
-                        e.preventDefault();
-                        window.location.href = dockLinks[index];
+                    icon.addEventListener('touchend', function() {
+                        setTimeout(() => this.classList.remove('touch-active'), 100);
+                    });
+                    icon.addEventListener('touchcancel', function() {
+                        this.classList.remove('touch-active');
+                    });
+                });
+                
+                // 头像上传功能
+                const avatar = document.getElementById('avatar');
+                const avatarUpload = document.getElementById('avatar-upload');
+                if (avatar && avatarUpload) {
+                    avatar.addEventListener('click', () => avatarUpload.click());
+                    avatarUpload.addEventListener('change', function(e) {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const img = avatar.querySelector('img');
+                                if (img) img.src = e.target?.result;
+                            };
+                            reader.readAsDataURL(file);
+                        }
                     });
                 }
+                
+                // 昵称和ID编辑功能
+                const nickname = document.getElementById('nickname');
+                const id = document.getElementById('id');
+                if (nickname) nickname.addEventListener('blur', () => { if (!nickname.textContent.trim()) nickname.textContent = '晕了饱饱'; });
+                if (id) id.addEventListener('blur', () => { if (!id.textContent.trim()) id.textContent = '@Q_iian'; });
+                
+                // 内容编辑功能
+                const content = document.getElementById('content');
+                if (content) content.addEventListener('blur', () => { if (!content.textContent.trim()) content.textContent = '拥有苹果时 只在意苹果'; });
+                
+                // 表情固定为红苹果
+                const emoji = document.getElementById('emoji');
+                if (emoji) emoji.textContent = '🍎';
+                
+                // Dock标签编辑功能
+                const dockLabel = document.getElementById('dock-label');
+                if (dockLabel) dockLabel.addEventListener('blur', () => { if (!dockLabel.textContent.trim()) dockLabel.textContent = '౿ ‧₊見えない愛ഒ ‧₊˚'; });
+                
+                // 阻止编辑时的回车行为
+                document.querySelectorAll('[contenteditable="true"]').forEach(element => {
+                    element.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+                });
             });
         });
     </script>

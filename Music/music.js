@@ -1,4 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // 加载头像
+    const loadAvatars = () => {
+        // 加载Char头像
+        const charData = localStorage.getItem('profile_char');
+        const charAvatar = document.getElementById('char-avatar');
+        if (charData && charAvatar) {
+            const data = JSON.parse(charData);
+            if (data.avatar) {
+                const img = charAvatar.querySelector('img');
+                if (img) {
+                    img.src = data.avatar;
+                }
+            }
+        }
+        
+        // 加载User头像
+        const userData = localStorage.getItem('profile_user');
+        const userAvatar = document.getElementById('user-avatar');
+        if (userData && userAvatar) {
+            const data = JSON.parse(userData);
+            if (data.avatar) {
+                const img = userAvatar.querySelector('img');
+                if (img) {
+                    img.src = data.avatar;
+                }
+            }
+        }
+    };
+    
+    loadAvatars();
+    
     // 防止双击放大页面
     let lastTap = 0;
     
