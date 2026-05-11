@@ -21,6 +21,40 @@
                 <div id="search-text" class="search-text" contenteditable="true">Search</div>
                 <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M19 11.5a7.5 7.5 0 1 1-15 0a7.5 7.5 0 0 1 15 0m-2.107 5.42l3.08 3.08"/><path d="M11.5 13.5a2 2 0 1 0 0-4a2 2 0 0 0 0 4"/></g></svg>
             </div>
+            
+            <div class="calendar">
+                <div class="calendar-header">
+                    <button class="calendar-prev" id="calendar-prev">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                    </button>
+                    <span class="calendar-month" id="calendar-month"></span>
+                    <button class="calendar-next" id="calendar-next">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+                <div class="calendar-dates" id="calendar-dates"></div>
+            </div>
+            
+            <div class="character-list">
+                <div class="character-card">
+                    <div class="card-header">
+                        <span class="pinned-label">Pinned Message</span>
+                        <button class="chat-btn" id="chat-btn">Chat</button>
+                    </div>
+                    <div class="card-content">
+                        <div class="avatar">
+                            <div class="avatar-placeholder">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="currentColor" d="M23 9A7 7 0 1 1 9 9a7 7 0 0 1 14 0m-2 0a5 5 0 1 0-10 0a5 5 0 0 0 10 0M7.5 18A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5zM6 21.5A1.5 1.5 0 0 1 7.5 20h17a1.5 1.5 0 0 1 1.5 1.5v.5c0 1.473-.94 2.949-2.759 4.106C21.434 27.256 18.877 28 16 28s-5.434-.744-7.241-1.894C6.939 24.95 6 23.472 6 22z"/></svg>
+                            </div>
+                        </div>
+                        <div class="character-info">
+                            <div class="character-name">Char</div>
+                            <div class="last-message">No information available at present.</div>
+                            <div class="message-time">05/20 13:14</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="bottom-nav">
@@ -57,7 +91,115 @@
                     window.location.replace(navLinks[index]);
                 });
             });
+            
+            // 搜索文本永久保存
+            const searchText = document.getElementById('search-text');
+            if (searchText) {
+                // 加载保存的搜索文本
+                const savedSearch = localStorage.getItem('chat_search_text');
+                if (savedSearch) {
+                    searchText.textContent = savedSearch;
+                }
+                
+                // 监听输入变化并保存
+                searchText.addEventListener('input', function() {
+                    localStorage.setItem('chat_search_text', this.textContent);
+                });
+                
+                // 监听失焦事件确保保存
+                searchText.addEventListener('blur', function() {
+                    localStorage.setItem('chat_search_text', this.textContent);
+                });
+            }
+            
+            // 日历功能
+            initCalendar();
+            
+            // Chat按钮点击事件
+            const chatBtn = document.getElementById('chat-btn');
+            if (chatBtn) {
+                chatBtn.addEventListener('click', function() {
+                    window.location.replace('chat-room.html');
+                });
+            }
         });
+        
+        function initCalendar() {
+            const today = new Date();
+            const timezoneOffset = 8 * 60; // 北京时区 UTC+8
+            const utc = today.getTime() + today.getTimezoneOffset() * 60000;
+            const beijingDate = new Date(utc + timezoneOffset * 60000);
+            
+            renderCalendar(beijingDate);
+            
+            document.getElementById('calendar-prev').addEventListener('click', function() {
+                const currentMonth = document.getElementById('calendar-month').dataset.date;
+                const date = new Date(currentMonth);
+                date.setDate(date.getDate() - 7);
+                renderCalendar(date);
+            });
+            
+            document.getElementById('calendar-next').addEventListener('click', function() {
+                const currentMonth = document.getElementById('calendar-month').dataset.date;
+                const date = new Date(currentMonth);
+                date.setDate(date.getDate() + 7);
+                renderCalendar(date);
+            });
+        }
+        
+        function renderCalendar(centerDate) {
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            const weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            
+            const timezoneOffset = 8 * 60;
+            const utc = centerDate.getTime() + centerDate.getTimezoneOffset() * 60000;
+            const beijingCenterDate = new Date(utc + timezoneOffset * 60000);
+            
+            // 获取今日日期（北京时区）
+            const today = new Date();
+            const todayUtc = today.getTime() + today.getTimezoneOffset() * 60000;
+            const beijingToday = new Date(todayUtc + timezoneOffset * 60000);
+            
+            // 获取中间日期所在月份
+            const calendarMonth = document.getElementById('calendar-month');
+            calendarMonth.textContent = monthNames[beijingCenterDate.getMonth()] + ' ' + beijingCenterDate.getFullYear();
+            calendarMonth.dataset.date = beijingCenterDate.toISOString().split('T')[0];
+            
+            // 生成前后各3天的日期（共7天）
+            const datesContainer = document.getElementById('calendar-dates');
+            datesContainer.innerHTML = '';
+            
+            for (let i = -3; i <= 3; i++) {
+                const date = new Date(beijingCenterDate);
+                date.setDate(date.getDate() + i);
+                
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date';
+                
+                // 判断是否是今天
+                const isToday = date.toDateString() === beijingToday.toDateString();
+                if (isToday) {
+                    dateElement.classList.add('today');
+                }
+                
+                // 判断是否是其他月份的日期（显示淡色）
+                if (date.getMonth() !== beijingCenterDate.getMonth()) {
+                    dateElement.classList.add('fade');
+                }
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'date-day';
+                dayElement.textContent = date.getDate();
+                
+                const weekdayElement = document.createElement('div');
+                weekdayElement.className = 'date-weekday';
+                weekdayElement.textContent = weekdayNames[date.getDay()];
+                
+                dateElement.appendChild(dayElement);
+                dateElement.appendChild(weekdayElement);
+                datesContainer.appendChild(dateElement);
+            }
+        }
     </script>
 </body>
 </html>
