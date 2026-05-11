@@ -172,6 +172,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     playBtn.classList.add('playing');
                     progressInterval = setInterval(updateProgress, 100);
                 }
+                // 停止Service Worker的播放
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'STOP_MUSIC' });
+                }
             }
         }
     }
@@ -819,6 +823,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 每分钟增加听歌时间
     setInterval(incrementListenTime, 60000);
+
+    // 在页面卸载前将音频交给Service Worker
+    window.addEventListener('beforeunload', function() {
+        if (isPlaying && songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
+            const currentSong = songs[currentSongIndex];
+            navigator.serviceWorker.controller.postMessage({
+                type: 'PLAY_MUSIC',
+                state: {
+                    currentSong: currentSong,
+                    currentTime: audio.currentTime,
+                    isPlaying: true,
+                    listenTime: listenTime
+                }
+            });
+        }
+    });
 
     // 初始化
     loadData();

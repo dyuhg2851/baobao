@@ -31,30 +31,30 @@ self.addEventListener('message', function(event) {
         audioState = event.data.state;
         if (!audio) {
             audio = new Audio();
-            audio.src = audioState.currentSong.url;
-            audio.currentTime = audioState.currentTime;
-            audio.loop = true;
-            audio.play();
-            
-            // 定期保存音频状态
-            setInterval(function() {
-                if (audio && !audio.paused) {
-                    self.clients.matchAll().then(function(clients) {
-                        clients.forEach(function(client) {
-                            client.postMessage({
-                                type: 'UPDATE_AUDIO_STATE',
-                                state: {
-                                    currentSong: audioState.currentSong,
-                                    currentTime: audio.currentTime,
-                                    isPlaying: true,
-                                    listenTime: audioState.listenTime
-                                }
-                            });
+        }
+        audio.src = audioState.currentSong.url;
+        audio.currentTime = audioState.currentTime;
+        audio.loop = true; // 循环播放当前歌曲
+        audio.play();
+        
+        // 定期保存音频状态
+        setInterval(function() {
+            if (audio && !audio.paused) {
+                self.clients.matchAll().then(function(clients) {
+                    clients.forEach(function(client) {
+                        client.postMessage({
+                            type: 'UPDATE_AUDIO_STATE',
+                            state: {
+                                currentSong: audioState.currentSong,
+                                currentTime: audio.currentTime,
+                                isPlaying: true,
+                                listenTime: audioState.listenTime
+                            }
                         });
                     });
-                }
-            }, 1000);
-        }
+                });
+            }
+        }, 1000);
     } else if (event.data.type === 'PAUSE_MUSIC') {
         if (audio) {
             audio.pause();
