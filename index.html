@@ -178,36 +178,58 @@
                     });
                 });
                 
-                // 头像上传功能
                 const avatar = document.getElementById('avatar');
                 const avatarUpload = document.getElementById('avatar-upload');
+
+                // 加载档案中的 user 头像到主屏幕
+                const savedUserProfile = localStorage.getItem('profile_user');
+                if (savedUserProfile && avatar) {
+                    try {
+                        const userProfile = JSON.parse(savedUserProfile);
+                        if (userProfile.avatar) {
+                            const img = avatar.querySelector('img');
+                            if (img) img.src = userProfile.avatar;
+                        }
+                    } catch (e) {
+                        console.error('解析 profile_user 失败', e);
+                    }
+                }
+
+                // 头像上传功能
                 if (avatar && avatarUpload) {
                     avatar.addEventListener('click', () => avatarUpload.click());
                     avatarUpload.addEventListener('change', function(e) {
                         const file = e.target.files?.[0];
                         if (file) {
                             const reader = new FileReader();
-                            reader.onload = function(e) {
+                            reader.onload = function(event) {
                                 const img = avatar.querySelector('img');
-                                if (img) img.src = e.target?.result;
+                                if (img) {
+                                    img.src = event.target?.result;
+                                    const existingProfile = localStorage.getItem('profile_user');
+                                    let profileData = { avatar: event.target?.result, name: '', signature: '', settings: '' };
+                                    if (existingProfile) {
+                                        try {
+                                            const parsed = JSON.parse(existingProfile);
+                                            profileData.name = parsed.name || '';
+                                            profileData.signature = parsed.signature || '';
+                                            profileData.settings = parsed.settings || '';
+                                        } catch (err) {
+                                            console.warn('解析 profile_user 失败，重置为新头像', err);
+                                        }
+                                    }
+                                    localStorage.setItem('profile_user', JSON.stringify(profileData));
+                                }
                             };
                             reader.readAsDataURL(file);
                         }
                     });
                 }
-                
+
                 // 昵称和ID编辑功能
                 const nickname = document.getElementById('nickname');
                 const id = document.getElementById('id');
-                if (nickname) nickname.addEventListener('blur', () => { if (!nickname.textContent.trim()) nickname.textContent = '晕了饱饱'; });
-                if (id) id.addEventListener('blur', () => { if (!id.textContent.trim()) id.textContent = '@Q_iian'; });
-                
-                // 内容编辑功能
-                const content = document.getElementById('content');
-                if (content) content.addEventListener('blur', () => { if (!content.textContent.trim()) content.textContent = '拥有苹果时 只在意苹果'; });
-                
-                // 表情固定为红苹果
-                const emoji = document.getElementById('emoji');
+
                 if (emoji) emoji.textContent = '🍎';
                 
                 // Dock标签编辑功能
