@@ -729,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('currentSongIndex:', currentSongIndex);
         console.log('isPlaying:', isPlaying);
         
-        // 保存音频状态，确保返回主屏幕后音乐继续播放（不显示卡片）
+        // 保存音频状态，确保返回主屏幕后音乐继续播放并显示卡片
         if (songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
             const currentSong = songs[currentSongIndex];
             console.log('当前歌曲:', currentSong);
@@ -739,11 +739,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentTime: audio.currentTime,
                 isPlaying: isPlaying,
                 listenTime: listenTime,
-                showFloat: false  // 不显示卡片
+                showFloat: true  // 显示卡片
             };
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            // 不设置 float_visible = true，这样音乐卡片不会显示
-            console.log('返回键: 状态已保存到localStorage（不显示卡片）');
+            localStorage.setItem('float_visible', 'true');  // 设置显示标志
+            console.log('返回键: 状态已保存到localStorage（显示卡片）');
             
             // 发送到Service Worker继续播放
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
