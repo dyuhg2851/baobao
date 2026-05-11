@@ -110,7 +110,7 @@
         // 引入音乐悬浮窗公共脚本
         const script = document.createElement('script');
         script.src = 'music-float.js';
-        script.async = true;
+        script.async = false;  // 同步加载，确保DOM加载前脚本已就绪
         document.head.appendChild(script);
     </script>
 </head>

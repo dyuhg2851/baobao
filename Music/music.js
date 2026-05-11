@@ -729,7 +729,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('currentSongIndex:', currentSongIndex);
         console.log('isPlaying:', isPlaying);
         
-        // 保存音频状态，确保返回主屏幕后音乐继续播放并显示卡片
+        // 保存音频状态，确保返回主屏幕后音乐继续播放（不显示卡片）
         if (songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
             const currentSong = songs[currentSongIndex];
             console.log('当前歌曲:', currentSong);
@@ -739,11 +739,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentTime: audio.currentTime,
                 isPlaying: isPlaying,
                 listenTime: listenTime,
-                showFloat: true  // 显示卡片
+                showFloat: false  // 不显示卡片
             };
+            // 同步保存到localStorage
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            localStorage.setItem('float_visible', 'true');  // 设置显示标志
-            console.log('返回键: 状态已保存到localStorage（显示卡片）');
+            // 不设置float_visible = true，这样音乐卡片不会显示
+            console.log('返回键: 状态已保存到localStorage（不显示卡片）');
             
             // 发送到Service Worker继续播放
             if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
@@ -755,8 +756,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             console.log('返回键: 没有有效的歌曲');
         }
-        // 跳转到主屏幕，不暂停音乐
-        window.location.href = '../index.html';
+        // 延迟跳转，确保localStorage写入完成
+        setTimeout(function() {
+            window.location.href = '../index.html';
+        }, 100);
     });
     
     addBtn.addEventListener('click', function() {
@@ -798,8 +801,10 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('float_visible', 'true');
             console.log('没有歌曲，但已设置float_visible标志');
         }
-        // 跳转到主屏幕，不暂停音乐
-        window.location.href = '../index.html';
+        // 延迟跳转，确保localStorage写入完成
+        setTimeout(function() {
+            window.location.href = '../index.html';
+        }, 100);
     });
 
     cancelAddSongBtn.addEventListener('click', function() {
