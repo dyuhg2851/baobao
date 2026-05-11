@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="search.css">
-    <link rel="stylesheet" href="../style.css">
     <title>Search</title>
 </head>
 <body>
-    <div class="search-container">
+    <div class="page-container">
         <div class="header">
             <button id="back-btn" class="back-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
@@ -16,19 +15,25 @@
             <h1>Search</h1>
         </div>
         
-        <!-- 搜索内容 -->
-        <div class="search-content">
-            <!-- 搜索框 -->
+        <div class="page-content">
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="搜索...">
             </div>
-            <!-- 搜索结果区域 -->
             <div class="search-results">
                 <p>搜索结果将显示在这里</p>
             </div>
         </div>
     </div>
     
-    <script src="search.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backBtn = document.getElementById('back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function() {
+                    window.location.replace('../index.html');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

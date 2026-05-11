@@ -86,8 +86,6 @@
                 });
             });
         }
-        
-        
     </script>
 </head>
 <body>
@@ -256,42 +254,45 @@
                 });
             });
             
+            // 为app-grid图标添加点击事件
+            const gridIcons = document.querySelectorAll('.app-grid .app-icon');
+            const gridLinks = [
+                'Chat/chat.html',      // 絮语
+                'Family/family.html', // 朝暮
+                'Search/search.html', // 安守
+                'Focus/focus.html'    // 惜时
+            ];
+            gridIcons.forEach((icon, index) => {
+                if (gridLinks[index]) {
+                    icon.addEventListener('click', function() {
+                        window.location.href = gridLinks[index];
+                    });
+                    icon.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        window.location.href = gridLinks[index];
+                    });
+                }
+            });
+            
             // 为dock栏图标添加点击事件
             const dockIcons = document.querySelectorAll('.dock .app-icon');
-            if (dockIcons.length > 0) {
-                // 第二个图标（从左往右）跳转到Music界面
-                const secondDockIcon = dockIcons[1];
-                secondDockIcon.addEventListener('click', function() {
-                    window.location.href = 'Music/music.html';
-                });
-                // 添加触摸事件支持
-                secondDockIcon.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    window.location.href = 'Music/music.html';
-                });
-                
-                // 第三个图标（从左往右）跳转到Theme界面
-                const thirdDockIcon = dockIcons[2];
-                thirdDockIcon.addEventListener('click', function() {
-                    window.location.href = 'Theme/theme.html';
-                });
-                // 添加触摸事件支持
-                thirdDockIcon.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    window.location.href = 'Theme/theme.html';
-                });
-                
-                // 最右边图标跳转到settings页面
-                const lastDockIcon = dockIcons[dockIcons.length - 1];
-                lastDockIcon.addEventListener('click', function() {
-                    window.location.href = 'Settings/Settings.html';
-                });
-                // 添加触摸事件支持
-                lastDockIcon.addEventListener('touchend', function(e) {
-                    e.preventDefault();
-                    window.location.href = 'Settings/Settings.html';
-                });
-            }
+            const dockLinks = [
+                'Secret/secret.html',     // 第一个图标（最左边）：secret
+                'Music/music.html',       // 第二个图标：音乐
+                'Theme/theme.html',       // 第三个图标：主题
+                'Settings/Settings.html'  // 第四个图标：设置
+            ];
+            dockIcons.forEach((icon, index) => {
+                if (dockLinks[index]) {
+                    icon.addEventListener('click', function() {
+                        window.location.href = dockLinks[index];
+                    });
+                    icon.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        window.location.href = dockLinks[index];
+                    });
+                }
+            });
         });
     </script>
 </body>

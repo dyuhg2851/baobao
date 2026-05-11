@@ -116,21 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let progressInterval;
     let repeatMode = 'order'; // order: 顺序播放, random: 随机播放, single: 单曲循环
     
-    // 保存音频状态到localStorage
-    function saveAudioState() {
-        if (songs.length > 0) {
-            const currentSong = songs[currentSongIndex];
-            window.currentSong = currentSong;
-            const audioState = {
-                currentSong: currentSong,
-                currentTime: audio.currentTime,
-                isPlaying: isPlaying,
-                listenTime: listenTime
-            };
-            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-        }
-    }
-    
     // 从localStorage加载音频状态
     function loadAudioState() {
         const savedState = localStorage.getItem('music_audio_state');
@@ -720,8 +705,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // 隐藏底部播放器栏
         bottomPlayerBar.style.display = 'none';
     });
-
-    
 
     cancelAddSongBtn.addEventListener('click', function() {
         // 隐藏添加歌曲弹窗
