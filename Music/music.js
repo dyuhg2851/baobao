@@ -70,7 +70,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // 元素引用
     const backBtn = document.getElementById('back-btn');
     const addBtn = document.getElementById('add-btn');
-    const floatBtn = document.getElementById('float-btn');
     const saveBtn = document.getElementById('save-btn');
     const songNameInput = document.getElementById('song-name');
     const artistNameInput = document.getElementById('artist-name');
@@ -126,18 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentSong: currentSong,
                 currentTime: audio.currentTime,
                 isPlaying: isPlaying,
-                listenTime: listenTime,
-                showFloat: true
+                listenTime: listenTime
             };
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            
-            // 发送到Service Worker
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'PLAY_MUSIC',
-                    state: audioState
-                });
-            }
         }
     }
     
@@ -215,28 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // 保存音频状态到localStorage
-    function saveAudioState() {
-        if (songs.length > 0) {
-            const currentSong = songs[currentSongIndex];
-            const audioState = {
-                currentSong: currentSong,
-                currentTime: audio.currentTime,
-                isPlaying: isPlaying,
-                listenTime: listenTime,
-                showFloat: true
-            };
-            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            
-            // 发送到Service Worker
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'PLAY_MUSIC',
-                    state: audioState
-                });
-            }
-        }
-    }
+    
 
     // 保存数据到本地存储
     function saveData() {
@@ -738,28 +707,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 currentSong: currentSong,
                 currentTime: audio.currentTime,
                 isPlaying: isPlaying,
-                listenTime: listenTime,
-                showFloat: false  // 不显示卡片
+                listenTime: listenTime
             };
-            // 同步保存到localStorage
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            // 不设置float_visible = true，这样音乐卡片不会显示
-            console.log('返回键: 状态已保存到localStorage（不显示卡片）');
-            
-            // 发送到Service Worker继续播放
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'PLAY_MUSIC',
-                    state: audioState
-                });
-            }
-        } else {
-            console.log('返回键: 没有有效的歌曲');
         }
-        // 延迟跳转，确保localStorage写入完成
-        setTimeout(function() {
-            window.location.href = '../index.html';
-        }, 100);
+        window.location.href = '../index.html';
     });
     
     addBtn.addEventListener('click', function() {
@@ -769,43 +721,7 @@ document.addEventListener('DOMContentLoaded', function() {
         bottomPlayerBar.style.display = 'none';
     });
 
-    floatBtn.addEventListener('click', function() {
-        console.log('小窗按钮被点击');
-        console.log('songs.length:', songs.length);
-        
-        // 保存音频状态，强制显示悬浮窗
-        if (songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
-            const currentSong = songs[currentSongIndex];
-            console.log('当前歌曲:', currentSong);
-            
-            const audioState = {
-                currentSong: currentSong,
-                currentTime: audio.currentTime,
-                isPlaying: isPlaying,
-                listenTime: listenTime,
-                showFloat: true
-            };
-            // 同步保存到localStorage
-            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            localStorage.setItem('float_visible', 'true');
-            console.log('状态已保存到localStorage');
-            
-            // 发送到Service Worker继续播放
-            if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'PLAY_MUSIC',
-                    state: audioState
-                });
-            }
-        } else {
-            localStorage.setItem('float_visible', 'true');
-            console.log('没有歌曲，但已设置float_visible标志');
-        }
-        // 延迟跳转，确保localStorage写入完成
-        setTimeout(function() {
-            window.location.href = '../index.html';
-        }, 100);
-    });
+    
 
     cancelAddSongBtn.addEventListener('click', function() {
         // 隐藏添加歌曲弹窗

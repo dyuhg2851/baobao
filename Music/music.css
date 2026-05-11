@@ -75,7 +75,7 @@ h1 {
     gap: 12px;
 }
 
-.add-btn, .float-btn {
+.add-btn {
     background: none;
     border: none;
     cursor: pointer;
@@ -90,8 +90,7 @@ h1 {
     user-select: none;
 }
 
-.add-btn svg,
-.float-btn svg {
+.add-btn svg {
     width: 24px;
     height: 24px;
 }

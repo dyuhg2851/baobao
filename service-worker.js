@@ -47,8 +47,7 @@ self.addEventListener('message', function(event) {
                                     currentSong: audioState.currentSong,
                                     currentTime: audio.currentTime,
                                     isPlaying: true,
-                                    listenTime: audioState.listenTime,
-                                    showFloat: true
+                                    listenTime: audioState.listenTime
                                 }
                             });
                         });

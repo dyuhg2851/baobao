@@ -130,31 +130,6 @@
         </div>
     </div>
     
-    <!-- 音乐悬浮窗 -->
-    <div class="music-float" id="music-float" style="display: none;">
-        <div class="fixed-player-card">
-            <div class="float-content">
-                <div class="float-vinyl">
-                    <div class="float-vinyl-record" id="float-vinyl-record">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Crect fill='%23e0e0e0' width='60' height='60'/%3E%3Ctext fill='%23999' font-family='Arial' font-size='12' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EAlbum%3C/text%3E%3C/svg%3E" alt="封面" id="float-cover">
-                    </div>
-                </div>
-                <div class="float-info">
-                    <div class="float-song-name" id="float-song-name"></div>
-                    <div class="float-lyric" id="float-lyric"></div>
-                </div>
-                <div class="float-close" id="float-close">×</div>
-            </div>
-        </div>
-    </div>
-    
     <script src="Settings.js"></script>
-    <script>
-        // 引入音乐悬浮窗公共脚本
-        const script = document.createElement('script');
-        script.src = '../music-float.js';
-        script.async = false;
-        document.head.appendChild(script);
-    </script>
 </body>
 </html>
