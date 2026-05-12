@@ -60,6 +60,9 @@
             justify-content: center;
             z-index: 9999;
             background: #ffffff;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: opacity, transform;
         }
 
         .logo-wrapper {
@@ -249,15 +252,29 @@
     </div>
 
     <script>
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('splash').classList.add('fade-out');
-            }, 100);
+        (function() {
+            var splash = document.getElementById('splash');
+            var isLoaded = document.readyState === 'complete';
             
-            setTimeout(function() {
-                window.location.href = 'index.html';
-            }, 3200);
-        });
+            function startAnimation() {
+                setTimeout(function() {
+                    splash.classList.add('fade-out');
+                }, 100);
+                
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 2500);
+            }
+            
+            if (isLoaded) {
+                startAnimation();
+            } else {
+                window.addEventListener('load', startAnimation);
+                window.addEventListener('DOMContentLoaded', startAnimation);
+            }
+            
+            setTimeout(startAnimation, 500);
+        })();
     </script>
 </body>
 </html>

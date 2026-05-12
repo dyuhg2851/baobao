@@ -2,11 +2,11 @@
   "name": "晕倒料理",
   "short_name": "晕倒料理",
   "description": "晕倒料理应用",
-  "start_url": "./index.html",
+  "start_url": "./splash.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f2f2f7",
-  "theme_color": "#f2f2f7",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "assets/app-icon.svg",
@@ -26,7 +26,7 @@
       "name": "打开应用",
       "short_name": "打开",
       "description": "打开晕倒料理应用",
-      "url": "./index.html",
+      "url": "./splash.html",
       "icons": [
         {
           "src": "assets/app-icon.svg",

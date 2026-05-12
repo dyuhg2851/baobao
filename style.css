@@ -81,16 +81,16 @@ body {
     left: 20px;
     right: 20px;
     padding: 14px 20px;
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.85);
     border-radius: 24px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     z-index: 20;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .dock-label {
@@ -122,8 +122,11 @@ body {
     justify-content: center;
     padding: 10px;
     cursor: pointer;
-    transition: all 0.1s ease;
+    transition: transform 0.1s ease, opacity 0.1s ease;
     -webkit-tap-highlight-color: transparent;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform;
 }
 
 .app-grid {
@@ -203,6 +206,8 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: transform 0.1s ease;
     background-color: rgba(255, 255, 255, 0.5);
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .avatar img {

@@ -4,6 +4,7 @@ self.addEventListener('install', function(event) {
         caches.open('music-cache').then(function(cache) {
             return cache.addAll([
                 '/',
+                '/splash.html',
                 '/index.html',
                 '/style.css',
                 '/Music/music.html',
