@@ -41,6 +41,7 @@ body {
     margin-bottom: 30px;
     position: relative;
     flex-shrink: 0;
+    min-height: 22px;
 }
 
 .back-btn {
