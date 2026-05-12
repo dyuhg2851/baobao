@@ -213,17 +213,14 @@ h1 {
     width: 44px;
     height: 60px;
     border-radius: 20px;
-    background-color: #f0f0f0;
     transition: all 0.2s ease;
 }
 
 .calendar-date.today {
-    background-color: #ffffff;
     border-radius: 20px;
 }
 
 .calendar-date.upcoming {
-    background-color: #f0f0f0;
     border-radius: 20px;
 }
 
@@ -247,7 +244,7 @@ h1 {
 
 .calendar-date .date-day {
     font-size: 14px;
-    color: #333;
+    color: #999999;
     margin-bottom: 2px;
 }
 

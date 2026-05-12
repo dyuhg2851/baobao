@@ -17,6 +17,33 @@
         </div>
         
         <div class="page-content">
+            <div class="me-avatar" id="me-avatar">
+                <img src="../assets/app-icon.svg" alt="avatar">
+            </div>
+            
+            <div class="me-grid">
+                <div class="me-row">
+                    <div class="col-left">@</div>
+                    <div class="col-mid"><a href="profile.html" id="me-name-link" class="me-link">晕了饱饱</a></div>
+                    <div class="col-right">·</div>
+                </div>
+            </div>
+                <div class="me-row">
+                    <div class="col-left">#</div>
+                    <div class="col-mid">^⎚-⎚^</div>
+                    <div class="col-right">·</div>
+                </div>
+                <div class="me-row">
+                    <div class="col-left">$</div>
+                    <div class="col-mid">Wallet</div>
+                    <div class="col-right">·</div>
+                </div>
+                <div class="me-row">
+                    <div class="col-left">%</div>
+                    <div class="col-mid">Emoji Pack</div>
+                    <div class="col-right">·</div>
+                </div>
+            </div>
         </div>
         
         <div class="dock">
@@ -53,6 +80,24 @@
                     window.location.replace(navLinks[index]);
                 });
             });
+            
+            // 加载 user 档案
+            var userData = localStorage.getItem('profile_user');
+            if (userData) {
+                try {
+                    var u = JSON.parse(userData);
+                    var avatarEl = document.getElementById('me-avatar');
+                    var nameEl = document.getElementById('me-username');
+                    var linkEl = document.getElementById('me-name-link');
+                    if (u.avatar && avatarEl) {
+                        avatarEl.innerHTML = '<img src="' + u.avatar + '" alt="avatar">';
+                    }
+                    if (u.name) {
+                        if (nameEl) nameEl.textContent = u.name;
+                        if (linkEl) linkEl.textContent = u.name;
+                    }
+                } catch(e) {}
+            }
         });
     </script>
 </body>
