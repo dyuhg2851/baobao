@@ -34,8 +34,6 @@ body {
     align-items: center;
     margin-bottom: 30px;
     position: relative;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: 12px;
 }
 
 .back-btn {
@@ -120,7 +118,7 @@ h1 {
     justify-content: space-around;
     align-items: center;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-    height: calc(70px + env(safe-area-inset-bottom));
+    height: auto;
     z-index: 40;
 }
 
