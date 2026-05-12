@@ -13,9 +13,16 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
             </button>
             <div class="header-center">
-                <div class="header-avatar" id="chat-header-avatar"></div>
-                <div class="character-name">Shayna</div>
-                <div class="character-status">Online</div>
+                <div class="avatar-row">
+                    <div class="avatar-block">
+                        <div class="avatar user-avatar" id="chat-user-avatar"></div>
+                        <div class="avatar-label" id="chat-user-name">You</div>
+                    </div>
+                    <div class="avatar-block">
+                        <div class="avatar char-avatar" id="chat-char-avatar"></div>
+                        <div class="avatar-label" id="chat-char-name">Char</div>
+                    </div>
+                </div>
             </div>
             <button id="voice-btn" class="voice-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m12 5.5l-.54.52a.75.75 0 0 0 1.08 0zM8.962 18.91l-.465.59zM7 16.42a.75.75 0 0 0-.954 1.16zm-4.659-3.009a.75.75 0 1 0 1.316-.72zm15.829 6.758l-.45-.6zm2.976-7.251l.543-.518zm-4.647.24l-.527.534a.75.75 0 0 0 1.054 0zm-1.67 7.011l.449-.6zm-2.977-7.251l.542.518zm7.594 7.243a.75.75 0 0 0-.893-1.205zm1.402-3.517a.75.75 0 1 0 1.32.712zm.249-3.777l-.53.53zM2.75 9.137c0-2.15 1.215-3.954 2.874-4.713c1.612-.737 3.778-.541 5.836 1.597l1.08-1.04C10.1 2.444 7.264 2.025 5 3.06C2.786 4.073 1.25 6.425 1.25 9.137zM8.497 19.5c.513.404 1.063.834 1.62 1.16s1.193.59 1.883.59v-1.5c-.31 0-.674-.12-1.126-.385c-.453-.264-.922-.628-1.448-1.043zM22.75 9.137c0-2.712-1.535-5.064-3.75-6.077c-2.264-1.035-5.098-.616-7.54 1.92l1.08 1.04c2.058-2.137 4.224-2.333 5.836-1.596c1.659.759 2.874 2.562 2.874 4.713zM9.426 18.322c-.796-.627-1.605-1.226-2.425-1.901l-.954 1.158c.83.683 1.708 1.335 2.45 1.92zm-5.768-5.63a7.25 7.25 0 0 1-.908-3.555h-1.5c0 1.638.42 3.046 1.092 4.275zm14.063 6.877a7 7 0 0 1-.758.52c-.225.125-.369.161-.463.161v1.5c.456 0 .861-.166 1.192-.35c.33-.182.65-.422.929-.63zm5.029-4.51a3.84 3.84 0 0 0-1.06-2.66l-1.085 1.037c.397.415.645.987.645 1.624zm-8.37 5.71c.278.21.599.449.928.632s.736.349 1.192.349v-1.5c-.094 0-.238-.036-.463-.16a7 7 0 0 1-.758-.521zm-2.63-5.71c0-.636.248-1.207.645-1.623L11.31 12.4a3.84 3.84 0 0 0-1.06 2.66zm.645-1.623a2.18 2.18 0 0 1 1.565-.686c.595-.003 1.304.242 2.013.942l1.054-1.067c-.953-.941-2.03-1.38-3.074-1.375a3.68 3.68 0 0 0-2.643 1.15zm6.226 7.333c.267-.2.527-.386.826-.608l-.893-1.205c-.27.199-.57.416-.833.613zm3.548-3.413a4.76 4.76 0 0 0 .581-2.297h-1.5c0 .605-.15 1.122-.4 1.585zm-6.89 2.213c-.238-.178-.496-.365-.74-.544l-.89 1.207c.26.191.498.363.73.537zm-.74-.544c-1.512-1.115-2.789-2.214-2.789-3.965h-1.5c0 2.594 1.953 4.106 3.4 5.172zm-.878-.009c-.691.49-1.218.734-1.661.734v1.5c.945 0 1.806-.498 2.528-1.01zM21.69 12.4l-.062-.063l-1.06 1.06l.037.038zm-.062-.063A3.67 3.67 0 0 0 19 11.25c-1.03.008-2.089.448-3.027 1.375l1.054 1.067c.699-.69 1.396-.937 1.985-.942a2.17 2.17 0 0 1 1.556.648zm.137.874a8.74 8.74 0 0 0 .985-4.074h-1.5c0 1.293-.31 2.403-.818 3.386z"/></svg>
@@ -48,22 +55,6 @@
         </div>
     </div>
     
-    <div class="dock">
-        <div class="dock-label" id="dock-label" contenteditable="true">౿ ‧₊見えない愛ഒ ‧₊˚</div>
-        <div class="app-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linecap="round" d="M18 10h-5"/><path d="M10 3h6.5c.464 0 .697 0 .892.026a3 3 0 0 1 2.582 2.582c.026.195.026.428.026.892"/><path stroke-linecap="round" d="M22 11.798c0-2.632 0-3.949-.77-4.804a3 3 0 0 0-.224-.225C20.151 6 18.834 6 16.202 6h-.374c-1.153 0-1.73 0-2.268-.153a4 4 0 0 1-.848-.352C12.224 5.224 11.816 4.815 11 4l-.55-.55c-.274-.274-.41-.41-.554-.53a4 4 0 0 0-2.18-.903C7.53 2 7.336 2 6.95 2c-.883 0-1.324 0-1.692.07A4 4 0 0 0 2.07 5.257C2 5.626 2 6.068 2 6.95M21.991 16c-.036 2.48-.22 3.885-1.163 4.828C19.657 22 17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172S2 17.771 2 14v-3"/></g></svg>
-        </div>
-        <div class="app-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="2"/><circle cx="18" cy="9" r="2"/><path d="M15.318 3.631a9 9 0 1 0 5.368 10.736M20 9V2l2 2"/></g></svg>
-        </div>
-        <div class="app-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12h-2c-.894 0-1.662-.857-1.761-2c-.296-3.45-.749-6-2.749-6s-2.5 3.582-2.5 8s-.5 8-2.5 8s-2.452-2.547-2.749-6c-.1-1.147-.867-2-1.763-2h-2"/></svg>
-        </div>
-        <div class="app-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M3.661 10.64c.473.296.777.802.777 1.36s-.304 1.064-.777 1.36c-.321.203-.529.364-.676.556a2 2 0 0 0-.396 1.479c.052.394.285.798.75 1.605c.467.807.7 1.21 1.015 1.453a2 2 0 0 0 1.479.396c.24-.032.483-.13.819-.308a1.62 1.62 0 0 1 1.567.008c.483.28.77.795.79 1.353c.014.38.05.64.143.863a2 2 0 0 0 1.083 1.083C10.602 22 11.068 22 12 22s1.398 0 1.765-.152a2 2 0 0 0 1.083-1.083c.092-.223.129-.483.143-.863c.02-.558.307-1.074.79-1.353a1.62 1.62 0 0 1 1.567-.008c.336.178.58.276.82.308a2 2 0 0 0 1.478-.396c.315-.242.548-.646 1.014-1.453c.208-.36.369-.639.489-.873m-.81-2.766a1.62 1.62 0 0 1-.777-1.36c0-.559.304-1.065.777-1.362c.321-.202.528-.363.676-.555a2 2 0 0 0 .396-1.479c-.052-.394-.285-.798-.75-1.605c-.467-.807-.7-1.21-1.015-1.453a2 2 0 0 0-1.479-.396c-.24.032-.483.13-.82.308a1.62 1.62 0 0 1-1.566-.008a1.62 1.62 0 0 1-.79-1.353c-.014-.38-.05-.64-.143-.863a2 2 0 0 0-1.083-1.083C13.398 2 12.932 2 12 2s-1.398 0-1.765.152a2 2 0 0 0-1.083 1.083c-.092.223-.129.483-.143.863a1.62 1.62 0 0 1-.79 1.353a1.62 1.62 0 0 1-1.567.008c-.336-.178-.58-.276-.82-.308a2 2 0 0 0-1.478.396C4.04 5.79 3.806 6.193 3.34 7c-.208.36-.369.639-.489.873"/></g></svg>
-        </div>
-    </div>
-    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const backBtn = document.getElementById('back-btn');
@@ -73,31 +64,40 @@
                 });
             }
             
-            // Dock图标点击事件
-            const dockLinks = ['../Secret/secret.html', '../Music/music.html', '../Theme/theme.html', '../Settings/Settings.html'];
-            document.querySelectorAll('.dock .app-icon').forEach((icon, index) => {
-                if (dockLinks[index]) {
-                    icon.addEventListener('click', () => window.location.href = dockLinks[index]);
-                }
-            });
-            
             // 加载档案资料
             const loadProfileData = () => {
                 const charData = localStorage.getItem('profile_char');
-                const nameElement = document.querySelector('.chat-header .character-name');
-                const avatarElement = document.getElementById('chat-header-avatar');
+                const userData = localStorage.getItem('profile_user');
+                const charNameElement = document.getElementById('chat-char-name');
+                const charAvatarElement = document.getElementById('chat-char-avatar');
+                const userNameElement = document.getElementById('chat-user-name');
+                const userAvatarElement = document.getElementById('chat-user-avatar');
 
                 if (charData) {
                     try {
                         const data = JSON.parse(charData);
-                        if (data.name && nameElement) {
-                            nameElement.textContent = data.name;
+                        if (data.name && charNameElement) {
+                            charNameElement.textContent = data.name;
                         }
-                        if (data.avatar && avatarElement) {
-                            avatarElement.style.backgroundImage = `url(${data.avatar})`;
+                        if (data.avatar && charAvatarElement) {
+                            charAvatarElement.style.backgroundImage = `url(${data.avatar})`;
                         }
                     } catch (e) {
                         console.error('解析 profile_char 失败', e);
+                    }
+                }
+
+                if (userData) {
+                    try {
+                        const data = JSON.parse(userData);
+                        if (data.name && userNameElement) {
+                            userNameElement.textContent = data.name;
+                        }
+                        if (data.avatar && userAvatarElement) {
+                            userAvatarElement.style.backgroundImage = `url(${data.avatar})`;
+                        }
+                    } catch (e) {
+                        console.error('解析 profile_user 失败', e);
                     }
                 }
             };

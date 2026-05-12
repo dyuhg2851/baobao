@@ -206,6 +206,11 @@
                     dateElement.classList.add('today');
                 }
                 
+                // 未到日期使用大圆角背景
+                if (date > beijingToday) {
+                    dateElement.classList.add('upcoming');
+                }
+                
                 // 判断是否是其他月份的日期（显示淡色）
                 if (date.getMonth() !== beijingCenterDate.getMonth()) {
                     dateElement.classList.add('fade');
