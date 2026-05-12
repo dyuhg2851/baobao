@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>开屏动画</title>
     <style>
         * {
@@ -11,15 +11,29 @@
             box-sizing: border-box;
         }
         
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
-            width: 100vw;
-            height: 100vh;
             background-color: white;
+            display: -webkit-box;
+            display: -webkit-flex;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
             justify-content: center;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
         
         .splash-container {
@@ -50,8 +64,8 @@
             width: 250px;
             height: 250px;
             opacity: 0.3;
+            -webkit-transform: translateZ(0);
             transform: translateZ(0);
-            animation: scale 1.5s ease-in-out infinite;
         }
         
         .svg-regular {
@@ -59,26 +73,36 @@
             width: 150px;
             height: 150px;
             z-index: 1;
+            -webkit-transform: translateZ(0);
             transform: translateZ(0);
-            animation: scale 1.2s ease-in-out infinite;
         }
         
         path {
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
+            -webkit-animation: draw 1.5s ease forwards;
             animation: draw 1.5s ease forwards;
             will-change: stroke-dashoffset;
         }
         
         .svg-large path {
             stroke: #ccc;
+            -webkit-animation-duration: 1.2s;
             animation-duration: 1.2s;
         }
         
         .svg-regular path {
             stroke: #000;
+            -webkit-animation-duration: 1.8s;
             animation-duration: 1.8s;
+            -webkit-animation-delay: 0.2s;
             animation-delay: 0.2s;
+        }
+        
+        @-webkit-keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
         }
         
         @keyframes draw {
@@ -88,22 +112,78 @@
         }
         
         .fade-out {
+            -webkit-animation: fadeOut 0.8s ease forwards;
             animation: fadeOut 0.8s ease forwards;
+            -webkit-animation-delay: 2.5s;
             animation-delay: 2.5s;
+        }
+        
+        @-webkit-keyframes fadeOut {
+            to {
+                opacity: 0;
+                -webkit-transform: scale(0.8);
+                transform: scale(0.8);
+            }
         }
         
         @keyframes fadeOut {
             to {
                 opacity: 0;
+                -webkit-transform: scale(0.8);
                 transform: scale(0.8);
             }
         }
         
-        @keyframes scale {
+        .svg-large {
+            -webkit-animation: scaleLarge 1.5s ease-in-out infinite;
+            animation: scaleLarge 1.5s ease-in-out infinite;
+        }
+        
+        .svg-regular {
+            -webkit-animation: scaleRegular 1.2s ease-in-out infinite;
+            animation: scaleRegular 1.2s ease-in-out infinite;
+        }
+        
+        @-webkit-keyframes scaleLarge {
             0%, 100% {
+                -webkit-transform: scale(1);
                 transform: scale(1);
             }
             50% {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+            }
+        }
+        
+        @keyframes scaleLarge {
+            0%, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+            50% {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+            }
+        }
+        
+        @-webkit-keyframes scaleRegular {
+            0%, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+            50% {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+            }
+        }
+        
+        @keyframes scaleRegular {
+            0%, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+            50% {
+                -webkit-transform: scale(1.1);
                 transform: scale(1.1);
             }
         }
