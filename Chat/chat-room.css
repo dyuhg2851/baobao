@@ -4,10 +4,14 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: #ffffff;
-    padding: 100px 0 100px;
+    padding: 0;
     touch-action: none;
     -webkit-tap-highlight-color: transparent;
     -webkit-user-select: none;
@@ -33,10 +37,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    background-color: #ffffff;
-    position: relative;
-    margin-bottom: 0;
+    padding: 12px 20px;
+    height: 64px;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 12;
 }
 
 .back-btn {
@@ -127,6 +135,8 @@ body {
 .chat-messages {
     flex: 1;
     padding: 16px;
+    padding-top: calc(64px + 12px);
+    padding-bottom: 92px; /* leave room for fixed input */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -172,12 +182,17 @@ body {
 }
 
 .chat-input {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
     padding: 12px 16px;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    background-color: #ffffff;
-    border-top: 1px solid #e5e5e5;
+    padding-bottom: 12px; /* ignore safe-area inset to show full-screen */
+    background-color: rgba(255,255,255,0.92);
+    border-top: 1px solid rgba(0,0,0,0.06);
+    z-index: 11;
 }
 
 .message-input {
@@ -215,38 +230,4 @@ body {
     height: 20px;
 }
 
-.dock {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 14px 20px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 24px 24px 0 0;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 20;
-}
-
-.dock-label {
-    position: absolute;
-    top: -40px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 12px;
-    color: #999;
-    cursor: text;
-    padding: 4px 8px;
-    border-radius: 8px;
-    transition: transform 0.1s ease;
-    background: transparent;
-    border: none;
-    outline: none;
-    text-align: center;
-    min-width: 40px;
-}
+/* removed dock — chat room is full screen */
