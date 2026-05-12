@@ -143,7 +143,7 @@ body {
     flex: 1;
     padding: 16px;
     padding-top: calc(64px + env(safe-area-inset-top));
-    padding-bottom: 92px; /* leave room for fixed input */
+    padding-bottom: calc(92px + env(safe-area-inset-bottom)); /* leave room for fixed input */
     overflow-y: auto;
     display: flex;
     flex-direction: column;
