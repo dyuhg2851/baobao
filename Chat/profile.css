@@ -5,7 +5,85 @@
 }
 
 html, body {
-    height: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #ffffff;
+    padding: 100px 20px 0;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    overflow: hidden;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-container {
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.back-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.back-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.decoration {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+}
+
+h1 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #333;
+    margin: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.page-content {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 body {
@@ -80,10 +158,11 @@ h1 {
 
 /* 底部 dock 栏 */
 .dock {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    flex-shrink: 0;
+    margin: 0 auto;
+    margin-bottom: 0;
+    width: calc(100% - 40px);
+    max-width: 560px;
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 50px;
     padding: 16px 24px;

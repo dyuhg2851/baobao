@@ -5,7 +5,9 @@
 }
 
 html, body {
-    height: 100%;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 body {
@@ -18,15 +20,19 @@ body {
     user-select: none;
     overflow: hidden;
     height: 100vh;
-    position: fixed;
     width: 100%;
-    top: 0;
-    left: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .settings-container {
     max-width: 600px;
     margin: 0 auto;
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 .header {
@@ -34,6 +40,7 @@ body {
     align-items: center;
     margin-bottom: 30px;
     position: relative;
+    flex-shrink: 0;
 }
 
 .back-btn {
@@ -74,8 +81,9 @@ h1 {
 }
 
 .page-content {
+    flex: 1;
     overflow-y: auto;
-    height: calc(100vh - 120px);
+    min-height: 0;
 }
 
 .search-box {
@@ -107,10 +115,11 @@ h1 {
 
 /* 底部 dock 栏 */
 .dock {
-    position: fixed;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
+    flex-shrink: 0;
+    margin: 0 auto;
+    margin-bottom: 0;
+    width: calc(100% - 40px);
+    max-width: 560px;
     background-color: rgba(255, 255, 255, 0.95);
     border-radius: 50px;
     padding: 16px 24px;
