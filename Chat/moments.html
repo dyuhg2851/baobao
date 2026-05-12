@@ -17,6 +17,50 @@
         </div>
         
         <div class="page-content">
+            <div class="moments-cover" id="moments-cover">
+                <div class="cover-image" id="cover-image"></div>
+                <div class="cover-overlay"></div>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar-wrapper" id="avatar-wrapper">
+                    <div class="avatar" id="user-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#999999" d="M23 9A7 7 0 1 1 9 9a7 7 0 0 1 14 0m-2 0a5 5 0 1 0-10 0a5 5 0 0 0 10 0M7.5 18A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5zM6 21.5A1.5 1.5 0 0 1 7.5 20h17a1.5 1.5 0 0 1 1.5 1.5v.5c0 1.473-.94 2.949-2.759 4.106C21.434 27.256 18.877 28 16 28s-5.434-.744-7.241-1.894C6.939 24.95 6 23.472 6 22z"/></svg>
+                    </div>
+                </div>
+                
+                <div class="user-details">
+                    <div class="name-row">
+                        <a href="profile.html" class="user-name" id="user-name">User</a>
+                        <button class="add-moment-btn" id="add-moment-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 16 16"><path fill="#000000" d="M8 0q-.264 0-.523.017l.064.998a7 7 0 0 1 .918 0l.064-.998A8 8 0 0 0 8 0M6.44.152q-.52.104-1.012.27l.321.948q.43-.147.884-.237L6.44.153zm4.132.271a8 8 0 0 0-1.011-.27l-.194.98q.453.09.884.237zm1.873.925a8 8 0 0 0-.906-.524l-.443.896q.413.205.793.459zM4.46.824q-.471.233-.905.524l.556.83a7 7 0 0 1 .793-.458zM2.725 1.985q-.394.346-.74.74l.752.66q.303-.345.648-.648zm11.29.74a8 8 0 0 0-.74-.74l-.66.752q.346.303.648.648zm1.161 1.735a8 8 0 0 0-.524-.905l-.83.556q.254.38.458.793l.896-.443zM1.348 3.555q-.292.433-.524.906l.896.443q.205-.413.459-.793zM.423 5.428a8 8 0 0 0-.27 1.011l.98.194q.09-.453.237-.884zM15.848 6.44a8 8 0 0 0-.27-1.012l-.948.321q.147.43.237.884zM.017 7.477a8 8 0 0 0 0 1.046l.998-.064a7 7 0 0 1 0-.918zM16 8a8 8 0 0 0-.017-.523l-.998.064a7 7 0 0 1 0 .918l.998.064A8 8 0 0 0 16 8M.152 9.56q.104.52.27 1.012l.948-.321a7 7 0 0 1-.237-.884l-.98.194zm15.425 1.012q.168-.493.27-1.011l-.98-.194q-.09.453-.237.884zM.824 11.54a8 8 0 0 0 .524.905l.83-.556a7 7 0 0 1-.458-.793zm13.828.905q.292-.434.524-.906l-.896-.443q-.205.413-.459.793zm-12.667.83q.346.394.74.74l.66-.752a7 7 0 0 1-.648-.648zm11.29.74q.394-.346.74-.74l-.752-.66q-.302.346-.648.648zm-1.735 1.161q.471-.233.905-.524l-.556-.83a7 7 0 0 1-.793.458zm-7.985-.524q.434.292.906.524l.443-.896a7 7 0 0 1-.793-.459zm1.873.925q.493.168 1.011.27l.194-.98a7 7 0 0 1-.884-.237zm4.132.271a8 8 0 0 0 1.012-.27l-.321-.948a7 7 0 0 1-.884.237l.194.98zm-2.083.135a8 8 0 0 0 1.046 0l-.064-.998a7 7 0 0 1-.918 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z"/></svg>
+                        </button>
+                    </div>
+                    <div class="signature-wrapper">
+                        <p class="signature" id="user-signature">This is user signature</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="photo-grid">
+                <div class="photo-item" data-index="0">
+                    <div class="photo-placeholder" id="photo-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="#cccccc" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                    </div>
+                </div>
+                <div class="photo-item" data-index="1">
+                    <div class="photo-placeholder" id="photo-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="#cccccc" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                    </div>
+                </div>
+                <div class="photo-item" data-index="2">
+                    <div class="photo-placeholder" id="photo-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="#cccccc" d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="moments-feed" id="moments-feed"></div>
         </div>
         
         <div class="dock">
@@ -34,7 +78,57 @@
             </button>
         </div>
     </div>
-    
+
+    <div class="modal-overlay" id="moment-modal">
+        <div class="moment-card">
+            <div class="moment-header">
+                <span class="moment-title">Moment</span>
+            </div>
+            <textarea class="moment-content" id="moment-text" placeholder="What's on your mind?"></textarea>
+            <div class="moment-attachment">
+                <button class="attachment-btn" id="ai-post-btn">AI Post</button>
+                <button class="attachment-btn" id="virtual-image-btn">Virtual Image</button>
+                <button class="attachment-btn" id="real-image-btn">Real Image</button>
+            </div>
+            <div class="moment-image-preview" id="moment-image-preview" style="display: none;">
+                <div class="image-preview-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#999999" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M6.5 8a2 2 0 1 0 4 0a2 2 0 0 0-4 0m14.427 1.99c-6.61-.908-12.31 4-11.927 10.51"/><path d="M3 13.066c2.78-.385 5.275.958 6.624 3.1"/><path d="M3 9.4c0-2.24 0-3.36.436-4.216a4 4 0 0 1 1.748-1.748C6.04 3 7.16 3 9.4 3h5.2c2.24 0 3.36 0 4.216.436a4 4 0 0 1 1.748 1.748C21 6.04 21 7.16 21 9.4v5.2c0 2.24 0 3.36-.436 4.216a4 4 0 0 1-1.748 1.748C17.96 21 16.84 21 14.6 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6z"/></g></svg>
+                </div>
+            </div>
+            <div class="moment-loading" id="moment-loading" style="display: none;">
+                <div class="loading-spinner"></div>
+                <span>AI is thinking...</span>
+            </div>
+            <div class="moment-actions">
+                <button class="action-btn cancel" id="moment-cancel">Cancel</button>
+                <button class="action-btn send" id="moment-send">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="virtual-image-modal">
+        <div class="virtual-image-card">
+            <div class="virtual-header">
+                <span class="virtual-title">Virtual Image</span>
+            </div>
+            <textarea class="virtual-content" id="virtual-text" placeholder="Enter image description..."></textarea>
+            <div class="virtual-actions">
+                <button class="action-btn cancel" id="virtual-cancel">Cancel</button>
+                <button class="action-btn send" id="virtual-send">Generate</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="delete-modal">
+        <div class="delete-card">
+            <div class="delete-message">Delete this moment?</div>
+            <div class="delete-actions">
+                <button class="action-btn cancel" id="delete-cancel">Cancel</button>
+                <button class="action-btn send" id="delete-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const backBtn = document.getElementById('back-btn');
@@ -53,6 +147,512 @@
                     window.location.replace(navLinks[index]);
                 });
             });
+
+            // 加载用户数据
+            loadUserData();
+
+            // 封面点击事件
+            const coverSection = document.getElementById('moments-cover');
+            coverSection.addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const coverImage = document.getElementById('cover-image');
+                        coverImage.style.backgroundImage = `url(${e.target.result})`;
+                        localStorage.setItem('moments_cover', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            });
+
+            // 头像点击 - 跳转到profile
+            const avatarWrapper = document.getElementById('avatar-wrapper');
+            avatarWrapper.addEventListener('click', function() {
+                window.location.replace('profile.html');
+            });
+
+            // 名字点击 - 跳转到profile
+            const userName = document.getElementById('user-name');
+            userName.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.replace('profile.html');
+            });
+
+            // 签名点击也可以编辑
+            const signatureElement = document.getElementById('user-signature');
+            signatureElement.addEventListener('click', function() {
+                const currentSignature = this.textContent;
+                const newSignature = prompt('Edit your signature:', currentSignature);
+                if (newSignature !== null) {
+                    this.textContent = newSignature || 'This is user signature';
+                    const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+                    userData.signature = newSignature || 'This is user signature';
+                    localStorage.setItem('profile_user', JSON.stringify(userData));
+                }
+            });
+
+            // 图片点击上传
+            const photoItems = document.querySelectorAll('.photo-item');
+            photoItems.forEach((item, index) => {
+                item.addEventListener('click', function() {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    input.onchange = function(e) {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const photoPlaceholder = document.getElementById('photo-' + index);
+                            photoPlaceholder.style.backgroundImage = `url(${e.target.result})`;
+                            photoPlaceholder.innerHTML = '';
+                            localStorage.setItem('moments_photo_' + index, e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    };
+                    input.click();
+                });
+            });
+
+            // Moment弹窗
+            const momentModal = document.getElementById('moment-modal');
+            const addMomentBtn = document.getElementById('add-moment-btn');
+            const momentCancel = document.getElementById('moment-cancel');
+            const momentSend = document.getElementById('moment-send');
+            const virtualImageBtn = document.getElementById('virtual-image-btn');
+            const realImageBtn = document.getElementById('real-image-btn');
+            const virtualImageModal = document.getElementById('virtual-image-modal');
+            const virtualCancel = document.getElementById('virtual-cancel');
+            const virtualSend = document.getElementById('virtual-send');
+
+            let currentMomentImage = null;
+
+            addMomentBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                momentModal.style.display = 'flex';
+            });
+
+            momentCancel.addEventListener('click', function() {
+                momentModal.style.display = 'none';
+                document.getElementById('moment-text').value = '';
+                document.getElementById('moment-image-preview').style.display = 'none';
+                currentMomentImage = null;
+            });
+
+            momentSend.addEventListener('click', function() {
+                const content = document.getElementById('moment-text').value;
+                if (content || currentMomentImage) {
+                    const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+                    const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                    
+                    const sender = {
+                        user: userData.name || 'User',
+                        char: charData.name || 'Char'
+                    };
+                    
+                    const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
+                    moments.unshift({
+                        content: content,
+                        image: currentMomentImage,
+                        timestamp: Date.now(),
+                        sender: sender
+                    });
+                    localStorage.setItem('moments_list', JSON.stringify(moments));
+                    renderMomentsFeed();
+                }
+                momentModal.style.display = 'none';
+                document.getElementById('moment-text').value = '';
+                document.getElementById('moment-image-preview').style.display = 'none';
+                currentMomentImage = null;
+            });
+
+            // 初始化时加载动态
+            renderMomentsFeed();
+
+            // 虚拟图片按钮
+            virtualImageBtn.addEventListener('click', function() {
+                virtualImageModal.style.display = 'flex';
+            });
+
+            virtualCancel.addEventListener('click', function() {
+                virtualImageModal.style.display = 'none';
+                document.getElementById('virtual-text').value = '';
+            });
+
+            virtualSend.addEventListener('click', function() {
+                const text = document.getElementById('virtual-text').value;
+                if (text) {
+                    currentMomentImage = 'virtual:' + text;
+                    document.getElementById('moment-image-preview').style.display = 'block';
+                }
+                virtualImageModal.style.display = 'none';
+                document.getElementById('virtual-text').value = '';
+            });
+
+            // 真实图片按钮
+            realImageBtn.addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        currentMomentImage = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            });
+
+            // AI Post 按钮 - 自动生成并发布Char的朋友圈
+            document.getElementById('ai-post-btn').addEventListener('click', async function() {
+                const loadingEl = document.getElementById('moment-loading');
+                const aiPostBtn = document.getElementById('ai-post-btn');
+                
+                loadingEl.style.display = 'flex';
+                aiPostBtn.disabled = true;
+                
+                try {
+                    const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                    const chatHistory = getChatHistoryForAI();
+                    
+                    const prompt = buildMomentPrompt(charData, chatHistory);
+                    
+                    const result = await callAIAPI(prompt);
+                    
+                    if (result) {
+                        // 关闭弹窗
+                        momentModal.style.display = 'none';
+                        
+                        // 发布Char的朋友圈
+                        const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
+                        moments.unshift({
+                            content: result,
+                            image: null,
+                            timestamp: Date.now(),
+                            sender: {
+                                user: 'User',
+                                char: charData.name || 'Char'
+                            }
+                        });
+                        localStorage.setItem('moments_list', JSON.stringify(moments));
+                        renderMomentsFeed();
+                        
+                        alert(`${charData.name || 'Char'} posted a moment!`);
+                    } else {
+                        alert('Failed to generate moment. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('AI Post error:', error);
+                    alert('Failed to generate moment. Please try again.');
+                } finally {
+                    loadingEl.style.display = 'none';
+                    aiPostBtn.disabled = false;
+                    document.getElementById('moment-text').value = '';
+                    document.getElementById('moment-image-preview').style.display = 'none';
+                    currentMomentImage = null;
+                }
+            });
+
+            // 获取聊天历史上下文
+            function getChatHistoryForAI() {
+                const chatHistory = [];
+                const chatData = JSON.parse(localStorage.getItem('chat_history') || '[]');
+                
+                // 获取最近10条对话
+                const recentChats = chatData.slice(-10);
+                recentChats.forEach(chat => {
+                    chatHistory.push({
+                        role: chat.role,
+                        content: chat.content
+                    });
+                });
+                
+                return chatHistory;
+            }
+
+            // 构建提示词
+            function buildMomentPrompt(charData, chatHistory) {
+                const customPrompt = localStorage.getItem('ai_moment_prompt') || '';
+                
+                const charInfo = `
+角色名称: ${charData.name || 'Char'}
+角色性格: ${charData.personality || charData.settings || '暂无'}
+人设描述: ${charData.bio || '暂无'}
+生活习惯: ${charData.lifestyle || '暂无'}
+`.trim();
+
+                const contextInfo = chatHistory.length > 0 ? 
+                    `最近对话记录:\n${chatHistory.map(c => `${c.role === 'user' ? 'User' : charData.name || 'Char'}: ${c.content}`).join('\n')}` 
+                    : '无对话记录';
+
+                const defaultPrompt = `你是一个性格鲜明的AI角色。请根据以下角色设定和最近的对话上下文，生成一条适合该角色发布的微信朋友圈动态。
+
+要求：
+1. 文案要符合角色性格和人设
+2. 结合当前场景和情绪
+3. 语言风格要与角色一致
+4. 内容要自然真实，不超过100字
+5. 如果有合适的图片场景也可以简单提及
+
+角色设定：
+${charInfo}
+
+${contextInfo}
+
+请生成朋友圈文案：` + (customPrompt ? `\n\n额外要求：${customPrompt}` : '');
+
+                return customPrompt || defaultPrompt;
+            }
+
+            // 调用AI API
+            async function callAIAPI(prompt) {
+                const defaultPreset = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
+                const apiUrl = defaultPreset.url || '';
+                const apiKey = defaultPreset.apiKey || '';
+                const model = defaultPreset.selectedModel || 'gpt-3.5-turbo';
+                
+                if (!apiUrl) {
+                    alert('Please configure API in Settings first.');
+                    return null;
+                }
+
+                const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                const systemPrompt = `You are ${charData.name || 'Char'}, a AI character with distinct personality. Generate a natural, in-character social media post.`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
+                        },
+                        body: JSON.stringify({
+                            model: model,
+                            messages: [
+                                { role: 'system', content: systemPrompt },
+                                { role: 'user', content: prompt }
+                            ],
+                            max_tokens: 200,
+                            temperature: 0.8
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+
+                    const data = await response.json();
+                    return data.choices?.[0]?.message?.content?.trim() || null;
+                } catch (error) {
+                    console.error('API Error:', error);
+                    return null;
+                }
+            }
+
+            // 点击遮罩层关闭弹窗
+            momentModal.addEventListener('click', function(e) {
+                if (e.target === momentModal) {
+                    momentModal.style.display = 'none';
+                }
+            });
+
+            virtualImageModal.addEventListener('click', function(e) {
+                if (e.target === virtualImageModal) {
+                    virtualImageModal.style.display = 'none';
+                }
+            });
+
+            function loadUserData() {
+                // 加载封面
+                const savedCover = localStorage.getItem('moments_cover');
+                if (savedCover) {
+                    const coverImage = document.getElementById('cover-image');
+                    coverImage.style.backgroundImage = `url(${savedCover})`;
+                }
+
+                // 加载用户数据
+                const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+                
+                if (userData.name) {
+                    document.getElementById('user-name').textContent = userData.name;
+                }
+                
+                if (userData.signature) {
+                    document.getElementById('user-signature').textContent = userData.signature;
+                }
+                
+                if (userData.avatar) {
+                    const avatar = document.getElementById('user-avatar');
+                    avatar.style.backgroundImage = `url(${userData.avatar})`;
+                    avatar.innerHTML = '';
+                }
+
+                // 加载图片
+                for (let i = 0; i < 3; i++) {
+                    const savedPhoto = localStorage.getItem('moments_photo_' + i);
+                    if (savedPhoto) {
+                        const photoPlaceholder = document.getElementById('photo-' + i);
+                        photoPlaceholder.style.backgroundImage = `url(${savedPhoto})`;
+                        photoPlaceholder.innerHTML = '';
+                    }
+                }
+                
+                // 加载动态
+                renderMomentsFeed();
+            }
+            
+            function renderMomentsFeed() {
+                const feedContainer = document.getElementById('moments-feed');
+                const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
+                
+                feedContainer.innerHTML = '';
+                
+                moments.forEach((moment, index) => {
+                    const date = new Date(moment.timestamp);
+                    const timeStr = formatDate(date);
+                    
+                    const likedKey = 'moment_liked_' + index;
+                    const isLiked = localStorage.getItem(likedKey) === 'true';
+                    
+                    const sender = moment.sender || { user: 'User', char: 'Char' };
+                    
+                    const card = document.createElement('div');
+                    card.className = 'moment-card-item';
+                    
+                    let imageHtml = '';
+                    if (moment.image) {
+                        if (moment.image.startsWith('virtual:')) {
+                            imageHtml = `<div class="moment-card-image">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#999999" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M6.5 8a2 2 0 1 0 4 0a2 2 0 0 0-4 0m14.427 1.99c-6.61-.908-12.31 4-11.927 10.51"/><path d="M3 13.066c2.78-.385 5.275.958 6.624 3.1"/><path d="M3 9.4c0-2.24 0-3.36.436-4.216a4 4 0 0 1 1.748-1.748C6.04 3 7.16 3 9.4 3h5.2c2.24 0 3.36 0 4.216.436a4 4 0 0 1 1.748 1.748C21 6.04 21 7.16 21 9.4v5.2c0 2.24 0 3.36-.436 4.216a4 4 0 0 1-1.748 1.748C17.96 21 16.84 21 14.6 21H9.4c-2.24 0-3.36 0-4.216-.436a4 4 0 0 1-1.748-1.748C3 17.96 3 16.84 3 14.6z"/></g></svg>
+                            </div>`;
+                        } else {
+                            imageHtml = `<div class="moment-card-image" style="background-image: url(${moment.image}); background-size: cover; background-position: center;"></div>`;
+                        }
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="moment-card-header">
+                            <div class="moment-card-names">
+                                <span class="moment-card-name">${sender.user}</span>
+                                <span class="moment-card-name">${sender.char}</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span class="moment-card-time">${timeStr}</span>
+                                <div class="moment-card-like ${isLiked ? 'liked' : ''}" data-index="${index}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${isLiked ? '#ff3b30' : 'none'}" stroke="${isLiked ? '#ff3b30' : '#999999'}" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                </div>
+                                <div class="moment-card-delete" data-index="${index}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999999" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="moment-card-content">
+                            ${moment.content || ''}
+                            ${imageHtml}
+                        </div>
+                    `;
+                    
+                    feedContainer.appendChild(card);
+                });
+                
+                // 添加点赞事件
+                document.querySelectorAll('.moment-card-like').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.getAttribute('data-index');
+                        const likedKey = 'moment_liked_' + idx;
+                        const currentlyLiked = localStorage.getItem(likedKey) === 'true';
+                        const svg = this.querySelector('svg');
+                        
+                        if (currentlyLiked) {
+                            localStorage.removeItem(likedKey);
+                            this.classList.remove('liked');
+                            if (svg) {
+                                svg.setAttribute('fill', 'none');
+                                svg.setAttribute('stroke', '#999999');
+                            }
+                        } else {
+                            localStorage.setItem(likedKey, 'true');
+                            this.classList.add('liked');
+                            if (svg) {
+                                svg.setAttribute('fill', '#ff3b30');
+                                svg.setAttribute('stroke', '#ff3b30');
+                            }
+                        }
+                    });
+                });
+                
+                // 添加删除事件
+                document.querySelectorAll('.moment-card-delete').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const idx = this.getAttribute('data-index');
+                        window.currentDeleteIndex = idx;
+                        document.getElementById('delete-modal').style.display = 'flex';
+                    });
+                });
+                
+                // 删除弹窗事件
+                document.getElementById('delete-cancel').addEventListener('click', function() {
+                    document.getElementById('delete-modal').style.display = 'none';
+                    window.currentDeleteIndex = null;
+                });
+                
+                document.getElementById('delete-confirm').addEventListener('click', function() {
+                    const idx = window.currentDeleteIndex;
+                    if (idx !== null) {
+                        const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
+                        moments.splice(idx, 1);
+                        localStorage.setItem('moments_list', JSON.stringify(moments));
+                        renderMomentsFeed();
+                    }
+                    document.getElementById('delete-modal').style.display = 'none';
+                    window.currentDeleteIndex = null;
+                });
+                
+                // 点击遮罩层关闭删除弹窗
+                document.getElementById('delete-modal').addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                        window.currentDeleteIndex = null;
+                    }
+                });
+            }
+            
+            function formatDate(date) {
+                const now = new Date();
+                const diff = now - date;
+                const oneDay = 24 * 60 * 60 * 1000;
+                const oneHour = 60 * 60 * 1000;
+                const oneMinute = 60 * 1000;
+                
+                if (diff < oneMinute) {
+                    return 'Just now';
+                } else if (diff < oneHour) {
+                    return Math.floor(diff / oneMinute) + 'm ago';
+                } else if (diff < oneDay) {
+                    return Math.floor(diff / oneHour) + 'h ago';
+                } else if (diff < oneDay * 7) {
+                    return Math.floor(diff / oneDay) + 'd ago';
+                } else {
+                    const month = date.getMonth() + 1;
+                    const day = date.getDate();
+                    return month + '/' + day;
+                }
+            }
         });
     </script>
 </body>

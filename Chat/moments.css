@@ -38,7 +38,7 @@ body {
 .header {
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     position: relative;
     flex-shrink: 0;
 }
@@ -84,6 +84,147 @@ h1 {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
+}
+
+/* 封面区域 */
+.moments-cover {
+    position: relative;
+    height: 200px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.cover-image {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3));
+    pointer-events: none;
+}
+
+/* 用户信息区域 */
+.user-info {
+    position: relative;
+    padding: 0 15px;
+    margin-top: -50px;
+    z-index: 10;
+    text-align: center;
+}
+
+.avatar-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+    background-color: #ffffff;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    margin: 0 auto;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar svg {
+    width: 40px;
+    height: 40px;
+    fill: #999999;
+}
+
+.user-details {
+    margin-top: 10px;
+    padding-left: 0;
+}
+
+.name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 28px;
+}
+
+.user-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #000000;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.signature-wrapper {
+    text-align: center;
+    margin-top: 8px;
+}
+
+.signature {
+    font-size: 14px;
+    color: #999999;
+    cursor: pointer;
+}
+
+.add-moment-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.add-moment-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* 图片网格 */
+.photo-grid {
+    display: flex;
+    gap: 10px;
+    padding: 20px 15px;
+    flex-wrap: wrap;
+}
+
+.photo-item {
+    flex: 0 0 calc(33.333% - 7px);
+    aspect-ratio: 1;
+    cursor: pointer;
+}
+
+.photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* 底部 dock 栏 */
@@ -138,4 +279,314 @@ h1 {
 .nav-item.profile svg {
     width: 36px;
     height: 36px;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Moment Card */
+.moment-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.moment-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.moment-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.moment-content {
+    width: 100%;
+    height: 120px;
+    border: none;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    resize: none;
+    outline: none;
+}
+
+.moment-content::placeholder {
+    color: #999999;
+}
+
+.moment-attachment {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.attachment-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid #cccccc;
+    background-color: transparent;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #666666;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+}
+
+.moment-attachment {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.moment-attachment .attachment-btn:first-child {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 8px;
+}
+
+.moment-attachment .attachment-btn:not(:first-child) {
+    flex: 1;
+}
+
+.moment-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px;
+    color: #999999;
+    font-size: 14px;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f0f0f0;
+    border-top: 2px solid #999999;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.moment-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn.cancel {
+    color: #999999;
+}
+
+.action-btn.send {
+    color: #000000;
+}
+
+/* Virtual Image Card */
+.virtual-image-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.virtual-header {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.virtual-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.virtual-content {
+    width: 100%;
+    height: 120px;
+    border: none;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    resize: none;
+    outline: none;
+}
+
+.virtual-content::placeholder {
+    color: #999999;
+}
+
+.virtual-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.moment-image-preview {
+    margin-top: 15px;
+}
+
+.image-preview-box {
+    width: 80px;
+    height: 80px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-preview-box svg {
+    width: 40px;
+    height: 40px;
+}
+
+/* Moments Feed */
+.moments-feed {
+    padding: 15px;
+    padding-bottom: 20px;
+}
+
+.moment-card-item {
+    background-color: #ffffff;
+    border-radius: 2px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.moment-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.moment-card-names {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.moment-card-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.moment-card-time {
+    font-size: 12px;
+    color: #cccccc;
+}
+
+.moment-card-like {
+    cursor: pointer;
+    padding: 4px;
+}
+
+.moment-card-delete {
+    cursor: pointer;
+    padding: 4px;
+}
+
+.moment-card-like svg {
+    width: 20px;
+    height: 20px;
+}
+
+.moment-card-like.liked svg {
+    fill: #ff3b30;
+    stroke: #ff3b30;
+}
+
+.moment-card-content {
+    padding-top: 10px;
+    border-top: 1px dashed #e0e0e0;
+    font-size: 14px;
+    color: #333333;
+    line-height: 1.5;
+}
+
+.moment-card-image {
+    margin-top: 10px;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+}
+
+.moment-card-image svg {
+    width: 40px;
+    height: 40px;
+}
+
+/* Delete Modal */
+.delete-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 300px;
+    padding: 25px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.delete-message {
+    font-size: 16px;
+    color: #000000;
+    margin-bottom: 20px;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.delete-actions .send {
+    color: #ff3b30;
 }
