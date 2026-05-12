@@ -30,29 +30,171 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const backBtn = document.getElementById('back-btn');
+            const sendBtn = document.getElementById('send-btn');
+            const messageInput = document.getElementById('message-input');
+            const chatMessages = document.getElementById('chat-messages');
+            const STORAGE_KEY = 'chat_messages';
+            
+            var charName = 'Char';
+            var userName = 'You';
+            var systemPrompt = '';
+            var apiConfig = null;
+            
+            function loadProfiles() {
+                var charData = localStorage.getItem('profile_char');
+                var userData = localStorage.getItem('profile_user');
+                if (charData) {
+                    try {
+                        var c = JSON.parse(charData);
+                        if (c.name) charName = c.name;
+                        if (c.settings) systemPrompt = c.settings;
+                    } catch(e) {}
+                }
+                if (userData) {
+                    try {
+                        var u = JSON.parse(userData);
+                        if (u.name) userName = u.name;
+                    } catch(e) {}
+                }
+                var preset = localStorage.getItem('default_api_preset');
+                if (preset) {
+                    try { apiConfig = JSON.parse(preset); } catch(e) {}
+                }
+            }
+            
+            function buildSystemPrompt() {
+                var prompt = '你是' + charName + '。';
+                if (systemPrompt) {
+                    prompt += '\n\n你的人设设定：\n' + systemPrompt;
+                }
+                prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话，不要机械问答。';
+                return prompt;
+            }
+            
+            function loadMessages() {
+                var saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    try {
+                        var messages = JSON.parse(saved);
+                        chatMessages.innerHTML = '';
+                        messages.forEach(function(msg) {
+                            var el = document.createElement('div');
+                            el.className = 'message ' + msg.role;
+                            el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>';
+                            chatMessages.appendChild(el);
+                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    } catch(e) {}
+                }
+            }
+            
+            function saveMessage(text, role) {
+                var messages = [];
+                var saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    try { messages = JSON.parse(saved); } catch(e) {}
+                }
+                messages.push({ text: text, role: role, time: new Date().toISOString() });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+            }
+            
+            function buildApiMessages() {
+                var msgs = [{ role: 'system', content: buildSystemPrompt() }];
+                var saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    try {
+                        var history = JSON.parse(saved);
+                        history.forEach(function(m) {
+                            msgs.push({
+                                role: m.role === 'sent' ? 'user' : 'assistant',
+                                content: m.text
+                            });
+                        });
+                    } catch(e) {}
+                }
+                return msgs;
+            }
+            
+            function callApi(userText) {
+                if (!apiConfig || !apiConfig.url || !apiConfig.key) {
+                    var replyEl = document.createElement('div');
+                    replyEl.className = 'message received';
+                    replyEl.innerHTML = '<div class="message-content"><div class="message-text">请先在设置中配置 API</div></div>';
+                    chatMessages.appendChild(replyEl);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    return;
+                }
+                
+                var apiUrl = apiConfig.url.replace(/\/+$/, '') + '/chat/completions';
+                var model = apiConfig.selectedModel || (apiConfig.models && apiConfig.models[0]) || 'gpt-3.5-turbo';
+                var messages = buildApiMessages();
+                
+                var loadingEl = document.createElement('div');
+                loadingEl.className = 'message received';
+                loadingEl.innerHTML = '<div class="message-content"><div class="message-text">' + charName + ' 正在输入...</div></div>';
+                chatMessages.appendChild(loadingEl);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiConfig.key
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: messages
+                    })
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    var reply = '';
+                    if (data.choices && data.choices.length > 0) {
+                        reply = data.choices[0].message.content;
+                    } else if (data.error) {
+                        reply = '错误: ' + data.error.message;
+                    } else {
+                        reply = '未能获取回复';
+                    }
+                    
+                    loadingEl.remove();
+                    saveMessage(reply, 'received');
+                    var replyEl = document.createElement('div');
+                    replyEl.className = 'message received';
+                    replyEl.innerHTML = '<div class="message-content"><div class="message-text">' + reply + '</div></div>';
+                    chatMessages.appendChild(replyEl);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .catch(function(err) {
+                    loadingEl.remove();
+                    var errEl = document.createElement('div');
+                    errEl.className = 'message received';
+                    errEl.innerHTML = '<div class="message-content"><div class="message-text">请求失败: ' + err.message + '</div></div>';
+                    chatMessages.appendChild(errEl);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+            }
+            
+            loadProfiles();
+            loadMessages();
+            
             if (backBtn) {
                 backBtn.addEventListener('click', function() {
                     window.location.replace('chat.html');
                 });
             }
             
-            const sendBtn = document.getElementById('send-btn');
-            const messageInput = document.getElementById('message-input');
-            const chatMessages = document.getElementById('chat-messages');
-            
             sendBtn.addEventListener('click', function() {
-                const messageText = messageInput.value.trim();
+                var messageText = messageInput.value.trim();
                 if (messageText) {
-                    const messageElement = document.createElement('div');
-                    messageElement.className = 'message sent';
-                    messageElement.innerHTML = `
-                        <div class="message-content">
-                            <div class="message-text">${messageText}</div>
-                        </div>
-                    `;
-                    chatMessages.appendChild(messageElement);
+                    saveMessage(messageText, 'sent');
+                    var el = document.createElement('div');
+                    el.className = 'message sent';
+                    el.innerHTML = '<div class="message-content"><div class="message-text">' + messageText + '</div></div>';
+                    chatMessages.appendChild(el);
                     messageInput.value = '';
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                    callApi(messageText);
                 }
             });
             

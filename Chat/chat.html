@@ -134,7 +134,28 @@
                 }
             };
             
+            // 加载最后一条聊天消息
+            const loadLastMessage = () => {
+                const saved = localStorage.getItem('chat_messages');
+                if (saved) {
+                    try {
+                        const messages = JSON.parse(saved);
+                        if (messages.length > 0) {
+                            const last = messages[messages.length - 1];
+                            const msgEl = document.querySelector('.character-card .last-message');
+                            const timeEl = document.querySelector('.character-card .message-time');
+                            if (msgEl) msgEl.textContent = (last.role === 'sent' ? 'You: ' : 'Char: ') + last.text;
+                            if (timeEl) {
+                                const d = new Date(last.time);
+                                timeEl.textContent = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+                            }
+                        }
+                    } catch(e) {}
+                }
+            };
+            
             loadCharProfile();
+            loadLastMessage();
             
             // 日历功能
             initCalendar();
