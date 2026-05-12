@@ -18,9 +18,30 @@
         </div>
         
         <div class="chat-messages" id="chat-messages"></div>
+        
+        <!-- Context Menu -->
+        <div class="context-menu" id="context-menu">
+            <div class="context-menu-item" id="menu-quote">
+                <span>Quote</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" id="menu-edit">
+                <span>Edit</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" id="menu-multiselect">
+                <span>Select</span>
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item delete" id="menu-delete">
+                <span>Delete</span>
+            </div>
         </div>
         
         <div class="chat-input">
+            <button id="receive-btn" class="receive-btn" title="Receive AI Response">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linecap="round" d="M22 10c.018.727 0 1.054 0 2c0 3.771 0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12s0-5.657 1.172-6.828S6.229 4 10 4h3"/><path stroke-linecap="round" d="m6 8l2.159 1.8c1.837 1.53 2.755 2.295 3.841 2.295s2.005-.765 3.841-2.296"/><circle cx="19" cy="5" r="3"/></g></svg>
+            </button>
             <input type="text" id="message-input" class="message-input" placeholder="Message...">
             <button id="send-btn" class="send-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" fill-rule="evenodd" d="M18.21 5.19c-.424.076-1.003.268-1.847.55l-6.49 2.163c-.823.274-1.42.473-1.855.643c-.452.176-.65.293-.733.372a1.5 1.5 0 0 0 0 2.164c.083.08.281.196.733.372a45 45 0 0 0 1.893.656c.292.097.494.164.677.261a2.5 2.5 0 0 1 1.04 1.041c.098.183.165.385.262.677l.013.039c.274.822.473 1.42.643 1.854c.176.452.293.65.373.733a1.5 1.5 0 0 0 2.163 0c.08-.083.196-.281.372-.733c.17-.434.37-1.032.643-1.854l2.164-6.491c.281-.844.473-1.424.548-1.847c.076-.428.001-.525-.037-.562c-.037-.038-.134-.113-.562-.037m-.175-.984c.51-.09 1.045-.085 1.445.314c.399.4.404.935.314 1.445c-.09.505-.306 1.154-.57 1.947l-.015.04l-2.163 6.492l-.005.015a45 45 0 0 1-.655 1.887c-.175.446-.35.82-.583 1.062a2.5 2.5 0 0 1-3.606 0c-.232-.243-.408-.616-.583-1.062c-.18-.461-.387-1.083-.655-1.887l-.005-.015c-.115-.345-.156-.463-.21-.564a1.5 1.5 0 0 0-.624-.625c-.1-.053-.219-.094-.564-.21l-.015-.004a46 46 0 0 1-1.887-.655c-.446-.175-.82-.35-1.062-.583a2.5 2.5 0 0 1 0-3.606c.243-.233.616-.408 1.062-.583c.461-.18 1.083-.387 1.887-.655l.015-.005l6.491-2.163l.041-.014c.793-.264 1.442-.48 1.947-.57" clip-rule="evenodd"/></svg>
@@ -77,16 +98,83 @@
                     try {
                         var messages = JSON.parse(saved);
                         chatMessages.innerHTML = '';
-                        messages.forEach(function(msg) {
+                        messages.forEach(function(msg, index) {
                             var el = document.createElement('div');
                             el.className = 'message ' + msg.role;
+                            el.dataset.index = index;
                             el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>';
+                            
+                            // Add long press event
+                            el.addEventListener('contextmenu', function(e) {
+                                e.preventDefault();
+                                showContextMenu(e, index, msg.role);
+                            });
+                            
+                            // Also support touch long press
+                            let touchTimer;
+                            el.addEventListener('touchstart', function(e) {
+                                touchTimer = setTimeout(function() {
+                                    e.preventDefault();
+                                    showContextMenu(e.touches[0], index, msg.role);
+                                }, 500);
+                            });
+                            el.addEventListener('touchend', function() {
+                                clearTimeout(touchTimer);
+                            });
+                            el.addEventListener('touchmove', function() {
+                                clearTimeout(touchTimer);
+                            });
+                            
                             chatMessages.appendChild(el);
                         });
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     } catch(e) {}
                 }
             }
+            
+            let currentMessageIndex = null;
+            let currentMessageRole = null;
+            
+            function showContextMenu(e, index, role) {
+                currentMessageIndex = index;
+                currentMessageRole = role;
+                
+                var menu = document.getElementById('context-menu');
+                
+                var messageEl = document.querySelector('.message[data-index="' + index + '"]');
+                if (!messageEl) return;
+                
+                var rect = messageEl.getBoundingClientRect();
+                
+                var menuWidth = 220;
+                var x = rect.left + rect.width / 2 - menuWidth / 2;
+                var y = rect.top - 50;
+                
+                if (x < 10) x = 10;
+                if (x + menuWidth > window.innerWidth - 10) {
+                    x = window.innerWidth - menuWidth - 10;
+                }
+                if (y < 10) {
+                    y = rect.bottom + 10;
+                }
+                
+                menu.style.left = x + 'px';
+                menu.style.top = y + 'px';
+                menu.style.display = 'flex';
+            }
+            
+            function hideContextMenu() {
+                document.getElementById('context-menu').style.display = 'none';
+                currentMessageIndex = null;
+                currentMessageRole = null;
+            }
+            
+            // Close menu when clicking elsewhere
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.context-menu')) {
+                    hideContextMenu();
+                }
+            });
             
             function saveMessage(text, role) {
                 var messages = [];
@@ -115,25 +203,20 @@
                 return msgs;
             }
             
-            function callApi(userText) {
+            function callApi(userText, callback) {
                 if (!apiConfig || !apiConfig.url || !apiConfig.key) {
                     var replyEl = document.createElement('div');
                     replyEl.className = 'message received';
                     replyEl.innerHTML = '<div class="message-content"><div class="message-text">请先在设置中配置 API</div></div>';
                     chatMessages.appendChild(replyEl);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                    if (callback) callback();
                     return;
                 }
                 
                 var apiUrl = apiConfig.url.replace(/\/+$/, '') + '/chat/completions';
                 var model = apiConfig.selectedModel || (apiConfig.models && apiConfig.models[0]) || 'gpt-3.5-turbo';
                 var messages = buildApiMessages();
-                
-                var loadingEl = document.createElement('div');
-                loadingEl.className = 'message received loading-message';
-                loadingEl.innerHTML = '<div class="message-content"><div class="loading-dots"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="24" viewBox="0 0 48 48"><path fill="none" stroke="#999999" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M24 16a8 8 0 1 0 0 16a8 8 0 1 0 0-16M7 20a4 4 0 1 0 0 8a4 4 0 1 0 0-8m34 0a4 4 0 1 0 0 8a4 4 0 1 0 0-8"/></svg></div></div>';
-                chatMessages.appendChild(loadingEl);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
                 
                 fetch(apiUrl, {
                     method: 'POST',
@@ -157,26 +240,117 @@
                         reply = '未能获取回复';
                     }
                     
-                    loadingEl.remove();
                     saveMessage(reply, 'received');
                     var replyEl = document.createElement('div');
                     replyEl.className = 'message received';
+                    var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    replyEl.dataset.index = messages.length - 1;
                     replyEl.innerHTML = '<div class="message-content"><div class="message-text">' + reply + '</div></div>';
+                    
+                    // Add long press event
+                    replyEl.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        showContextMenu(e, messages.length - 1, 'received');
+                    });
+                    let touchTimer;
+                    replyEl.addEventListener('touchstart', function(e) {
+                        touchTimer = setTimeout(function() {
+                            e.preventDefault();
+                            showContextMenu(e.touches[0], messages.length - 1, 'received');
+                        }, 500);
+                    });
+                    replyEl.addEventListener('touchend', function() {
+                        clearTimeout(touchTimer);
+                    });
+                    replyEl.addEventListener('touchmove', function() {
+                        clearTimeout(touchTimer);
+                    });
+                    
                     chatMessages.appendChild(replyEl);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                    if (callback) callback();
                 })
                 .catch(function(err) {
-                    loadingEl.remove();
                     var errEl = document.createElement('div');
                     errEl.className = 'message received';
                     errEl.innerHTML = '<div class="message-content"><div class="message-text">请求失败: ' + err.message + '</div></div>';
                     chatMessages.appendChild(errEl);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
+                    if (callback) callback();
                 });
             }
             
+            // Receive button - triggers AI response
+            document.getElementById('receive-btn').addEventListener('click', function() {
+                var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                if (messages.length === 0) {
+                    alert('No messages yet. Send a message first.');
+                    return;
+                }
+                
+                // Check if there's already a pending response
+                var lastMsg = messages[messages.length - 1];
+                if (lastMsg.role === 'received') {
+                    alert('Already got a response.');
+                    return;
+                }
+                
+                // Call API to get response
+                callApi(null);
+            });
+            
             loadProfiles();
             loadMessages();
+            
+            // Context menu functions
+            document.getElementById('menu-quote').addEventListener('click', function() {
+                if (currentMessageIndex !== null) {
+                    var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    var msg = messages[currentMessageIndex];
+                    if (msg) {
+                        var prefix = currentMessageRole === 'sent' ? userName + ': ' : charName + ': ';
+                        messageInput.value = '「' + prefix + msg.text + '」\n';
+                        messageInput.focus();
+                    }
+                }
+                hideContextMenu();
+            });
+            
+            document.getElementById('menu-edit').addEventListener('click', function() {
+                if (currentMessageIndex !== null && currentMessageRole === 'sent') {
+                    var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    var msg = messages[currentMessageIndex];
+                    if (msg) {
+                        var newText = prompt('Edit message:', msg.text);
+                        if (newText !== null && newText.trim() !== '') {
+                            messages[currentMessageIndex].text = newText.trim();
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                            loadMessages();
+                        }
+                    }
+                } else if (currentMessageIndex !== null) {
+                    alert('Can only edit your own messages');
+                }
+                hideContextMenu();
+            });
+            
+            document.getElementById('menu-multiselect').addEventListener('click', function() {
+                // TODO: Implement multi-select functionality
+                alert('Multi-select: Select multiple messages for batch operations');
+                hideContextMenu();
+            });
+            
+            document.getElementById('menu-delete').addEventListener('click', function() {
+                if (currentMessageIndex !== null) {
+                    if (confirm('Delete this message?')) {
+                        var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                        messages.splice(currentMessageIndex, 1);
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                        loadMessages();
+                    }
+                }
+                hideContextMenu();
+            });
             
             if (backBtn) {
                 backBtn.addEventListener('click', function() {
@@ -187,14 +361,41 @@
             sendBtn.addEventListener('click', function() {
                 var messageText = messageInput.value.trim();
                 if (messageText) {
+                    var messages = [];
+                    var saved = localStorage.getItem(STORAGE_KEY);
+                    if (saved) {
+                        try { messages = JSON.parse(saved); } catch(e) {}
+                    }
+                    var newIndex = messages.length;
+                    
                     saveMessage(messageText, 'sent');
                     var el = document.createElement('div');
                     el.className = 'message sent';
+                    el.dataset.index = newIndex;
                     el.innerHTML = '<div class="message-content"><div class="message-text">' + messageText + '</div></div>';
+                    
+                    // Add long press event
+                    el.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        showContextMenu(e, newIndex, 'sent');
+                    });
+                    let touchTimer;
+                    el.addEventListener('touchstart', function(e) {
+                        touchTimer = setTimeout(function() {
+                            e.preventDefault();
+                            showContextMenu(e.touches[0], newIndex, 'sent');
+                        }, 500);
+                    });
+                    el.addEventListener('touchend', function() {
+                        clearTimeout(touchTimer);
+                    });
+                    el.addEventListener('touchmove', function() {
+                        clearTimeout(touchTimer);
+                    });
+                    
                     chatMessages.appendChild(el);
                     messageInput.value = '';
                     chatMessages.scrollTop = chatMessages.scrollHeight;
-                    callApi(messageText);
                 }
             });
             
