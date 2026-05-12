@@ -136,16 +136,8 @@
         </div>
     </div>
     <script>
-        // 使用requestAnimationFrame优化动画性能
-        function raf(callback) {
-            return new Promise(resolve => requestAnimationFrame(() => {
-                callback();
-                resolve();
-            }));
-        }
-        
         // 延迟初始化非关键功能
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
             // 立即初始化图标点击事件（关键功能）
             const gridLinks = ['Chat/chat.html', 'Family/family.html', 'Search/search.html', 'Focus/focus.html'];
             const dockLinks = ['Secret/secret.html', 'Music/music.html', 'Theme/theme.html', 'Settings/Settings.html'];
@@ -153,31 +145,37 @@
             // 为app-grid图标添加点击事件
             document.querySelectorAll('.app-grid .app-icon').forEach((icon, index) => {
                 if (gridLinks[index]) {
-                    icon.addEventListener('click', () => window.location.href = gridLinks[index]);
+                    icon.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        this.style.transition = 'transform 0.08s ease';
+                        this.style.transform = 'scale(0.92)';
+                        requestAnimationFrame(() => {
+                            setTimeout(() => {
+                                location.replace(gridLinks[index]);
+                            }, 60);
+                        });
+                    });
                 }
             });
             
             // 为dock栏图标添加点击事件
             document.querySelectorAll('.dock .app-icon').forEach((icon, index) => {
                 if (dockLinks[index]) {
-                    icon.addEventListener('click', () => window.location.href = dockLinks[index]);
+                    icon.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        this.style.transition = 'transform 0.08s ease';
+                        this.style.transform = 'scale(0.92)';
+                        requestAnimationFrame(() => {
+                            setTimeout(() => {
+                                location.replace(dockLinks[index]);
+                            }, 60);
+                        });
+                    });
                 }
             });
             
-            // 延迟初始化触摸反馈和其他非关键功能
-            await raf(() => {
-                document.querySelectorAll('.app-icon').forEach(icon => {
-                    icon.addEventListener('touchstart', function() {
-                        this.classList.add('touch-active');
-                    });
-                    icon.addEventListener('touchend', function() {
-                        setTimeout(() => this.classList.remove('touch-active'), 100);
-                    });
-                    icon.addEventListener('touchcancel', function() {
-                        this.classList.remove('touch-active');
-                    });
-                });
-                
+            // 延迟初始化非关键功能
+            setTimeout(() => {
                 const avatar = document.getElementById('avatar');
                 const avatarUpload = document.getElementById('avatar-upload');
 
@@ -229,8 +227,6 @@
                 // 昵称和ID编辑功能
                 const nickname = document.getElementById('nickname');
                 const id = document.getElementById('id');
-
-                if (emoji) emoji.textContent = '🍎';
                 
                 // Dock标签编辑功能
                 const dockLabel = document.getElementById('dock-label');

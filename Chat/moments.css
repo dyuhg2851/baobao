@@ -81,21 +81,21 @@ h1 {
 /* 底部 dock 栏 */
 .dock {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #ffffff;
-    border-radius: 0;
-    padding: 8px 0;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 24px;
+    padding: 12px 24px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     height: 60px;
     z-index: 40;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    transform: translateZ(0) translateX(-50%);
+    -webkit-transform: translateZ(0) translateX(-50%);
 }
 
 .nav-item {
@@ -111,10 +111,12 @@ h1 {
     width: 60px;
     height: 54px;
     color: #999999;
-    transition: transform 0.15s ease;
+    transition: transform 0.08s ease;
+    -webkit-transition: -webkit-transform 0.08s ease;
     -webkit-tap-highlight-color: transparent;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    will-change: transform;
 }
 
 .nav-item svg {
