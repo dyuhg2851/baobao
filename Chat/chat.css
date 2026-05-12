@@ -75,7 +75,7 @@ h1 {
 
 .page-content {
     overflow-y: auto;
-    height: calc(100vh - 190px - env(safe-area-inset-bottom));
+    height: calc(100vh - 120px);
 }
 
 .search-box {
@@ -105,20 +105,20 @@ h1 {
     margin-left: 12px;
 }
 
-/* 底部导航栏 */
-.app-bottom-nav {
+/* 底部 dock 栏 */
+.dock {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background-color: #ffffff;
     border-radius: 0;
-    padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    padding: 8px 0;
     display: flex;
     justify-content: space-around;
     align-items: center;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
-    height: auto;
+    height: 60px;
     z-index: 40;
 }
 

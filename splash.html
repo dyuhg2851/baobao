@@ -10,16 +10,14 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         html, body {
             width: 100%;
             height: 100%;
-            margin: 0;
-            padding: 0;
         }
-        
+
         body {
-            background-color: white;
+            background-color: #ffffff;
             display: -webkit-box;
             display: -webkit-flex;
             display: flex;
@@ -30,215 +28,225 @@
             -webkit-justify-content: center;
             justify-content: center;
             overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
             position: fixed;
             top: 0;
             left: 0;
         }
-        
+
         .splash-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            display: -webkit-box;
+            display: -webkit-flex;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
             justify-content: center;
             z-index: 9999;
-            will-change: transform, opacity;
+            background: #ffffff;
         }
-        
-        .svg-container {
+
+        .logo-wrapper {
             position: relative;
+            width: 200px;
+            height: 200px;
+            display: -webkit-box;
+            display: -webkit-flex;
             display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
             align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
             justify-content: center;
-            width: 100%;
-            max-width: 300px;
-            height: auto;
         }
-        
-        .svg-large {
+
+        .logo-circle {
             position: absolute;
-            width: 250px;
-            height: 250px;
-            opacity: 0.3;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
+            border-radius: 50%;
+            border: 3px solid #e0e0e0;
+            -webkit-animation: pulse 1.5s ease-in-out infinite;
+            animation: pulse 1.5s ease-in-out infinite;
         }
-        
-        .svg-regular {
-            position: relative;
-            width: 150px;
-            height: 150px;
+
+        .logo-circle.large {
+            width: 180px;
+            height: 180px;
+            border-color: #e8e8e8;
+            -webkit-animation-duration: 2s;
+            animation-duration: 2s;
+        }
+
+        .logo-circle.medium {
+            width: 140px;
+            height: 140px;
+            border-color: #d0d0d0;
+            -webkit-animation-duration: 1.5s;
+            animation-duration: 1.5s;
+        }
+
+        .logo-circle.small {
+            width: 100px;
+            height: 100px;
+            border-color: #000000;
+            -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+        }
+
+        .logo-inner {
+            width: 60px;
+            height: 60px;
+            background: #000000;
+            border-radius: 50%;
             z-index: 1;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
+            -webkit-animation: scaleIn 0.8s ease-out forwards;
+            animation: scaleIn 0.8s ease-out forwards;
         }
-        
-        path {
-            stroke-dasharray: 1000;
-            stroke-dashoffset: 1000;
-            -webkit-animation: draw 1.5s ease forwards;
-            animation: draw 1.5s ease forwards;
-            will-change: stroke-dashoffset;
-        }
-        
-        .svg-large path {
-            stroke: #ccc;
-            -webkit-animation-duration: 1.2s;
-            animation-duration: 1.2s;
-        }
-        
-        .svg-regular path {
-            stroke: #000;
-            -webkit-animation-duration: 1.8s;
-            animation-duration: 1.8s;
-            -webkit-animation-delay: 0.2s;
-            animation-delay: 0.2s;
-        }
-        
-        @-webkit-keyframes draw {
-            to {
-                stroke-dashoffset: 0;
+
+        @-webkit-keyframes pulse {
+            0%, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+                opacity: 0.3;
             }
         }
-        
-        @keyframes draw {
-            to {
-                stroke-dashoffset: 0;
+
+        @keyframes pulse {
+            0%, 100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                -webkit-transform: scale(1.1);
+                transform: scale(1.1);
+                opacity: 0.3;
             }
         }
-        
+
+        @-webkit-keyframes scaleIn {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes scaleIn {
+            0% {
+                -webkit-transform: scale(0);
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                -webkit-transform: scale(1);
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         .fade-out {
-            -webkit-animation: fadeOut 0.8s ease forwards;
-            animation: fadeOut 0.8s ease forwards;
+            -webkit-animation: fadeOut 0.6s ease-out forwards;
+            animation: fadeOut 0.6s ease-out forwards;
             -webkit-animation-delay: 2.5s;
             animation-delay: 2.5s;
         }
-        
+
         @-webkit-keyframes fadeOut {
-            to {
+            0% {
+                opacity: 1;
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+            100% {
                 opacity: 0;
                 -webkit-transform: scale(0.8);
                 transform: scale(0.8);
             }
         }
-        
+
         @keyframes fadeOut {
-            to {
+            0% {
+                opacity: 1;
+                -webkit-transform: scale(1);
+                transform: scale(1);
+            }
+            100% {
                 opacity: 0;
                 -webkit-transform: scale(0.8);
                 transform: scale(0.8);
             }
         }
-        
-        .svg-large {
-            -webkit-animation: scaleLarge 1.5s ease-in-out infinite;
-            animation: scaleLarge 1.5s ease-in-out infinite;
-        }
-        
-        .svg-regular {
-            -webkit-animation: scaleRegular 1.2s ease-in-out infinite;
-            animation: scaleRegular 1.2s ease-in-out infinite;
-        }
-        
-        @-webkit-keyframes scaleLarge {
-            0%, 100% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-            50% {
-                -webkit-transform: scale(1.1);
-                transform: scale(1.1);
-            }
-        }
-        
-        @keyframes scaleLarge {
-            0%, 100% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-            50% {
-                -webkit-transform: scale(1.1);
-                transform: scale(1.1);
-            }
-        }
-        
-        @-webkit-keyframes scaleRegular {
-            0%, 100% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-            50% {
-                -webkit-transform: scale(1.1);
-                transform: scale(1.1);
-            }
-        }
-        
-        @keyframes scaleRegular {
-            0%, 100% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-            50% {
-                -webkit-transform: scale(1.1);
-                transform: scale(1.1);
-            }
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .svg-large {
-                width: 200px;
-                height: 200px;
+
+        @media (max-width: 480px) {
+            .logo-wrapper {
+                width: 150px;
+                height: 150px;
             }
             
-            .svg-regular {
-                width: 120px;
-                height: 120px;
+            .logo-circle.large {
+                width: 135px;
+                height: 135px;
+            }
+            
+            .logo-circle.medium {
+                width: 105px;
+                height: 105px;
+            }
+            
+            .logo-circle.small {
+                width: 75px;
+                height: 75px;
+            }
+            
+            .logo-inner {
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="splash-container" id="splash-container">
-        <div class="svg-container">
-            <svg class="svg-large" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24">
-                <path fill="none" stroke="#ccc" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.953 2C17.502 2 22 6.477 22 12s-4.498 10-10.047 10C-.63 22-1.827 4.018 11.5 5c3.35.247 6.53 3.41 6.53 7c0 4.5-2.794 6.5-6.53 6.5c-7 0-8.31-10.033-.498-9.5c1.506.103 3.014 1.343 3.014 3c0 1.928-1.016 3-2.895 3"/>
-            </svg>
-            <svg class="svg-regular" xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24">
-                <path fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.953 2C17.502 2 22 6.477 22 12s-4.498 10-10.047 10C-.63 22-1.827 4.018 11.5 5c3.35.247 6.53 3.41 6.53 7c0 4.5-2.794 6.5-6.53 6.5c-7 0-8.31-10.033-.498-9.5c1.506.103 3.014 1.343 3.014 3c0 1.928-1.016 3-2.895 3"/>
-            </svg>
+    <div class="splash-container" id="splash">
+        <div class="logo-wrapper">
+            <div class="logo-circle large"></div>
+            <div class="logo-circle medium"></div>
+            <div class="logo-circle small"></div>
+            <div class="logo-inner"></div>
         </div>
     </div>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const splashContainer = document.getElementById('splash-container');
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('splash').classList.add('fade-out');
+            }, 100);
             
-            // 计算SVG路径的实际长度并设置动画参数
-            const paths = document.querySelectorAll('path');
-            paths.forEach(path => {
-                try {
-                    const length = path.getTotalLength();
-                    path.style.strokeDasharray = length;
-                    path.style.strokeDashoffset = length;
-                } catch (e) {
-                    // 降级处理，使用固定值
-                    path.style.strokeDasharray = '1000';
-                    path.style.strokeDashoffset = '1000';
-                }
-            });
-            
-            // 添加淡出动画
-            splashContainer.classList.add('fade-out');
-            
-            // 动画结束后跳转到主页面
             setTimeout(function() {
                 window.location.href = 'index.html';
-            }, 3300);
+            }, 3200);
         });
     </script>
 </body>
