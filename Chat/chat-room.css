@@ -36,9 +36,10 @@ body {
 .chat-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: calc(12px + env(safe-area-inset-top)) 20px 12px 20px;
-    height: calc(64px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
     background-color: transparent;
     position: fixed;
     top: 0;
@@ -54,7 +55,7 @@ body {
     padding: 0;
     cursor: pointer;
     position: absolute;
-    left: 0;
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
     -webkit-tap-highlight-color: transparent;
@@ -72,6 +73,7 @@ body {
     justify-content: center;
     gap: 6px;
     text-align: center;
+    width: 100%;
 }
 
 .avatar-row {
@@ -125,6 +127,10 @@ body {
     border: none;
     padding: 4px;
     cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -136,7 +142,7 @@ body {
 .chat-messages {
     flex: 1;
     padding: 16px;
-    padding-top: calc(64px + 12px);
+    padding-top: calc(64px + env(safe-area-inset-top));
     padding-bottom: 92px; /* leave room for fixed input */
     overflow-y: auto;
     display: flex;
