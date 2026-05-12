@@ -45,7 +45,7 @@ body {
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    transition: transform 0.2s ease;
+    transition: transform 0.08s ease;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -64,16 +64,22 @@ body {
     top: 50%;
     transform: translateY(-50%);
     -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .voice-btn svg {
     width: 24px;
     height: 24px;
+    max-width: 24px;
+    max-height: 24px;
 }
 
 .page-content {
     overflow-y: auto;
     height: calc(100vh - 120px);
+    padding-bottom: 80px;
 }
 
 .chat-messages {
@@ -124,14 +130,17 @@ body {
 
 .chat-input {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 50%;
+    bottom: 25px;
+    transform: translateX(-50%);
+    width: calc(100% - 40px);
+    max-width: 560px;
     display: flex;
     align-items: center;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-    background-color: rgba(255,255,255,0.92);
-    border-top: 1px solid rgba(0,0,0,0.06);
+    padding: 12px 16px;
+    background-color: rgba(255,255,255,0.95);
+    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     z-index: 11;
 }
 
