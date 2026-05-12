@@ -37,14 +37,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 20px;
-    height: 64px;
+    padding: calc(12px + env(safe-area-inset-top)) 20px 12px 20px;
+    height: calc(64px + env(safe-area-inset-top));
     background-color: transparent;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 12;
+    box-sizing: border-box;
 }
 
 .back-btn {

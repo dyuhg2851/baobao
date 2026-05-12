@@ -34,6 +34,7 @@ body {
     align-items: center;
     margin-bottom: 30px;
     position: relative;
+    padding-top: env(safe-area-inset-top);
 }
 
 .back-btn {
@@ -81,7 +82,7 @@ h1 {
 }
 
 /* 底部导航栏 */
-.bottom-nav {
+.app-bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
