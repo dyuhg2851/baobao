@@ -144,7 +144,7 @@
                             const last = messages[messages.length - 1];
                             const msgEl = document.querySelector('.character-card .last-message');
                             const timeEl = document.querySelector('.character-card .message-time');
-                            if (msgEl) msgEl.textContent = (last.role === 'sent' ? 'You: ' : 'Char: ') + last.text;
+                            if (msgEl) msgEl.textContent = (last.role === 'sent' ? 'Me: ' : 'Ta: ') + last.text;
                             if (timeEl) {
                                 const d = new Date(last.time);
                                 timeEl.textContent = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
