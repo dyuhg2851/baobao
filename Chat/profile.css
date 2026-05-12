@@ -72,7 +72,7 @@ body {
 }
 
 h1 {
-    font-size: 14px; color: #999999;
+    font-size: 18px;
     font-weight: 500;
     color: #333;
     margin: 0;
@@ -119,15 +119,6 @@ h1 {
     top: 50%;
     transform: translateY(-50%);
     font-size: 14px; color: #999999;
-}
-
-h1 {
-    font-size: 14px; color: #999999;
-    font-weight: 500;
-    color: #333;
-    margin: 0;
-    width: 100%;
-    text-align: center;
 }
 
 .page-content {
