@@ -160,7 +160,7 @@ body {
     height: 44px;
     border: none;
     border-radius: 50%;
-    background-color: #07c160;
+    background: none;
     margin-left: 12px;
     display: flex;
     align-items: center;
@@ -168,6 +168,8 @@ body {
     cursor: pointer;
     transition: opacity 0.2s ease;
     -webkit-tap-highlight-color: transparent;
+    padding: 0;
+    line-height: 0;
 }
 
 .send-btn:hover {
@@ -175,6 +177,7 @@ body {
 }
 
 .send-btn svg {
-    width: 20px;
-    height: 20px;
+    display: block;
+    width: 30px;
+    height: 30px;
 }
