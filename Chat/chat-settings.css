@@ -254,3 +254,68 @@ label {
     padding-top: 12px;
     border-top: 1px solid #e0e0e0;
 }
+
+/* 卡片美化样式 */
+.card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 16px;
+    text-align: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 预设列表样式 */
+.preset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.preset-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #fff;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.preset-item-name {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.preset-delete-btn {
+    background: none;
+    border: none;
+    color: #ff3b30;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.preset-delete-btn:hover {
+    background: rgba(255, 59, 48, 0.1);
+}
+
+.preset-empty {
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+    padding: 20px;
+}
