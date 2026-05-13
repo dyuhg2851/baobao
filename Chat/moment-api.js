@@ -43,12 +43,12 @@ function buildMomentPromptText() {
 
   return `你是一个性格鲜明的AI角色。请根据以下角色设定和最近的对话上下文，生成一条适合该角色发布的微信朋友圈动态。
 
-要求：
-1. 文案要符合角色性格和人设
-2. 结合当前场景和情绪
-3. 语言风格要与角色一致
-4. 内容要自然真实，不超过100字
-5. 如果有合适的图片场景也可以简单提及
+核心要求：
+1. 文案必须符合角色性格和人设
+2. 结合最近对话内容和情绪状态，自然融入对话中提到的关键词
+3. 内容要自然真实，像真人发的朋友圈，不超过100字
+4. 结合时间场景让内容更真实
+5. 结尾可以加入互动引导（提问、征求意见等）
 
 角色设定：
 ${charInfo}
@@ -111,8 +111,17 @@ async function callChatAPI(messages, options) {
 
 async function callMomentAPI(promptText) {
   const charData = getCharData();
+  
+  const systemPrompt = `You are ${charData.name || 'Char'}, an AI character with distinct personality. 
+  Character Settings:
+  - Personality: ${charData.personality || charData.settings || 'None'}
+  - Description: ${charData.bio || 'None'}
+  - Lifestyle: ${charData.lifestyle || 'None'}
+  
+  Generate a natural, authentic social media post that matches the character's personality and style.`;
+  
   return callChatAPI([
-    { role: 'system', content: `You are ${charData.name || 'Char'}, a AI character with distinct personality. Generate a natural, in-character social media post.` },
+    { role: 'system', content: systemPrompt },
     { role: 'user', content: promptText }
   ], { maxTokens: 200, temperature: 0.8 });
 }

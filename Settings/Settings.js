@@ -438,17 +438,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // AI Moment设置
     const momentAutoToggle = document.getElementById('moment-auto-toggle');
-    const momentPromptTextarea = document.getElementById('moment-prompt');
-    const btnMomentSave = document.getElementById('btn-moment-save');
     
     // 加载已保存的AI Moment设置
     momentAutoToggle.checked = localStorage.getItem('ai_moment_auto') === 'true';
-    momentPromptTextarea.value = localStorage.getItem('ai_moment_prompt') || '';
     
-    // 保存AI Moment设置
-    btnMomentSave.addEventListener('click', function() {
+    // 保存AI Moment设置（自动发布开关）
+    momentAutoToggle.addEventListener('change', function() {
         localStorage.setItem('ai_moment_auto', momentAutoToggle.checked);
-        localStorage.setItem('ai_moment_prompt', momentPromptTextarea.value);
-        alert('AI Moment settings saved!');
     });
 });

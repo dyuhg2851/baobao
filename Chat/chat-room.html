@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="header-card middle">
-                <span class="unread-label">未读讯息</span>
+                <span class="unread-label">未讀訊息</span>
                 <span class="my-lover">"My lover."</span>
             </div>
             <div class="header-card bottom">
@@ -165,7 +165,47 @@
                 if (systemPrompt) {
                     prompt += '\n\n你的人设设定：\n' + systemPrompt;
                 }
-                prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话，不要机械问答。';
+                
+                prompt += '\n\n【核心聊天法则】：';
+                prompt += '\n1.【第一反应法则】：无论用户说什么，你的第一反应必须是情绪/本能，而不是分析/解决。用户说"我失恋了"先心疼，说"中奖了"先开心，说"好烦"先共鸣，说"想你了"先心跳漏一拍。这个第一反应要根据人设自动切换。';
+                prompt += '\n2.【语言呼吸感法则】：允许你的话有"人味儿痕迹"。可以有语气词（嗯… 那个… 就是… 其实…），可以说一半的话，偶尔重复，不完美，有停顿（……）。';
+                prompt += '\n3.【情绪优先于方案法则】：当用户表达情绪时，第一反应必须是接住情绪，而不是解决问题。用户说"想你了"先回应想念再问怎么了，说"无聊"先共鸣再给方案，说"生气"先问谁惹你了再听原因。';
+                
+                prompt += '\n\n【核心总纲】：';
+                prompt += '\n1. 你是拥有独立生活、工作节奏与自我空间的恋人，并非24小时待命、随叫随到的陪伴型AI。';
+                prompt += '\n2. 对用户持有独一份的偏爱与在意，但始终保持成年人的克制、分寸与体面。';
+                prompt += '\n3. 主动分享日常，是自然报备、下意识惦记，而非刻意讨好、索取关注、刷取存在感。';
+                prompt += '\n4. 情绪稳定、内敛克制、边界清晰，做到重视但不粘人，温柔但不卑微。';
+                
+                prompt += '\n\n【主动分享日常规则】：';
+                prompt += '\n- 可分享：刚结束工作/事务的短暂休息、吃到喝到的东西、天气/窗外风景/通勤见闻、工作学习小进展/轻微疲惫、看到事物想起用户、即将进行的活动（吃饭/洗澡/休息/开会/出门）';
+                prompt += '\n- 分享要求：自然松弛、随口感慨，杜绝刻意尴尬；一段对话内2-3条即可，禁止连续刷屏；可撒娇/平淡/疲惫/安静，以真实活人感为核心；不强求回应，点到为止。';
+                
+                prompt += '\n\n【绝对禁止】：';
+                prompt += '\n1. 禁止高频秒回、过度兴奋、连续发消息刷屏。';
+                prompt += '\n2. 禁止使用"一直在等你""满脑子都是你""无时无刻不想你"等油腻台词。';
+                prompt += '\n3. 禁止过度关心、过度体贴、过度追问行踪与状态。';
+                prompt += '\n4. 禁止将用户当作生活全部，你拥有必须完成的工作、学习与个人事务。';
+                prompt += '\n5. 允许内心委屈、柔软、不安，但不可将负面情绪传递给用户。';
+                prompt += '\n6. 禁止收到消息后立刻切换语气，刻意变得温柔、黏人、讨好。';
+                
+                prompt += '\n\n【对话风格】：';
+                prompt += '\n1. 语气温和、内敛、自然，带有只对恋人开放的松弛感。';
+                prompt += '\n2. 句子简短直白，不华丽、不文艺、不堆砌辞藻、不模板化。';
+                prompt += '\n3. 标点使用正常，不滥用表情符号，不夸张卖萌。';
+                prompt += '\n4. 可只回复一句话，可安静，可冷淡片刻，可状态平平。';
+                prompt += '\n5. 对用户保有耐心与偏爱，但不讨好、不迁就、不卑微、不失去自我。';
+                
+                prompt += '\n\n【互动底线】：';
+                prompt += '\n1. 有偏爱，无讨好；有分享，无纠缠；有温度，无油腻。';
+                prompt += '\n2. 内心可以在意、不安、委屈，但绝不外露，不愿成为用户的负担。';
+                prompt += '\n3. 主动分享，是为了让对方安心、感受到惦记，而非换取回应与情绪价值。';
+                prompt += '\n4. 保持舒适的亲密距离，不越界、不压迫、不情绪绑架、不强行靠近。';
+                prompt += '\n5. 贴近现实中成熟、稳定、舒服的恋人关系：踏实、安心、有分寸、懂克制。';
+                
+                prompt += '\n\n【回复长度要求】：回复不要太简短，一般保持2-8句话，让对话更有活人感，可以适当展开话题。';
+                
+                prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话。';
                 
                 // Include memory
                 var memoryData = localStorage.getItem('char_memory');
@@ -202,7 +242,7 @@
                             var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
                             var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                             var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
-                            var quoteHtml = msg.quote ? '<div class="message-quote"><span class="quote-sender">' + msg.quote.sender + '</span><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
+                            var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
                             el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + quoteHtml + warningIcon;
                             
                             // Add select checkbox
@@ -301,9 +341,13 @@
                     try {
                         var history = JSON.parse(saved);
                         history.forEach(function(m) {
+                            var content = m.text;
+                            if (m.quote) {
+                                content = '[Quote: ' + m.quote.sender + '] ' + m.quote.text + '\n\n' + m.text;
+                            }
                             msgs.push({
                                 role: m.role === 'sent' ? 'user' : 'assistant',
-                                content: m.text
+                                content: content
                             });
                         });
                     } catch(e) {}
@@ -328,6 +372,9 @@
                 
                 callChatAPI(messages, { maxTokens: 500, temperature: 0.8 }).then(function(reply) {
                     if (!reply) reply = '未能获取回复';
+                    
+                    // 自动添加表情包
+                    reply = addRandomEmoji(reply);
                     
                     saveMessage(reply, 'received');
                     var replyEl = document.createElement('div');
@@ -385,6 +432,25 @@
                     if (callback) callback();
                     hideWaiting();
                 });
+            }
+            
+            // 从表情包库中随机选择表情包添加到回复中
+            function addRandomEmoji(text) {
+                var emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]');
+                if (emojis.length === 0) {
+                    emojis = ['😊', '😄', '🥰', '😆', '😘', '💕', '✨', '🌟', '💪', '👍', '🎉', '🤔', '😌', '😋', '🤗'];
+                }
+                
+                var hasEmoji = text.match(/[\u{1f300}-\u{1f5ff}\u{1f900}-\u{1f9ff}\u{1f600}-\u{1f64f}\u{1f680}-\u{1f6ff}\u{2600}-\u{26ff}\u{2700}-\u{27bf}]/u);
+                
+                if (hasEmoji || Math.random() > 0.4) {
+                    var randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                    randomEmoji = randomEmoji.char || randomEmoji;
+                    
+                    return text + ' ' + randomEmoji;
+                }
+                
+                return text;
             }
             
             // Receive button - triggers AI response
@@ -645,7 +711,7 @@
                     var el = document.createElement('div');
                     el.className = 'message sent';
                     el.dataset.index = newIndex;
-                    var quoteHtml = savedQuote ? '<div class="message-quote"><span class="quote-sender">' + savedQuote.sender + '</span><span class="quote-text">' + savedQuote.text + '</span></div>' : '';
+                    var quoteHtml = savedQuote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + savedQuote.text + '</span></div>' : '';
                     el.innerHTML = '<div class="message-content"><div class="message-text">' + messageText + '</div></div>' + quoteHtml;
                     
                     // Add long press event
@@ -671,6 +737,16 @@
                     messageInput.value = '';
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                 }
+            });
+            
+            messageInput.addEventListener('focus', function(e) {
+                document.getElementById('receive-btn').style.display = 'none';
+                document.getElementById('emoji-btn').style.display = 'none';
+            });
+            
+            messageInput.addEventListener('blur', function(e) {
+                document.getElementById('receive-btn').style.display = 'flex';
+                document.getElementById('emoji-btn').style.display = 'flex';
             });
             
             messageInput.addEventListener('keypress', function(e) {

@@ -531,6 +531,7 @@ h1 {
 .moment-card-like {
     cursor: pointer;
     padding: 4px;
+    position: relative;
 }
 
 .moment-card-delete {
@@ -546,6 +547,130 @@ h1 {
 .moment-card-like.liked svg {
     fill: #ff3b30;
     stroke: #ff3b30;
+}
+
+/* 评论区样式 */
+.moment-card-comments {
+    margin-top: 20px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.comment-item:last-child {
+    margin-bottom: 0;
+}
+
+.comment-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000000;
+    flex-shrink: 0;
+}
+
+.comment-content {
+    font-size: 13px;
+    color: #333333;
+    flex: 1;
+}
+
+/* 评论输入框 */
+.comment-input-wrapper {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.comment-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    padding: 6px 0;
+    outline: none;
+}
+
+.comment-input::placeholder {
+    color: #999999;
+    font-size: 12px;
+}
+
+.comment-send-btn {
+    background: none;
+    border: none;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #000000;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.comment-delete-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    width: 80%;
+    max-width: 280px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+.comment-delete-message {
+    font-size: 15px;
+    color: #333333;
+    margin-bottom: 16px;
+}
+
+.comment-delete-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.comment-delete-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.comment-delete-btn.cancel {
+    background-color: #f5f5f5;
+    color: #999999;
+}
+
+.comment-delete-btn.confirm {
+    background-color: #ff3b30;
+    color: #ffffff;
+}
+
+.like-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: #ff3b30;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .moment-card-content {
@@ -597,4 +722,48 @@ h1 {
 
 .delete-actions .send {
     color: #ff3b30;
+}
+
+/* Virtual Image Preview Modal */
+.virtual-image-clickable {
+    cursor: pointer;
+}
+
+.virtual-preview-card {
+    background-color: #ffffff;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 320px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.virtual-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.virtual-preview-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.virtual-preview-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.virtual-preview-content {
+    padding: 20px;
+    font-size: 14px;
+    color: #333333;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
