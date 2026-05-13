@@ -15,7 +15,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
                 </button>
                 <div class="to-row">
-                    <span class="to-label">To :</span>
+                    <span class="to-label">To</span>
                     <div class="to-info">
                         <span class="to-name" id="to-name">Char</span>
                         <span class="waiting-text" id="waiting-text" style="display:none">Waiting for reply...</span>
@@ -243,7 +243,14 @@
                             var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                             var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
                             var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
-                            el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + quoteHtml + warningIcon;
+                            var timeHtml = '';
+                            if (msg.time) {
+                                var date = new Date(msg.time);
+                                var hours = date.getHours().toString().padStart(2, '0');
+                                var minutes = date.getMinutes().toString().padStart(2, '0');
+                                timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                            }
+                            el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + quoteHtml + timeHtml + warningIcon;
                             
                             // Add select checkbox
                             var checkEl = document.createElement('span');

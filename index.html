@@ -13,33 +13,29 @@
     <link rel="stylesheet" href="style.css">
     <title>晕倒料理</title>
     <script>
-        // 延迟加载非关键资源，提升首屏性能
-        document.addEventListener('DOMContentLoaded', function() {
-            // 延迟加载壁纸
-            setTimeout(function() {
+        // 立即同步加载壁纸，避免闪烁
+        (function() {
+            try {
                 const savedWallpaperData = localStorage.getItem('wallpaperData');
                 if (savedWallpaperData) {
-                    try {
-                        const data = JSON.parse(savedWallpaperData);
-                        const existingStyle = document.getElementById('wallpaper-style');
-                        if (!existingStyle && data.url) {
-                            const style = document.createElement('style');
-                            style.id = 'wallpaper-style';
-                            const blurRadius = Math.min((data.blur || 0) / 100 * 20, 20);
-                            style.textContent = `.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); }`;
-                            document.head.appendChild(style);
-                        }
-                    } catch(e) {
-                        console.error('Failed to load wallpaper:', e);
+                    const data = JSON.parse(savedWallpaperData);
+                    if (data.url) {
+                        const blurRadius = Math.min((data.blur || 0) / 100 * 20, 20);
+                        document.write(`<style id="wallpaper-style">.background-container { background-image: url(${data.url}); filter: blur(${blurRadius}px); background-color: transparent; }</style>`);
                     }
                 }
-            }, 300);
-            
-            // 延迟加载字体
-            setTimeout(function() {
-                const savedFont = localStorage.getItem('current_font');
-                if (savedFont) {
-                    try {
+            } catch(e) {
+                console.error('Failed to load wallpaper:', e);
+            }
+        })();
+        
+        // DOM加载完成后执行其他初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载字体（非关键，延迟加载）
+            requestAnimationFrame(function() {
+                try {
+                    const savedFont = localStorage.getItem('current_font');
+                    if (savedFont) {
                         const font = JSON.parse(savedFont);
                         if (font.url) {
                             const oldFontStyle = document.getElementById('custom-font-style');
@@ -57,17 +53,17 @@
                         } else if (font.family) {
                             document.body.style.fontFamily = font.family;
                         }
-                    } catch(e) {
-                        console.error('Failed to load font:', e);
                     }
+                } catch(e) {
+                    console.error('Failed to load font:', e);
                 }
-            }, 500);
+            });
             
-            // 延迟注册Service Worker
+            // 延迟注册Service Worker（不影响首屏）
             if ('serviceWorker' in navigator) {
                 setTimeout(function() {
                     navigator.serviceWorker.register('/service-worker.js').catch(function() {});
-                }, 1000);
+                }, 3000);
             }
         });
     </script>

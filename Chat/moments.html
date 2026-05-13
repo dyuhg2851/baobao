@@ -582,9 +582,10 @@ ${moment.content || '（图片）'}
                         commentsHtml = `
                             <div class="moment-card-comments">
                                 ${comments.map((comment, cIndex) => `
-                                    <div class="comment-item" data-comment-index="${cIndex}">
+                                    <div class="comment-item" data-comment-index="${cIndex}" data-comment-name="${comment.name}">
                                         <span class="comment-name">${comment.name}:</span>
                                         <span class="comment-content">${comment.content}</span>
+                                        ${comment.reply ? `<span class="comment-reply">@${comment.reply.name}: ${comment.reply.content}</span>` : ''}
                                     </div>
                                 `).join('')}
                                 <div class="comment-input-wrapper">
@@ -693,6 +694,7 @@ ${moment.content || '（图片）'}
                         const momentIndex = this.getAttribute('data-moment-index');
                         const input = document.querySelector(`.comment-input[data-moment-index="${momentIndex}"]`);
                         const content = input.value.trim();
+                        const replyTo = input.getAttribute('data-reply-to');
                         
                         if (content) {
                             const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
@@ -703,11 +705,23 @@ ${moment.content || '（图片）'}
                                 moments[momentIndex].comments = [];
                             }
                             
-                            moments[momentIndex].comments.push({
+                            const commentData = {
                                 name: userName,
                                 content: content,
                                 timestamp: Date.now()
-                            });
+                            };
+                            
+                            // 如果是回复
+                            if (replyTo) {
+                                commentData.reply = {
+                                    name: replyTo,
+                                    content: content
+                                };
+                                input.removeAttribute('data-reply-to');
+                                input.placeholder = 'Write...';
+                            }
+                            
+                            moments[momentIndex].comments.push(commentData);
                             
                             localStorage.setItem('moments_list', JSON.stringify(moments));
                             input.value = '';
@@ -738,20 +752,29 @@ ${moment.content || '（图片）'}
                     const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
                     const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
                     
-                    const prompt = `你是${charName}，根据以下角色设定和对话，生成一条自然的回复：
+                    const prompt = `你是${charName}，拥有独立生活、工作节奏与自我空间的恋人，对用户持有独一份的偏爱与在意，但始终保持成年人的克制、分寸与体面。
 
 角色设定：
 - 性格：${charData.personality || charData.settings || '友好'}
 - 描述：${charData.bio || '暂无'}
+- 生活习惯：${charData.lifestyle || '暂无'}
+
+核心法则：
+1. 第一反应必须是情绪/本能，而不是分析/解决
+2. 语言要有"人味儿痕迹"，可以有语气词（嗯… 那个…）、说一半的话、停顿
+3. 先接住情绪再解决问题
+
+对话风格：语气温和、内敛、自然，句子简短直白，不华丽不文艺，标点正常，不滥用表情
 
 动态内容：${moment.content || '（图片）'}
 
 用户评论：${lastComment.name}: ${lastComment.content}
 
 要求：
-1. 回复要符合角色性格
-2. 语言自然，不超过40字
-3. 符合朋友间的互动语气
+1. 回复要符合角色性格和人设
+2. 语言自然真实，像真人回复，不超过50字
+3. 符合恋人之间的互动语气，温柔但不卑微
+4. 不要AI味，要有活人感
 
 生成回复：`;
                     
@@ -800,11 +823,15 @@ ${moment.content || '（图片）'}
                         replyContent = defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
                     }
                     
-                    // 添加回复
+                    // 添加回复（作为对用户评论的回复）
                     moment.comments.push({
                         name: charName,
                         content: replyContent,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        reply: {
+                            name: lastComment.name,
+                            content: replyContent
+                        }
                     });
                     
                     localStorage.setItem('moments_list', JSON.stringify(moments));
@@ -817,11 +844,12 @@ ${moment.content || '（图片）'}
                     item.addEventListener('touchstart', function(e) {
                         const momentIndex = this.closest('.moment-card-item').querySelector('.comment-send-btn').getAttribute('data-moment-index');
                         const commentIndex = this.getAttribute('data-comment-index');
+                        const commentName = this.getAttribute('data-comment-name');
                         
                         longPressTimer = setTimeout(() => {
                             window.currentDeleteMomentIndex = momentIndex;
                             window.currentDeleteCommentIndex = commentIndex;
-                            document.getElementById('comment-delete-modal').style.display = 'block';
+                            document.getElementById('comment-delete-modal').style.display = 'flex';
                         }, 500);
                     });
                     
@@ -836,6 +864,19 @@ ${moment.content || '（图片）'}
                         if (longPressTimer) {
                             clearTimeout(longPressTimer);
                             longPressTimer = null;
+                        }
+                    });
+                    
+                    // 点击回复评论
+                    item.addEventListener('click', function() {
+                        const momentIndex = this.closest('.moment-card-item').querySelector('.comment-send-btn').getAttribute('data-moment-index');
+                        const commentName = this.getAttribute('data-comment-name');
+                        const input = this.closest('.moment-card-comments').querySelector('.comment-input');
+                        
+                        if (input && commentName) {
+                            input.setAttribute('data-reply-to', commentName);
+                            input.placeholder = `Reply to ${commentName}...`;
+                            input.focus();
                         }
                     });
                 });
