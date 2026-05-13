@@ -312,6 +312,7 @@
             }
             
             function callApi(userText, callback) {
+                var apiConfig = getApiConfig();
                 if (!apiConfig || !apiConfig.url || !apiConfig.key) {
                     var replyEl = document.createElement('div');
                     replyEl.className = 'message received';
@@ -322,45 +323,22 @@
                     return;
                 }
                 
-                var apiUrl = apiConfig.url.replace(/\/+$/, '') + '/chat/completions';
-                var model = apiConfig.selectedModel || (apiConfig.models && apiConfig.models[0]) || 'gpt-3.5-turbo';
+                showWaiting();
                 var messages = buildApiMessages();
                 
-                showWaiting();
-                fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + apiConfig.key
-                    },
-                    body: JSON.stringify({
-                        model: model,
-                        messages: messages
-                    })
-                })
-                .then(function(res) { return res.json(); })
-                .then(function(data) {
-                    var reply = '';
-                    if (data.choices && data.choices.length > 0) {
-                        reply = data.choices[0].message.content;
-                    } else if (data.error) {
-                        reply = '错误: ' + data.error.message;
-                    } else {
-                        reply = '未能获取回复';
-                    }
+                callChatAPI(messages, { maxTokens: 500, temperature: 0.8 }).then(function(reply) {
+                    if (!reply) reply = '未能获取回复';
                     
                     saveMessage(reply, 'received');
                     var replyEl = document.createElement('div');
                     replyEl.className = 'message received';
-                    var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                    replyEl.dataset.index = messages.length - 1;
+                    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    replyEl.dataset.index = saved.length - 1;
                     replyEl.innerHTML = '<div class="message-content"><div class="message-text">' + reply + '</div></div>';
                     
-                    // Add block warning if blocked
                     if (localStorage.getItem('chat_block_char') === 'true') {
                         var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
-                        var replyTime = Date.now();
-                        if (replyTime >= blockedAt) {
+                        if (Date.now() >= blockedAt) {
                             var warningSpan = document.createElement('span');
                             warningSpan.className = 'block-warning';
                             warningSpan.textContent = '!';
@@ -368,44 +346,37 @@
                         }
                     }
                     
-                    // Add long press event
+                    // Long press event
                     replyEl.addEventListener('contextmenu', function(e) {
                         e.preventDefault();
-                        showContextMenu(e, messages.length - 1, 'received');
+                        showContextMenu(e, saved.length - 1, 'received');
                     });
-                    let touchTimer;
+                    var touchTimer;
                     replyEl.addEventListener('touchstart', function(e) {
                         touchTimer = setTimeout(function() {
                             e.preventDefault();
-                            showContextMenu(e.touches[0], messages.length - 1, 'received');
+                            showContextMenu(e.touches[0], saved.length - 1, 'received');
                         }, 500);
                     });
-                    replyEl.addEventListener('touchend', function() {
-                        clearTimeout(touchTimer);
-                    });
-                    replyEl.addEventListener('touchmove', function() {
-                        clearTimeout(touchTimer);
-                    });
+                    replyEl.addEventListener('touchend', function() { clearTimeout(touchTimer); });
+                    replyEl.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
                     
                     chatMessages.appendChild(replyEl);
                     chatMessages.scrollTop = chatMessages.scrollHeight;
                     if (callback) callback();
-                    
-                    // Hide waiting
                     hideWaiting();
                     
-                    // Auto-trigger moment generation after AI reply
+                    // Auto-trigger moment
                     if (localStorage.getItem('ai_moment_auto') === 'true') {
-                      setTimeout(function() {
-                        generateAndPublishMoment('char').then(function(content) {
-                          if (content) {
-                            window.dispatchEvent(new CustomEvent('moment-auto-published', { detail: { content: content } }));
-                          }
-                        });
-                      }, 1000);
+                        setTimeout(function() {
+                            generateAndPublishMoment('char').then(function(content) {
+                                if (content) {
+                                    window.dispatchEvent(new CustomEvent('moment-auto-published', { detail: { content: content } }));
+                                }
+                            });
+                        }, 1000);
                     }
-                })
-                .catch(function(err) {
+                }).catch(function(err) {
                     var errEl = document.createElement('div');
                     errEl.className = 'message received';
                     errEl.innerHTML = '<div class="message-content"><div class="message-text">请求失败: ' + err.message + '</div></div>';

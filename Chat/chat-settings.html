@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="chat-settings.css">
+    <script src="moment-api.js"></script>
     <title>Chat Settings</title>
 </head>
 <body>
@@ -164,39 +165,21 @@
                 const defaultPrompt = 'Summarize the key information, personality traits, preferences, and relationship dynamics revealed in this conversation. Output as concise character memory notes.';
                 const finalPrompt = summaryPrompt || defaultPrompt;
 
-                const apiConfig = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
-                if (!apiConfig.url || !apiConfig.key) {
-                    alert('Please configure API in Settings first.');
-                    return;
-                }
-
                 document.getElementById('btn-summarize').textContent = 'Summarizing...';
                 document.getElementById('btn-summarize').disabled = true;
 
                 try {
-                    const response = await fetch(apiConfig.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + apiConfig.key
-                        },
-                        body: JSON.stringify({
-                            model: apiConfig.selectedModel || 'gpt-3.5-turbo',
-                            messages: [
-                                { role: 'system', content: finalPrompt },
-                                { role: 'user', content: 'Conversation:\n' + chatText }
-                            ],
-                            max_tokens: 300,
-                            temperature: 0.7
-                        })
-                    });
+                    const result = await callChatAPI([
+                        { role: 'system', content: finalPrompt },
+                        { role: 'user', content: 'Conversation:\n' + chatText }
+                    ], { maxTokens: 300, temperature: 0.7 });
 
-                    if (!response.ok) throw new Error('API request failed');
-                    const data = await response.json();
-                    const summary = data.choices?.[0]?.message?.content?.trim() || '';
-
-                    document.getElementById('memory-result').style.display = 'block';
-                    document.getElementById('memory-content').value = summary;
+                    if (result) {
+                        document.getElementById('memory-result').style.display = 'block';
+                        document.getElementById('memory-content').value = result;
+                    } else {
+                        alert('Failed to summarize. Check API settings.');
+                    }
                 } catch (err) {
                     alert('Failed to summarize: ' + err.message);
                 } finally {

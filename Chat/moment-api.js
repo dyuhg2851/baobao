@@ -64,11 +64,14 @@ function buildMomentSystemPrompt() {
   return `You are ${charData.name || 'Char'}, a AI character with distinct personality. Generate a natural, in-character social media post.`;
 }
 
-async function callMomentAPI(promptText) {
+// 通用 AI API 调用函数，供所有地方共用
+async function callChatAPI(messages, options) {
   const config = getApiConfig();
   const apiUrl = config.url || '';
   const apiKey = config.key || '';
-  const model = config.selectedModel || 'gpt-3.5-turbo';
+  const model = options?.model || config.selectedModel || 'gpt-3.5-turbo';
+  const maxTokens = options?.maxTokens || 200;
+  const temperature = options?.temperature ?? 0.8;
 
   if (!apiUrl || !apiKey) {
     console.warn('API not configured');
@@ -86,27 +89,32 @@ async function callMomentAPI(promptText) {
       },
       body: JSON.stringify({
         model: model,
-        messages: [
-          { role: 'system', content: buildMomentSystemPrompt() },
-          { role: 'user', content: promptText }
-        ],
-        max_tokens: 200,
-        temperature: 0.8
+        messages: messages,
+        max_tokens: maxTokens,
+        temperature: temperature
       })
     });
 
     if (!response.ok) {
       const errText = await response.text().catch(() => '');
-      console.error('Moment API error:', response.status, errText);
+      console.error('API error:', response.status, errText);
       return null;
     }
 
     const data = await response.json();
     return data.choices?.[0]?.message?.content?.trim() || null;
   } catch (err) {
-    console.error('Moment API error:', err);
+    console.error('API error:', err);
     return null;
   }
+}
+
+async function callMomentAPI(promptText) {
+  const charData = getCharData();
+  return callChatAPI([
+    { role: 'system', content: `You are ${charData.name || 'Char'}, a AI character with distinct personality. Generate a natural, in-character social media post.` },
+    { role: 'user', content: promptText }
+  ], { maxTokens: 200, temperature: 0.8 });
 }
 
 function publishMoment(content, image, from) {
