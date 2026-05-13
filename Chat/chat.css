@@ -84,6 +84,21 @@ h1 {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: #d0d0d0 transparent;
+}
+
+.page-content::-webkit-scrollbar {
+    width: 3px;
+}
+
+.page-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+    background: #d0d0d0;
+    border-radius: 3px;
 }
 
 .search-box {

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="stylesheet" href="chat-settings.css">
+    <title>Chat Settings</title>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="header">
+            <button id="back-btn" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
+            </button>
+            <h1>Chat Settings</h1>
+        </div>
+        
+        <div class="page-content">
+
+        <!-- Chat Background -->
+        <div class="card">
+            <h2>Chat Background</h2>
+            <div class="bg-preview" id="bg-preview">
+                <div class="bg-preview-inner" id="bg-preview-inner">Preview</div>
+            </div>
+            <div class="button-group">
+                <button id="btn-bg-set" class="btn btn-save">Set Background</button>
+                <button id="btn-bg-reset" class="btn btn-delete">Reset</button>
+            </div>
+        </div>
+
+        <!-- Block Char -->
+        <div class="card">
+            <h2>Block List</h2>
+            <div class="form-group toggle-row">
+                <label>Block Char</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="block-char">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Memory -->
+        <div class="card">
+            <h2>Memory</h2>
+            
+            <div class="form-group">
+                <label for="memory-summary-prompt">Summary Prompt (optional)</label>
+                <textarea id="memory-summary-prompt" class="form-textarea" placeholder="Add instructions for summary generation..." rows="3"></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button id="btn-summarize" class="btn btn-save">Summarize & Save Memory</button>
+            </div>
+            
+            <div id="memory-result" class="memory-result" style="display:none">
+                <label>Generated Memory</label>
+                <textarea id="memory-content" class="form-textarea" rows="4" placeholder="Generated memory will appear here..."></textarea>
+                <div class="button-group">
+                    <button id="btn-memory-save" class="btn btn-save">Save Memory</button>
+                    <button id="btn-memory-clear" class="btn btn-delete">Clear Memory</button>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="manual-memory">Manual Memory Input</label>
+                <textarea id="manual-memory" class="form-textarea" rows="3" placeholder="Enter Char's memory manually..."></textarea>
+                <div class="button-group">
+                    <button id="btn-manual-save" class="btn btn-save">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clear Data -->
+        <div class="card">
+            <h2>Data</h2>
+            <div class="button-group">
+                <button id="btn-clear-chat" class="btn btn-delete">Clear Chat History</button>
+            </div>
+        </div>
+        </div> <!-- page-content -->
+    </div> <!-- settings-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const backBtn = document.getElementById('back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function() {
+                    window.location.replace('chat-room.html');
+                });
+            }
+
+            // Load saved settings
+            loadSettings();
+
+            // Background
+            document.getElementById('btn-bg-set').addEventListener('click', function() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.onchange = function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const dataUrl = e.target.result;
+                        localStorage.setItem('chat_bg', dataUrl);
+                        updateBgPreview(dataUrl);
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            });
+
+            document.getElementById('btn-bg-reset').addEventListener('click', function() {
+                localStorage.removeItem('chat_bg');
+                updateBgPreview(null);
+            });
+
+            // Block Char
+            document.getElementById('block-char').addEventListener('change', function() {
+                localStorage.setItem('chat_block_char', this.checked);
+            });
+
+            // Summarize
+            document.getElementById('btn-summarize').addEventListener('click', async function() {
+                const summaryPrompt = document.getElementById('memory-summary-prompt').value;
+                const chatData = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+                
+                if (chatData.length === 0) {
+                    alert('No chat history to summarize.');
+                    return;
+                }
+
+                const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                const chatText = chatData.map(c => 
+                    (c.role === 'sent' ? 'User' : (charData.name || 'Char')) + ': ' + c.text
+                ).join('\n');
+
+                const defaultPrompt = 'Summarize the key information, personality traits, preferences, and relationship dynamics revealed in this conversation. Output as concise character memory notes.';
+                const finalPrompt = summaryPrompt || defaultPrompt;
+
+                const apiConfig = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
+                if (!apiConfig.url || !apiConfig.key) {
+                    alert('Please configure API in Settings first.');
+                    return;
+                }
+
+                document.getElementById('btn-summarize').textContent = 'Summarizing...';
+                document.getElementById('btn-summarize').disabled = true;
+
+                try {
+                    const response = await fetch(apiConfig.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + apiConfig.key
+                        },
+                        body: JSON.stringify({
+                            model: apiConfig.selectedModel || 'gpt-3.5-turbo',
+                            messages: [
+                                { role: 'system', content: finalPrompt },
+                                { role: 'user', content: 'Conversation:\n' + chatText }
+                            ],
+                            max_tokens: 300,
+                            temperature: 0.7
+                        })
+                    });
+
+                    if (!response.ok) throw new Error('API request failed');
+                    const data = await response.json();
+                    const summary = data.choices?.[0]?.message?.content?.trim() || '';
+
+                    document.getElementById('memory-result').style.display = 'block';
+                    document.getElementById('memory-content').value = summary;
+                } catch (err) {
+                    alert('Failed to summarize: ' + err.message);
+                } finally {
+                    document.getElementById('btn-summarize').textContent = 'Summarize & Save Memory';
+                    document.getElementById('btn-summarize').disabled = false;
+                }
+            });
+
+            // Memory save / clear
+            document.getElementById('btn-memory-save').addEventListener('click', function() {
+                const memory = document.getElementById('memory-content').value;
+                if (memory) {
+                    localStorage.setItem('char_memory', memory);
+                    alert('Memory saved!');
+                }
+            });
+
+            document.getElementById('btn-memory-clear').addEventListener('click', function() {
+                localStorage.removeItem('char_memory');
+                document.getElementById('memory-content').value = '';
+                document.getElementById('memory-result').style.display = 'none';
+                alert('Memory cleared.');
+            });
+
+            // Manual memory
+            document.getElementById('btn-manual-save').addEventListener('click', function() {
+                const memory = document.getElementById('manual-memory').value;
+                if (memory) {
+                    localStorage.setItem('char_memory', memory);
+                    alert('Memory saved!');
+                }
+            });
+
+            // Clear chat
+            document.getElementById('btn-clear-chat').addEventListener('click', function() {
+                if (confirm('Clear all chat history? This will delete the conversation.')) {
+                    localStorage.removeItem('chat_messages');
+                    alert('Chat history cleared.');
+                }
+            });
+
+            function loadSettings() {
+                // Background
+                const bg = localStorage.getItem('chat_bg');
+                if (bg) updateBgPreview(bg);
+
+                // Block
+                const blocked = localStorage.getItem('chat_block_char') === 'true';
+                document.getElementById('block-char').checked = blocked;
+
+                // Memory
+                const memory = localStorage.getItem('char_memory');
+                if (memory) {
+                    document.getElementById('memory-content').value = memory;
+                    document.getElementById('memory-result').style.display = 'block';
+                }
+
+                // Summary prompt
+                const savedPrompt = localStorage.getItem('memory_summary_prompt');
+                if (savedPrompt) document.getElementById('memory-summary-prompt').value = savedPrompt;
+            }
+
+            function updateBgPreview(dataUrl) {
+                const preview = document.getElementById('bg-preview-inner');
+                if (dataUrl) {
+                    preview.style.backgroundImage = 'url(' + dataUrl + ')';
+                    preview.style.backgroundSize = 'cover';
+                    preview.style.backgroundPosition = 'center';
+                    preview.textContent = '';
+                } else {
+                    preview.style.backgroundImage = '';
+                    preview.textContent = 'Default';
+                }
+            }
+
+            // Save summary prompt on change
+            document.getElementById('memory-summary-prompt').addEventListener('change', function() {
+                localStorage.setItem('memory_summary_prompt', this.value);
+            });
+        });
+    </script>
+</body>
+</html>
