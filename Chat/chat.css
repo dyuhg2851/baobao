@@ -145,7 +145,8 @@ h1 {
     width: 60px;
     height: 54px;
     color: #999999;
-    transition: transform 0.08s ease;
+    fill: #999999;
+    transition: transform 0.15s ease, color 0.15s ease;
     -webkit-transition: -webkit-transform 0.08s ease;
     -webkit-tap-highlight-color: transparent;
     transform: translateZ(0);
@@ -154,17 +155,19 @@ h1 {
 }
 
 .nav-item svg {
-    width: 30px;
-    height: 30px;
+    width: 26px;
+    height: 26px;
 }
 
 .nav-item.active {
     color: #000000;
+    fill: #000000;
+    transform: scale(1.1);
 }
 
 .nav-item.profile svg {
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
 }
 
 /* 日历组件 */
