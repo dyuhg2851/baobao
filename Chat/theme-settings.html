@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #ffffff;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            color: #333333;
+        }
+
+        .header-title {
+            font-size: 17px;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .container {
+            padding: 16px;
+        }
+
+        .section {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 12px;
+        }
+
+        .preset-select {
+            width: 100%;
+            height: 44px;
+            background-color: #f5f5f5;
+            border: none;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 15px;
+            color: #333333;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .css-editor {
+            width: 100%;
+            height: 300px;
+            background-color: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #333333;
+            outline: none;
+            resize: none;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .btn {
+            flex: 1;
+            height: 44px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-copy {
+            background-color: #f0f0f0;
+            color: #666666;
+        }
+
+        .btn-copy:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-save {
+            background-color: #333333;
+            color: #ffffff;
+        }
+
+        .btn-save:hover {
+            background-color: #444444;
+        }
+
+        .btn-add {
+            background-color: #007aff;
+            color: #ffffff;
+        }
+
+        .btn-add:hover {
+            background-color: #0066dd;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background-color: #ffffff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 320px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 16px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .modal-title {
+            font-size: 17px;
+            font-weight: 500;
+            color: #333333;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-input {
+            width: 100%;
+            height: 44px;
+            background-color: #f5f5f5;
+            border: none;
+            border-radius: 12px;
+            padding: 0 16px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .modal-footer {
+            display: flex;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .modal-btn {
+            flex: 1;
+            height: 48px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-btn.cancel {
+            color: #666666;
+            border-right: 1px solid #f0f0f0;
+        }
+
+        .modal-btn.confirm {
+            color: #007aff;
+        }
+
+        .toast {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="back-btn" onclick="goBack()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </div>
+        <span class="header-title">Theme Settings</span>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <span class="section-title">Select Preset</span>
+            <select class="preset-select" id="presetSelect" onchange="loadPreset()">
+                <option value="">Custom CSS</option>
+            </select>
+        </div>
+
+        <div class="section">
+            <span class="section-title">Custom CSS</span>
+            <textarea class="css-editor" id="cssEditor" placeholder="Enter your custom CSS code here..."></textarea>
+            
+            <div class="button-row">
+                <button class="btn btn-copy" onclick="copyCSS()">Copy</button>
+                <button class="btn btn-save" onclick="saveAndApply()">Save & Apply</button>
+                <button class="btn btn-add" onclick="showAddPresetModal()">Add Preset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Preset Modal -->
+    <div class="modal-overlay" id="addPresetModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">Save as Preset</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="modal-input" id="presetNameInput" placeholder="Enter preset name">
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" onclick="hideAddPresetModal()">Cancel</button>
+                <button class="modal-btn confirm" onclick="savePreset()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const CSS_KEY = 'chat_custom_css';
+        const PRESETS_KEY = 'chat_theme_presets';
+
+        function goBack() {
+            window.location.href = 'chat-room.html';
+        }
+
+        function loadPresets() {
+            const presets = getPresets();
+            const select = document.getElementById('presetSelect');
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
+            }
+            
+            // Add presets to dropdown
+            Object.keys(presets).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+
+        function getPresets() {
+            try {
+                return JSON.parse(localStorage.getItem(PRESETS_KEY) || '{}');
+            } catch {
+                return {};
+            }
+        }
+
+        function savePresets(presets) {
+            localStorage.setItem(PRESETS_KEY, JSON.stringify(presets));
+        }
+
+        function loadCSS() {
+            const css = localStorage.getItem(CSS_KEY);
+            if (css) {
+                document.getElementById('cssEditor').value = css;
+            } else {
+                // Load default theme
+                fetch('theme.css')
+                    .then(response => response.text())
+                    .then(text => {
+                        document.getElementById('cssEditor').value = text;
+                    });
+            }
+        }
+
+        function loadPreset() {
+            const select = document.getElementById('presetSelect');
+            const presetName = select.value;
+            
+            if (!presetName) {
+                loadCSS();
+                return;
+            }
+            
+            const presets = getPresets();
+            if (presets[presetName]) {
+                document.getElementById('cssEditor').value = presets[presetName];
+            }
+        }
+
+        function copyCSS() {
+            const editor = document.getElementById('cssEditor');
+            editor.select();
+            document.execCommand('copy');
+            
+            showToast('CSS copied to clipboard!');
+        }
+
+        function saveAndApply() {
+            const css = document.getElementById('cssEditor').value;
+            localStorage.setItem(CSS_KEY, css);
+            
+            // Clear preset selection
+            document.getElementById('presetSelect').value = '';
+            
+            showToast('CSS saved and applied!');
+        }
+
+        function showAddPresetModal() {
+            document.getElementById('presetNameInput').value = '';
+            document.getElementById('addPresetModal').classList.add('show');
+        }
+
+        function hideAddPresetModal() {
+            document.getElementById('addPresetModal').classList.remove('show');
+        }
+
+        function savePreset() {
+            const name = document.getElementById('presetNameInput').value.trim();
+            const css = document.getElementById('cssEditor').value;
+            
+            if (!name) {
+                showToast('Please enter a preset name');
+                return;
+            }
+            
+            const presets = getPresets();
+            presets[name] = css;
+            savePresets(presets);
+            
+            loadPresets();
+            hideAddPresetModal();
+            
+            showToast('Preset saved!');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCSS();
+            loadPresets();
+        });
+    </script>
+</body>
+</html>

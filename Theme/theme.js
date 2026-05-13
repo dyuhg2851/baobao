@@ -464,4 +464,176 @@ document.addEventListener('DOMContentLoaded', function() {
         // 初始化
         init();
     }
+    
+    // CSS美化模块功能
+    initCSSModule();
+    
+    function initCSSModule() {
+        // 元素引用
+        const cssPresetSelect = document.getElementById('css-preset');
+        const cssEditor = document.getElementById('css-editor');
+        const cssCopyBtn = document.getElementById('css-copy');
+        const cssSaveBtn = document.getElementById('css-save');
+        const cssAddBtn = document.getElementById('css-add');
+        
+        // 弹窗元素
+        const cssModal = document.getElementById('css-modal');
+        const cssPresetNameInput = document.getElementById('css-preset-name');
+        const cssModalCancel = document.getElementById('css-modal-cancel');
+        const cssModalConfirm = document.getElementById('css-modal-confirm');
+        
+        // 存储键名
+        const CSS_PRESETS_KEY = 'chat_css_presets';
+        const CURRENT_CSS_KEY = 'chat_custom_css';
+        
+        // 初始化
+        function init() {
+            loadCSSPresets();
+            loadCurrentCSS();
+        }
+        
+        // 加载CSS预设
+        function loadCSSPresets() {
+            const presets = getCSSPresets();
+            // 保留第一个选项
+            const firstOption = cssPresetSelect.querySelector('option');
+            cssPresetSelect.innerHTML = '';
+            cssPresetSelect.appendChild(firstOption);
+            
+            Object.keys(presets).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                cssPresetSelect.appendChild(option);
+            });
+        }
+        
+        // 获取CSS预设
+        function getCSSPresets() {
+            try {
+                return JSON.parse(localStorage.getItem(CSS_PRESETS_KEY) || '{}');
+            } catch {
+                return {};
+            }
+        }
+        
+        // 保存CSS预设
+        function saveCSSPresets(presets) {
+            localStorage.setItem(CSS_PRESETS_KEY, JSON.stringify(presets));
+        }
+        
+        // 加载当前CSS
+        function loadCurrentCSS() {
+            const css = localStorage.getItem(CURRENT_CSS_KEY);
+            if (css) {
+                cssEditor.value = css;
+            }
+        }
+        
+        // 保存当前CSS
+        function saveCurrentCSS(css) {
+            localStorage.setItem(CURRENT_CSS_KEY, css);
+        }
+        
+        // 复制CSS
+        function copyCSS() {
+            cssEditor.select();
+            document.execCommand('copy');
+            alert('CSS已复制到剪贴板！');
+        }
+        
+        // 保存并应用CSS
+        function saveAndApplyCSS() {
+            const css = cssEditor.value;
+            saveCurrentCSS(css);
+            // 清除预设选择
+            cssPresetSelect.value = '';
+            alert('CSS已保存并应用！');
+        }
+        
+        // 显示弹窗
+        function showCSSModal() {
+            cssPresetNameInput.value = '';
+            cssModal.style.display = 'flex';
+        }
+        
+        // 隐藏弹窗
+        function hideCSSModal() {
+            cssModal.style.display = 'none';
+        }
+        
+        // 保存预设
+        function saveCSSPreset() {
+            const name = cssPresetNameInput.value.trim();
+            const css = cssEditor.value;
+            
+            if (!name) {
+                alert('请输入预设名称');
+                return;
+            }
+            
+            const presets = getCSSPresets();
+            if (presets[name]) {
+                alert('预设名称已存在');
+                return;
+            }
+            
+            presets[name] = css;
+            saveCSSPresets(presets);
+            loadCSSPresets();
+            cssPresetSelect.value = name;
+            hideCSSModal();
+            alert('预设保存成功！');
+        }
+        
+        // 加载预设
+        function loadCSSPreset() {
+            const name = cssPresetSelect.value;
+            if (!name) {
+                loadCurrentCSS();
+                return;
+            }
+            
+            const presets = getCSSPresets();
+            if (presets[name]) {
+                cssEditor.value = presets[name];
+            }
+        }
+        
+        // 事件监听器
+        if (cssCopyBtn) {
+            cssCopyBtn.addEventListener('click', copyCSS);
+        }
+        
+        if (cssSaveBtn) {
+            cssSaveBtn.addEventListener('click', saveAndApplyCSS);
+        }
+        
+        if (cssAddBtn) {
+            cssAddBtn.addEventListener('click', showCSSModal);
+        }
+        
+        if (cssPresetSelect) {
+            cssPresetSelect.addEventListener('change', loadCSSPreset);
+        }
+        
+        if (cssModalCancel) {
+            cssModalCancel.addEventListener('click', hideCSSModal);
+        }
+        
+        if (cssModalConfirm) {
+            cssModalConfirm.addEventListener('click', saveCSSPreset);
+        }
+        
+        if (cssModal) {
+            cssModal.addEventListener('click', function(e) {
+                if (e.target === cssModal) {
+                    hideCSSModal();
+                }
+            });
+        }
+        
+        // 初始化
+        init();
+    }
 });

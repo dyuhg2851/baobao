@@ -66,6 +66,33 @@
                 </div>
             </div>
         </div>
+        
+        <!-- CSS美化卡片 -->
+        <div class="card">
+            <h2>CSS美化</h2>
+            
+            <div class="css-section">
+                <div class="css-preset-group">
+                    <label for="css-preset">选择预设</label>
+                    <select id="css-preset">
+                        <option value="">Custom CSS</option>
+                        <!-- 预设将通过JS动态添加 -->
+                    </select>
+                </div>
+                
+                <div class="css-editor-group">
+                    <textarea id="css-editor" placeholder="输入自定义CSS代码..."></textarea>
+                </div>
+                
+                <div class="css-actions">
+                    <div class="button-group">
+                        <button id="css-copy" class="btn btn-copy">Copy</button>
+                        <button id="css-save" class="btn btn-save">Save & Apply</button>
+                        <button id="css-add" class="btn btn-add">Add Preset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <!-- 字体预设弹窗 -->
@@ -76,6 +103,18 @@
             <div class="modal-buttons">
                 <button id="font-modal-cancel" class="btn btn-save">Cancel</button>
                 <button id="font-modal-confirm" class="btn btn-add">Confirm</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CSS预设弹窗 -->
+    <div id="css-modal" class="modal">
+        <div class="modal-content">
+            <h3>保存为预设</h3>
+            <input type="text" id="css-preset-name" placeholder="输入预设名称">
+            <div class="modal-buttons">
+                <button id="css-modal-cancel" class="btn btn-save">Cancel</button>
+                <button id="css-modal-confirm" class="btn btn-add">Confirm</button>
             </div>
         </div>
     </div>
