@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('default_api_preset', JSON.stringify(config));
         
         loadPresets(); // 重新加载预设列表
+        apiPresetSelect.value = presetName; // 保持选择当前预设
         alert('配置保存成功，已设置为全局默认');
     }
     
@@ -420,4 +421,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 初始化
     loadPresets();
+    
+    // 加载当前默认配置
+    const defaultPreset = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
+    if (defaultPreset.name) {
+        apiPresetSelect.value = defaultPreset.name;
+        apiUrlInput.value = defaultPreset.url || '';
+        apiKeyInput.value = defaultPreset.key || '';
+        if (defaultPreset.models && defaultPreset.models.length > 0) {
+            loadModels(defaultPreset.models);
+            if (defaultPreset.selectedModel) {
+                apiModelSelect.value = defaultPreset.selectedModel;
+            }
+        }
+    }
+    
+    // AI Moment设置
+    const momentAutoToggle = document.getElementById('moment-auto-toggle');
+    const momentPromptTextarea = document.getElementById('moment-prompt');
+    const btnMomentSave = document.getElementById('btn-moment-save');
+    
+    // 加载已保存的AI Moment设置
+    momentAutoToggle.checked = localStorage.getItem('ai_moment_auto') === 'true';
+    momentPromptTextarea.value = localStorage.getItem('ai_moment_prompt') || '';
+    
+    // 保存AI Moment设置
+    btnMomentSave.addEventListener('click', function() {
+        localStorage.setItem('ai_moment_auto', momentAutoToggle.checked);
+        localStorage.setItem('ai_moment_prompt', momentPromptTextarea.value);
+        alert('AI Moment settings saved!');
+    });
 });

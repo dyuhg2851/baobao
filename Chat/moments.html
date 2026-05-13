@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="moments.css">
+    <script src="moment-api.js"></script>
     <title>Moments</title>
 </head>
 <body>
@@ -317,7 +318,7 @@
                 input.click();
             });
 
-            // AI Post 按钮 - 自动生成并发布Char的朋友圈
+            // AI Post 按钮 - 使用共享API
             document.getElementById('ai-post-btn').addEventListener('click', async function() {
                 const loadingEl = document.getElementById('moment-loading');
                 const aiPostBtn = document.getElementById('ai-post-btn');
@@ -326,35 +327,15 @@
                 aiPostBtn.disabled = true;
                 
                 try {
-                    const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
-                    const chatHistory = getChatHistoryForAI();
-                    
-                    const prompt = buildMomentPrompt(charData, chatHistory);
-                    
-                    const result = await callAIAPI(prompt);
+                    const result = await generateAndPublishMoment('char');
                     
                     if (result) {
-                        // 关闭弹窗
                         momentModal.style.display = 'none';
-                        
-                        // 发布Char的朋友圈
-                        const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
-                        moments.unshift({
-                            content: result,
-                            image: null,
-                            timestamp: Date.now(),
-                            sender: {
-                                user: 'User',
-                                char: charData.name || 'Char'
-                            },
-                            from: 'char'
-                        });
-                        localStorage.setItem('moments_list', JSON.stringify(moments));
                         renderMomentsFeed();
-                        
+                        const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
                         alert(`${charData.name || 'Char'} posted a moment!`);
                     } else {
-                        alert('Failed to generate moment. Please try again.');
+                        alert('Failed to generate moment. Please check API settings.');
                     }
                 } catch (error) {
                     console.error('AI Post error:', error);
@@ -367,102 +348,6 @@
                     currentMomentImage = null;
                 }
             });
-
-            // 获取聊天历史上下文
-            function getChatHistoryForAI() {
-                const chatHistory = [];
-                const chatData = JSON.parse(localStorage.getItem('chat_history') || '[]');
-                
-                // 获取最近10条对话
-                const recentChats = chatData.slice(-10);
-                recentChats.forEach(chat => {
-                    chatHistory.push({
-                        role: chat.role,
-                        content: chat.content
-                    });
-                });
-                
-                return chatHistory;
-            }
-
-            // 构建提示词
-            function buildMomentPrompt(charData, chatHistory) {
-                const customPrompt = localStorage.getItem('ai_moment_prompt') || '';
-                
-                const charInfo = `
-角色名称: ${charData.name || 'Char'}
-角色性格: ${charData.personality || charData.settings || '暂无'}
-人设描述: ${charData.bio || '暂无'}
-生活习惯: ${charData.lifestyle || '暂无'}
-`.trim();
-
-                const contextInfo = chatHistory.length > 0 ? 
-                    `最近对话记录:\n${chatHistory.map(c => `${c.role === 'user' ? 'User' : charData.name || 'Char'}: ${c.content}`).join('\n')}` 
-                    : '无对话记录';
-
-                const defaultPrompt = `你是一个性格鲜明的AI角色。请根据以下角色设定和最近的对话上下文，生成一条适合该角色发布的微信朋友圈动态。
-
-要求：
-1. 文案要符合角色性格和人设
-2. 结合当前场景和情绪
-3. 语言风格要与角色一致
-4. 内容要自然真实，不超过100字
-5. 如果有合适的图片场景也可以简单提及
-
-角色设定：
-${charInfo}
-
-${contextInfo}
-
-请生成朋友圈文案：` + (customPrompt ? `\n\n额外要求：${customPrompt}` : '');
-
-                return customPrompt || defaultPrompt;
-            }
-
-            // 调用AI API
-            async function callAIAPI(prompt) {
-                const defaultPreset = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
-                const apiUrl = defaultPreset.url || '';
-                const apiKey = defaultPreset.apiKey || '';
-                const model = defaultPreset.selectedModel || 'gpt-3.5-turbo';
-                
-                if (!apiUrl) {
-                    alert('Please configure API in Settings first.');
-                    return null;
-                }
-
-                const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
-                const systemPrompt = `You are ${charData.name || 'Char'}, a AI character with distinct personality. Generate a natural, in-character social media post.`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...(apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {})
-                        },
-                        body: JSON.stringify({
-                            model: model,
-                            messages: [
-                                { role: 'system', content: systemPrompt },
-                                { role: 'user', content: prompt }
-                            ],
-                            max_tokens: 200,
-                            temperature: 0.8
-                        })
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('API request failed');
-                    }
-
-                    const data = await response.json();
-                    return data.choices?.[0]?.message?.content?.trim() || null;
-                } catch (error) {
-                    console.error('API Error:', error);
-                    return null;
-                }
-            }
 
             // 点击遮罩层关闭弹窗
             momentModal.addEventListener('click', function(e) {

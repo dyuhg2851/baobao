@@ -113,6 +113,28 @@
                 <button id="btn-clear" class="btn btn-delete">Clear the data</button>
             </div>
         </div>
+        
+        <!-- AI Moment设置卡片 -->
+        <div class="card">
+            <h2>AI Moment</h2>
+            
+            <div class="form-group">
+                <label for="moment-auto-toggle">Auto publish after chat</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="moment-auto-toggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label for="moment-prompt">Custom Prompt (optional)</label>
+                <textarea id="moment-prompt" class="form-textarea" placeholder="添加额外要求，如：&#10;- 语气要更调皮一点&#10;- 多使用emoji&#10;- 内容偏向日常分享" rows="4"></textarea>
+            </div>
+            
+            <div class="button-group">
+                <button id="btn-moment-save" class="btn btn-save">Save Prompt</button>
+            </div>
+        </div>
     </div>
     
     <!-- 弹窗 -->

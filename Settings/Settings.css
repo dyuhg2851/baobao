@@ -120,6 +120,76 @@ label {
     border-bottom-color: #007aff;
 }
 
+.form-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    background: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+    line-height: 1.4;
+}
+
+.form-textarea:focus {
+    border-color: #007aff;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    display: none;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e0e0e0;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #000000;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.form-group:has(.toggle-switch) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.form-group:has(.toggle-switch) label {
+    margin-bottom: 0;
+}
+
 /* 按钮组样式 */
 .button-group {
     display: flex;
