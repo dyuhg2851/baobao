@@ -354,6 +354,92 @@ body {
     height: 30px;
 }
 
+/* Multi-select bar */
+.multi-select-bar {
+    flex-shrink: 0;
+    margin: 0 auto;
+    margin-bottom: 15px;
+    width: calc(100% - 24px);
+    max-width: 580px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background-color: rgba(255,255,255,0.95);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    z-index: 11;
+}
+
+.multi-select-count {
+    font-size: 13px;
+    color: #666;
+}
+
+.multi-select-delete {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #ff3b30;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.multi-select-cancel {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #666;
+    font-size: 13px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.message.selectable {
+    cursor: pointer;
+}
+
+.message.selected .message-content {
+    border: 2px solid #007aff;
+}
+
+.message .select-check {
+    display: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    flex-shrink: 0;
+    margin-right: 8px;
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.message.selectable .select-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message.selected .select-check {
+    background-color: #007aff;
+    border-color: #007aff;
+}
+
+.message.selected .select-check::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin-top: -2px;
+}
+
 .loading-dots {
     display: flex;
     align-items: center;

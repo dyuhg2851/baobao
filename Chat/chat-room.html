@@ -53,7 +53,7 @@
             </div>
         </div>
         
-        <div class="chat-input">
+        <div class="chat-input" id="chat-input">
             <button id="receive-btn" class="receive-btn" title="Receive AI Response">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linecap="round" d="M22 10c.018.727 0 1.054 0 2c0 3.771 0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12s0-5.657 1.172-6.828S6.229 4 10 4h3"/><path stroke-linecap="round" d="m6 8l2.159 1.8c1.837 1.53 2.755 2.295 3.841 2.295s2.005-.765 3.841-2.296"/><circle cx="19" cy="5" r="3"/></g></svg>
             </button>
@@ -61,6 +61,12 @@
             <button id="send-btn" class="send-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" fill-rule="evenodd" d="M18.21 5.19c-.424.076-1.003.268-1.847.55l-6.49 2.163c-.823.274-1.42.473-1.855.643c-.452.176-.65.293-.733.372a1.5 1.5 0 0 0 0 2.164c.083.08.281.196.733.372a45 45 0 0 0 1.893.656c.292.097.494.164.677.261a2.5 2.5 0 0 1 1.04 1.041c.098.183.165.385.262.677l.013.039c.274.822.473 1.42.643 1.854c.176.452.293.65.373.733a1.5 1.5 0 0 0 2.163 0c.08-.083.196-.281.372-.733c.17-.434.37-1.032.643-1.854l2.164-6.491c.281-.844.473-1.424.548-1.847c.076-.428.001-.525-.037-.562c-.037-.038-.134-.113-.562-.037m-.175-.984c.51-.09 1.045-.085 1.445.314c.399.4.404.935.314 1.445c-.09.505-.306 1.154-.57 1.947l-.015.04l-2.163 6.492l-.005.015a45 45 0 0 1-.655 1.887c-.175.446-.35.82-.583 1.062a2.5 2.5 0 0 1-3.606 0c-.232-.243-.408-.616-.583-1.062c-.18-.461-.387-1.083-.655-1.887l-.005-.015c-.115-.345-.156-.463-.21-.564a1.5 1.5 0 0 0-.624-.625c-.1-.053-.219-.094-.564-.21l-.015-.004a46 46 0 0 1-1.887-.655c-.446-.175-.82-.35-1.062-.583a2.5 2.5 0 0 1 0-3.606c.243-.233.616-.408 1.062-.583c.461-.18 1.083-.387 1.887-.655l.015-.005l6.491-2.163l.041-.014c.793-.264 1.442-.48 1.947-.57" clip-rule="evenodd"/></svg>
             </button>
+        </div>
+        
+        <div class="multi-select-bar" id="multi-select-bar" style="display:none">
+            <span class="multi-select-count" id="multi-select-count">0 selected</span>
+            <button class="multi-select-delete" id="multi-select-delete">Delete</button>
+            <button class="multi-select-cancel" id="multi-select-cancel">Cancel</button>
         </div>
     
     <script>
@@ -75,6 +81,8 @@
             var userName = 'You';
             var systemPrompt = '';
             var apiConfig = null;
+            var isMultiSelect = false;
+            var selectedIndices = {};
             
             function loadProfiles() {
                 var charData = localStorage.getItem('profile_char');
@@ -163,7 +171,12 @@
                             var warningIcon = (msg.role === 'received' && blocked) ? '<span class="block-warning">!</span>' : '';
                             el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + warningIcon;
                             
-                            // Add long press event
+                            // Add select checkbox
+                            var checkEl = document.createElement('span');
+                            checkEl.className = 'select-check';
+                            el.insertBefore(checkEl, el.firstChild);
+                            
+                            // Long press
                             el.addEventListener('contextmenu', function(e) {
                                 e.preventDefault();
                                 showContextMenu(e, index, msg.role);
@@ -365,6 +378,7 @@
             
             // Receive button - triggers AI response
             document.getElementById('receive-btn').addEventListener('click', function() {
+                if (isMultiSelect) return;
                 var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                 if (messages.length === 0) {
                     alert('No messages yet. Send a message first.');
@@ -421,9 +435,58 @@
             });
             
             document.getElementById('menu-multiselect').addEventListener('click', function() {
-                // TODO: Implement multi-select functionality
-                alert('Multi-select: Select multiple messages for batch operations');
+                enterMultiSelect();
                 hideContextMenu();
+            });
+            
+            function enterMultiSelect() {
+                isMultiSelect = true;
+                selectedIndices = {};
+                document.querySelectorAll('.message').forEach(function(el) {
+                    el.classList.add('selectable');
+                    el.addEventListener('click', toggleSelectMessage);
+                });
+                document.getElementById('chat-input').style.display = 'none';
+                document.getElementById('multi-select-bar').style.display = 'flex';
+                document.getElementById('multi-select-count').textContent = '0 selected';
+            }
+            
+            function exitMultiSelect() {
+                isMultiSelect = false;
+                selectedIndices = {};
+                document.querySelectorAll('.message').forEach(function(el) {
+                    el.classList.remove('selectable', 'selected');
+                    el.removeEventListener('click', toggleSelectMessage);
+                });
+                document.getElementById('chat-input').style.display = 'flex';
+                document.getElementById('multi-select-bar').style.display = 'none';
+            }
+            
+            function toggleSelectMessage(e) {
+                var el = e.currentTarget;
+                var index = parseInt(el.dataset.index);
+                if (el.classList.contains('selected')) {
+                    el.classList.remove('selected');
+                    delete selectedIndices[index];
+                } else {
+                    el.classList.add('selected');
+                    selectedIndices[index] = true;
+                }
+                var count = Object.keys(selectedIndices).length;
+                document.getElementById('multi-select-count').textContent = count + ' selected';
+            }
+            
+            document.getElementById('multi-select-cancel').addEventListener('click', exitMultiSelect);
+            
+            document.getElementById('multi-select-delete').addEventListener('click', function() {
+                var indices = Object.keys(selectedIndices).map(Number).sort(function(a,b){return b-a;});
+                if (indices.length === 0) return;
+                if (!confirm('Delete ' + indices.length + ' message(s)?')) return;
+                var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                indices.forEach(function(idx) { messages.splice(idx, 1); });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                exitMultiSelect();
+                loadMessages();
             });
             
             document.getElementById('menu-delete').addEventListener('click', function() {
@@ -445,6 +508,7 @@
             }
             
             sendBtn.addEventListener('click', function() {
+                if (isMultiSelect) return;
                 var messageText = messageInput.value.trim();
                 if (messageText) {
                     var messages = [];
