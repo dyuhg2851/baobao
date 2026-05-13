@@ -435,15 +435,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
-    // AI Moment设置
-    const momentAutoToggle = document.getElementById('moment-auto-toggle');
-    
-    // 加载已保存的AI Moment设置
-    momentAutoToggle.checked = localStorage.getItem('ai_moment_auto') === 'true';
-    
-    // 保存AI Moment设置（自动发布开关）
-    momentAutoToggle.addEventListener('change', function() {
-        localStorage.setItem('ai_moment_auto', momentAutoToggle.checked);
-    });
 });

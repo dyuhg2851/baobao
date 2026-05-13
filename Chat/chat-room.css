@@ -48,8 +48,8 @@ body {
 
 .header-card {
     width: 100%;
-    border-radius: 3px;
-    padding: 10px 14px;
+    border-radius: 20px;
+    padding: 14px 18px;
     position: relative;
 }
 
@@ -90,7 +90,7 @@ body {
 
 .to-label {
     font-size: 36px;
-    font-weight: 300;
+    font-weight: 400;
     color: #cccccc;
     line-height: 1;
     letter-spacing: 2px;
@@ -213,31 +213,57 @@ body {
 }
 
 .message {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     display: flex;
-    flex-direction: column;
-    max-width: 75%;
+    max-width: 85%;
+}
+
+.message + .message.received {
+    margin-top: -4px;
+}
+
+.message + .message.sent {
+    margin-top: -4px;
 }
 
 .message.received {
     align-self: flex-start;
+    flex-direction: row;
 }
 
 .message.sent {
     align-self: flex-end;
+    flex-direction: row-reverse;
 }
 
-.message-content {
-    background-color: #ffffff;
-    border-radius: 3px;
-    padding: 8px 12px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    align-self: flex-start;
+.message-avatar-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.message.sent .message-content {
-    background-color: #07c160;
-    align-self: flex-end;
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.message-avatar svg {
+    width: 20px;
+    height: 20px;
+    color: #999999;
+}
+
+.message-avatar.hidden {
+    visibility: hidden;
 }
 
 .message-time {
@@ -247,14 +273,43 @@ body {
     display: block;
 }
 
-.message.received .message-time {
-    text-align: left;
-    padding-left: 4px;
+.message-info {
+    display: flex;
+    flex-direction: column;
+    margin: 0 8px;
+    flex: 1;
 }
 
-.message.sent .message-time {
+.message-nickname {
+    font-size: 12px;
+    color: #666666;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+}
+
+.message.received .message-nickname {
+    text-align: left;
+}
+
+.message.sent .message-nickname {
     text-align: right;
-    padding-right: 4px;
+}
+
+.message-content-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-content {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 6px 14px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    position: relative;
+}
+
+.message.sent .message-content {
+    background-color: #333333;
 }
 
 .message-text {
@@ -623,7 +678,7 @@ body {
     border-radius: 50px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 1000;
-    padding: 6px 8px;
+    padding: 4px 8px;
     gap: 2px;
     align-items: center;
     justify-content: center;
@@ -632,7 +687,7 @@ body {
 }
 
 .context-menu-item {
-    padding: 6px 10px;
+    padding: 4px 10px;
     font-size: 12px;
     color: #666666;
     cursor: pointer;

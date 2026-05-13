@@ -233,24 +233,98 @@
                     try {
                         var messages = JSON.parse(saved);
                         chatMessages.innerHTML = '';
+                        
+                        // 先收集所有用户消息和char消息的索引
+                        var userMsgIndices = [];
+                        var charMsgIndices = [];
+                        messages.forEach(function(msg, index) {
+                            if (msg.role === 'sent') {
+                                userMsgIndices.push(index);
+                            } else {
+                                charMsgIndices.push(index);
+                            }
+                        });
+                        
                         messages.forEach(function(msg, index) {
                             var el = document.createElement('div');
                             el.className = 'message ' + msg.role;
                             el.dataset.index = index;
+                            
+                            // 判断消息的位置
+                            if (msg.role === 'sent') {
+                                var userMsgCount = userMsgIndices.length;
+                                var posInUserMsgs = userMsgIndices.indexOf(index);
+                                
+                                if (posInUserMsgs === 0) {
+                                    el.classList.add('is-first');
+                                }
+                                if (posInUserMsgs === userMsgCount - 1) {
+                                    el.classList.add('is-last');
+                                }
+                                if (posInUserMsgs > 0 && posInUserMsgs < userMsgCount - 1) {
+                                    el.classList.add('is-middle');
+                                }
+                            } else {
+                                var charMsgCount = charMsgIndices.length;
+                                var posInCharMsgs = charMsgIndices.indexOf(index);
+                                
+                                if (posInCharMsgs === 0) {
+                                    el.classList.add('is-first');
+                                }
+                                if (posInCharMsgs === charMsgCount - 1) {
+                                    el.classList.add('is-last');
+                                }
+                                if (posInCharMsgs > 0 && posInCharMsgs < charMsgCount - 1) {
+                                    el.classList.add('is-middle');
+                                }
+                            }
+                            
+                            // 判断是否需要显示头像和时间（连续相同角色只显示第一个）
+                            var showAvatarAndTime = true;
+                            if (index > 0) {
+                                var prevMsg = messages[index - 1];
+                                if (prevMsg.role === msg.role) {
+                                    showAvatarAndTime = false;
+                                }
+                            }
+                            
                             var blocked = localStorage.getItem('chat_block_char') === 'true';
                             var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
                             var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
                             var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                             var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
+                            
                             var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
-                            var timeHtml = '';
-                            if (msg.time) {
-                                var date = new Date(msg.time);
-                                var hours = date.getHours().toString().padStart(2, '0');
-                                var minutes = date.getMinutes().toString().padStart(2, '0');
-                                timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                            
+                            // 根据角色设置昵称
+                            var nickname = msg.role === 'sent' ? '@> <' : '@T T';
+                            
+                            // 只有第一条消息显示头像和昵称
+                            var avatarWrapperHtml, nicknameHtml;
+                            if (showAvatarAndTime) {
+                                var timeHtml = '';
+                                if (msg.time) {
+                                    var date = new Date(msg.time);
+                                    var hours = date.getHours().toString().padStart(2, '0');
+                                    var minutes = date.getMinutes().toString().padStart(2, '0');
+                                    timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                                }
+                                avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                                nicknameHtml = '<span class="message-nickname">' + nickname + '</span>';
+                            } else {
+                                avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
+                                nicknameHtml = '';
                             }
-                            el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + quoteHtml + timeHtml + warningIcon;
+                            
+                            el.innerHTML = avatarWrapperHtml + 
+                                '<div class="message-info">' +
+                                    nicknameHtml +
+                                    '<div class="message-content-wrapper">' +
+                                        '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
+                                        quoteHtml +
+                                    '</div>' +
+                                '</div>' + 
+                                warningIcon;
                             
                             // Add select checkbox
                             var checkEl = document.createElement('span');
@@ -383,12 +457,57 @@
                     // 自动添加表情包
                     reply = addRandomEmoji(reply);
                     
+                    // AI回复时，用户消息序列结束，最后一条用户消息变成is-last
+                    document.querySelectorAll('.message.sent.is-middle, .message.sent.is-first').forEach(function(msgEl) {
+                        msgEl.classList.remove('is-middle', 'is-first');
+                        msgEl.classList.add('is-last');
+                    });
+                    
+                    // 更新之前char消息的class（移除is-last）
+                    document.querySelectorAll('.message.received').forEach(function(msgEl) {
+                        if (msgEl.classList.contains('is-last')) {
+                            msgEl.classList.remove('is-last');
+                            msgEl.classList.add('is-middle');
+                        }
+                    });
+                    
                     saveMessage(reply, 'received');
                     var replyEl = document.createElement('div');
                     replyEl.className = 'message received';
+                    replyEl.classList.add('is-first');
+                    replyEl.classList.add('is-last');
                     var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                     replyEl.dataset.index = saved.length - 1;
-                    replyEl.innerHTML = '<div class="message-content"><div class="message-text">' + reply + '</div></div>';
+                    
+                    // 判断是否需要显示头像和时间（连续相同角色只显示第一个）
+                    var showAvatarAndTime = true;
+                    if (saved.length > 1) {
+                        var prevMsg = saved[saved.length - 2];
+                        if (prevMsg && prevMsg.role === 'received') {
+                            showAvatarAndTime = false;
+                        }
+                    }
+                    
+                    var avatarWrapperHtml, nicknameHtml;
+                    if (showAvatarAndTime) {
+                        var date = new Date();
+                        var hours = date.getHours().toString().padStart(2, '0');
+                        var minutes = date.getMinutes().toString().padStart(2, '0');
+                        var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                        nicknameHtml = '<span class="message-nickname">@T T</span>';
+                    } else {
+                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
+                        nicknameHtml = '';
+                    }
+                    
+                    replyEl.innerHTML = avatarWrapperHtml + 
+                        '<div class="message-info">' +
+                            nicknameHtml +
+                            '<div class="message-content-wrapper">' +
+                                '<div class="message-content"><div class="message-text">' + reply + '</div></div>' +
+                            '</div>' +
+                        '</div>';
                     
                     if (localStorage.getItem('chat_block_char') === 'true') {
                         var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
@@ -711,6 +830,15 @@
                     }
                     var newIndex = messages.length;
                     
+                    // 判断是否需要显示头像（连续相同角色只显示第一个）
+                    var showAvatar = true;
+                    if (messages.length > 0) {
+                        var prevMsg = messages[messages.length - 1];
+                        if (prevMsg && prevMsg.role === 'sent') {
+                            showAvatar = false;
+                        }
+                    }
+                    
                     saveMessage(messageText, 'sent', currentQuote);
                     var savedQuote = currentQuote;
                     currentQuote = null;
@@ -718,8 +846,58 @@
                     var el = document.createElement('div');
                     el.className = 'message sent';
                     el.dataset.index = newIndex;
+                    
+                    // 更新之前char消息的class（char消息序列结束）
+                    document.querySelectorAll('.message.received.is-middle, .message.received.is-first').forEach(function(msgEl) {
+                        msgEl.classList.remove('is-middle', 'is-first');
+                        msgEl.classList.add('is-last');
+                    });
+                    
+                    // 更新之前用户消息的class（移除is-last）
+                    document.querySelectorAll('.message.sent').forEach(function(msgEl) {
+                        if (msgEl.classList.contains('is-last')) {
+                            msgEl.classList.remove('is-last');
+                            msgEl.classList.add('is-middle');
+                        }
+                    });
+                    
+                    // 新消息是第一条也是最后一条（单条）
+                    el.classList.add('is-first');
+                    el.classList.add('is-last');
+                    
+                    // 判断是否需要显示头像和时间（连续相同角色只显示第一个）
+                    var showAvatarAndTime = true;
+                    if (messages.length > 0) {
+                        var prevMsg = messages[messages.length - 1];
+                        if (prevMsg && prevMsg.role === 'sent') {
+                            showAvatarAndTime = false;
+                        }
+                    }
+                    
+                    var avatarWrapperHtml, nicknameHtml;
+                    if (showAvatarAndTime) {
+                        var date = new Date();
+                        var hours = date.getHours().toString().padStart(2, '0');
+                        var minutes = date.getMinutes().toString().padStart(2, '0');
+                        var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                        nicknameHtml = '<span class="message-nickname">@> <</span>';
+                    } else {
+                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
+                        nicknameHtml = '';
+                    }
+                    
                     var quoteHtml = savedQuote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + savedQuote.text + '</span></div>' : '';
-                    el.innerHTML = '<div class="message-content"><div class="message-text">' + messageText + '</div></div>' + quoteHtml;
+                    
+                    el.innerHTML = avatarWrapperHtml + 
+                        '<div class="message-info">' +
+                            nicknameHtml +
+                            '<div class="message-content-wrapper">' +
+                                '<div class="message-content"><div class="message-text">' + messageText + '</div></div>' +
+                                quoteHtml +
+                            '</div>' +
+                        '</div>';
+                    messageInput.value = '';
                     
                     // Add long press event
                     el.addEventListener('contextmenu', function(e) {
