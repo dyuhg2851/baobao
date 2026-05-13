@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="stylesheet" href="memory-world.css">
+    <title>Memory World</title>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="header">
+            <button id="back-btn" class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
+            </button>
+            <h1>Memory World</h1>
+        </div>
+        
+        <div class="page-content" id="memory-container">
+            <!-- Memory cards will be rendered here -->
+        </div>
+    </div>
+
+    <!-- Delete confirmation modal -->
+    <div class="modal-overlay" id="delete-modal" style="display:none">
+        <div class="modal-card">
+            <div class="modal-message">Delete this memory?</div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="delete-cancel">Cancel</button>
+                <button class="modal-btn confirm" id="delete-confirm">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('back-btn').addEventListener('click', function() {
+                window.location.replace('chat-settings.html');
+            });
+
+            var currentDeleteIndex = null;
+
+            function renderMemories() {
+                var container = document.getElementById('memory-container');
+                var memoryData = localStorage.getItem('char_memory');
+                var memories = [];
+
+                if (memoryData) {
+                    try {
+                        var parsed = JSON.parse(memoryData);
+                        if (Array.isArray(parsed)) {
+                            memories = parsed;
+                        } else if (parsed.content) {
+                            memories = [{ content: parsed.content, timestamp: parsed.timestamp || Date.now() }];
+                        }
+                    } catch(e) {
+                        memories = [{ content: memoryData, timestamp: Date.now() }];
+                    }
+                }
+
+                container.innerHTML = '';
+
+                if (memories.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No memories yet.</div>';
+                    return;
+                }
+
+                var charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                var charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
+
+                memories.forEach(function(memory, index) {
+                    var date = new Date(memory.timestamp || Date.now());
+                    var dateStr = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+
+                    var card = document.createElement('div');
+                    card.className = 'memory-card';
+                    card.innerHTML = 
+                        '<div class="memory-card-top">' +
+                            '<div class="memory-card-name">' + charName + '</div>' +
+                            '<div class="memory-card-time">' + dateStr + '</div>' +
+                        '</div>' +
+                        '<div class="memory-divider"></div>' +
+                        '<div class="memory-card-content" id="memory-content-' + index + '">' + memory.content + '</div>' +
+                        '<div class="memory-card-actions">' +
+                            '<button class="memory-action-btn edit" data-index="' + index + '">' +
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999999" stroke-width="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>' +
+                            '</button>' +
+                            '<button class="memory-action-btn delete" data-index="' + index + '">' +
+                                '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>' +
+                            '</button>' +
+                        '</div>';
+                    container.appendChild(card);
+                });
+
+                // Edit buttons
+                document.querySelectorAll('.memory-action-btn.edit').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var idx = parseInt(this.getAttribute('data-index'));
+                        var contentEl = document.getElementById('memory-content-' + idx);
+                        var currentText = contentEl.textContent;
+                        var newText = prompt('Edit memory:', currentText);
+                        if (newText !== null && newText.trim() !== '') {
+                            var memories = getMemories();
+                            memories[idx].content = newText.trim();
+                            saveMemories(memories);
+                            renderMemories();
+                        }
+                    });
+                });
+
+                // Delete buttons
+                document.querySelectorAll('.memory-action-btn.delete').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        currentDeleteIndex = parseInt(this.getAttribute('data-index'));
+                        document.getElementById('delete-modal').style.display = 'flex';
+                    });
+                });
+            }
+
+            function getMemories() {
+                var memoryData = localStorage.getItem('char_memory');
+                if (!memoryData) return [];
+                try {
+                    var parsed = JSON.parse(memoryData);
+                    if (Array.isArray(parsed)) return parsed;
+                    if (parsed.content) return [{ content: parsed.content, timestamp: parsed.timestamp || Date.now() }];
+                } catch(e) {}
+                return [{ content: memoryData, timestamp: Date.now() }];
+            }
+
+            function saveMemories(memories) {
+                if (memories.length === 1 && memories[0].content) {
+                    localStorage.setItem('char_memory', JSON.stringify(memories[0]));
+                } else {
+                    localStorage.setItem('char_memory', JSON.stringify(memories));
+                }
+            }
+
+            // Delete modal
+            document.getElementById('delete-cancel').addEventListener('click', function() {
+                document.getElementById('delete-modal').style.display = 'none';
+                currentDeleteIndex = null;
+            });
+
+            document.getElementById('delete-confirm').addEventListener('click', function() {
+                if (currentDeleteIndex !== null) {
+                    var memories = getMemories();
+                    memories.splice(currentDeleteIndex, 1);
+                    if (memories.length === 0) {
+                        localStorage.removeItem('char_memory');
+                    } else {
+                        saveMemories(memories);
+                    }
+                    renderMemories();
+                }
+                document.getElementById('delete-modal').style.display = 'none';
+                currentDeleteIndex = null;
+            });
+
+            document.getElementById('delete-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                    currentDeleteIndex = null;
+                }
+            });
+
+            renderMemories();
+        });
+    </script>
+</body>
+</html>

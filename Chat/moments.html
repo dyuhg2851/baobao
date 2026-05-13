@@ -257,7 +257,7 @@
                     
                     const sender = {
                         user: userData.name || 'User',
-                        char: charData.name || 'Char'
+                        char: localStorage.getItem('char_nickname') || charData.name || 'Char'
                     };
                     
                     const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');

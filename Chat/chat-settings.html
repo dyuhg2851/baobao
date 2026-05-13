@@ -17,6 +17,19 @@
         
         <div class="page-content">
 
+        <!-- Nickname -->
+        <div class="card">
+            <h2>Nickname</h2>
+            <div class="form-group">
+                <label for="char-nickname">Character Nickname</label>
+                <input type="text" id="char-nickname" class="form-input" placeholder="Enter nickname...">
+            </div>
+            <div class="button-group">
+                <button id="btn-nickname-save" class="btn btn-save">Save</button>
+                <button id="btn-nickname-reset" class="btn btn-delete">Reset</button>
+            </div>
+        </div>
+
         <!-- Chat Background -->
         <div class="card">
             <h2>Chat Background</h2>
@@ -26,18 +39,6 @@
             <div class="button-group">
                 <button id="btn-bg-set" class="btn btn-save">Set Background</button>
                 <button id="btn-bg-reset" class="btn btn-delete">Reset</button>
-            </div>
-        </div>
-
-        <!-- Block Char -->
-        <div class="card">
-            <h2>Block List</h2>
-            <div class="form-group toggle-row">
-                <label>Block Char</label>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="block-char">
-                    <span class="toggle-slider"></span>
-                </label>
             </div>
         </div>
 
@@ -63,12 +64,20 @@
                 </div>
             </div>
             
-            <div class="form-group">
-                <label for="manual-memory">Manual Memory Input</label>
-                <textarea id="manual-memory" class="form-textarea" rows="3" placeholder="Enter Char's memory manually..."></textarea>
-                <div class="button-group">
-                    <button id="btn-manual-save" class="btn btn-save">Save</button>
-                </div>
+            <div class="button-group" style="margin-top: 16px;">
+                <button id="btn-view-memory" class="btn btn-save">View Memory</button>
+            </div>
+        </div>
+
+        <!-- Block Char -->
+        <div class="card">
+            <h2>Block List</h2>
+            <div class="form-group toggle-row">
+                <label>Block Char</label>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="block-char">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
         </div>
 
@@ -93,6 +102,20 @@
 
             // Load saved settings
             loadSettings();
+
+            // Nickname
+            document.getElementById('btn-nickname-save').addEventListener('click', function() {
+                var nickname = document.getElementById('char-nickname').value;
+                if (nickname) {
+                    localStorage.setItem('char_nickname', nickname);
+                    alert('Nickname saved!');
+                }
+            });
+            document.getElementById('btn-nickname-reset').addEventListener('click', function() {
+                localStorage.removeItem('char_nickname');
+                document.getElementById('char-nickname').value = '';
+                alert('Nickname reset.');
+            });
 
             // Background
             document.getElementById('btn-bg-set').addEventListener('click', function() {
@@ -184,9 +207,13 @@
 
             // Memory save / clear
             document.getElementById('btn-memory-save').addEventListener('click', function() {
-                const memory = document.getElementById('memory-content').value;
+                var memory = document.getElementById('memory-content').value;
                 if (memory) {
-                    localStorage.setItem('char_memory', memory);
+                    var memoryData = {
+                        content: memory,
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem('char_memory', JSON.stringify(memoryData));
                     alert('Memory saved!');
                 }
             });
@@ -198,13 +225,9 @@
                 alert('Memory cleared.');
             });
 
-            // Manual memory
-            document.getElementById('btn-manual-save').addEventListener('click', function() {
-                const memory = document.getElementById('manual-memory').value;
-                if (memory) {
-                    localStorage.setItem('char_memory', memory);
-                    alert('Memory saved!');
-                }
+            // View Memory
+            document.getElementById('btn-view-memory').addEventListener('click', function() {
+                window.location.href = 'memory-world.html';
             });
 
             // Clear chat
@@ -216,6 +239,10 @@
             });
 
             function loadSettings() {
+                // Nickname
+                var nickname = localStorage.getItem('char_nickname');
+                if (nickname) document.getElementById('char-nickname').value = nickname;
+
                 // Background
                 const bg = localStorage.getItem('chat_bg');
                 if (bg) updateBgPreview(bg);
@@ -225,10 +252,17 @@
                 document.getElementById('block-char').checked = blocked;
 
                 // Memory
-                const memory = localStorage.getItem('char_memory');
-                if (memory) {
-                    document.getElementById('memory-content').value = memory;
-                    document.getElementById('memory-result').style.display = 'block';
+                var memoryData = localStorage.getItem('char_memory');
+                if (memoryData) {
+                    try {
+                        var parsed = JSON.parse(memoryData);
+                        document.getElementById('memory-content').value = parsed.content || '';
+                        document.getElementById('memory-result').style.display = 'block';
+                    } catch(e) {
+                        // Old format - plain text
+                        document.getElementById('memory-content').value = memoryData;
+                        document.getElementById('memory-result').style.display = 'block';
+                    }
                 }
 
                 // Summary prompt

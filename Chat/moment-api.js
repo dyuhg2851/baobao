@@ -70,17 +70,19 @@ async function callMomentAPI(promptText) {
   const apiKey = config.key || '';
   const model = config.selectedModel || 'gpt-3.5-turbo';
 
-  if (!apiUrl) {
+  if (!apiUrl || !apiKey) {
     console.warn('API not configured');
     return null;
   }
 
+  const fullUrl = apiUrl.replace(/\/+$/, '') + '/chat/completions';
+
   try {
-    const response = await fetch(apiUrl, {
+    const response = await fetch(fullUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(apiKey ? { 'Authorization': 'Bearer ' + apiKey } : {})
+        'Authorization': 'Bearer ' + apiKey
       },
       body: JSON.stringify({
         model: model,
@@ -93,7 +95,11 @@ async function callMomentAPI(promptText) {
       })
     });
 
-    if (!response.ok) throw new Error('API request failed');
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      console.error('Moment API error:', response.status, errText);
+      return null;
+    }
 
     const data = await response.json();
     return data.choices?.[0]?.message?.content?.trim() || null;
@@ -106,6 +112,7 @@ async function callMomentAPI(promptText) {
 function publishMoment(content, image, from) {
   const charData = getCharData();
   const userData = getUserData();
+  const nickname = localStorage.getItem('char_nickname');
 
   const moments = JSON.parse(localStorage.getItem('moments_list') || '[]');
   moments.unshift({
@@ -114,7 +121,7 @@ function publishMoment(content, image, from) {
     timestamp: Date.now(),
     sender: {
       user: userData.name || 'User',
-      char: charData.name || 'Char'
+      char: nickname || charData.name || 'Char'
     },
     from: from || 'char'
   });

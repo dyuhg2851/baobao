@@ -19,7 +19,8 @@
                     <div class="to-info">
                         <span class="to-name" id="to-name">Char</span>
                         <span class="waiting-text" id="waiting-text" style="display:none">Waiting for reply...</span>
-                    </div>
+        </div>
+        
                     <span class="online-text" id="online-text"><a href="chat-settings.html" class="online-link">Online</a></span>
                 </div>
             </div>
@@ -53,11 +54,19 @@
             </div>
         </div>
         
+        <div class="emoji-picker" id="emoji-picker" style="display:none">
+            <div class="emoji-grid" id="emoji-grid"></div>
+            <div class="emoji-empty" id="emoji-empty">No emojis yet. Add them in Me page.</div>
+        </div>
+        
         <div class="chat-input" id="chat-input">
             <button id="receive-btn" class="receive-btn" title="Receive AI Response">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linecap="round" d="M22 10c.018.727 0 1.054 0 2c0 3.771 0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12s0-5.657 1.172-6.828S6.229 4 10 4h3"/><path stroke-linecap="round" d="m6 8l2.159 1.8c1.837 1.53 2.755 2.295 3.841 2.295s2.005-.765 3.841-2.296"/><circle cx="19" cy="5" r="3"/></g></svg>
             </button>
             <input type="text" id="message-input" class="message-input" placeholder="Message...">
+            <button id="emoji-btn" class="emoji-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none"><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M8.913 15.934c1.258.315 2.685.315 4.122-.07s2.673-1.099 3.605-2.001"/><ellipse cx="14.509" cy="9.774" fill="#000000" rx="1" ry="1.5" transform="rotate(-15 14.51 9.774)"/><ellipse cx="8.714" cy="11.328" fill="#000000" rx="1" ry="1.5" transform="rotate(-15 8.714 11.328)"/><path stroke="#000000" stroke-width="1.5" d="m13 16l.478.974a1.5 1.5 0 1 0 2.693-1.322l-.46-.935"/><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M4.928 4.927A9.95 9.95 0 0 1 9.412 2.34C14.746.91 20.23 4.077 21.659 9.411c1.43 5.335-1.736 10.818-7.07 12.248S3.77 19.922 2.34 14.588a9.95 9.95 0 0 1-.002-5.176"/></g></svg>
+            </button>
             <button id="send-btn" class="send-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" fill-rule="evenodd" d="M18.21 5.19c-.424.076-1.003.268-1.847.55l-6.49 2.163c-.823.274-1.42.473-1.855.643c-.452.176-.65.293-.733.372a1.5 1.5 0 0 0 0 2.164c.083.08.281.196.733.372a45 45 0 0 0 1.893.656c.292.097.494.164.677.261a2.5 2.5 0 0 1 1.04 1.041c.098.183.165.385.262.677l.013.039c.274.822.473 1.42.643 1.854c.176.452.293.65.373.733a1.5 1.5 0 0 0 2.163 0c.08-.083.196-.281.372-.733c.17-.434.37-1.032.643-1.854l2.164-6.491c.281-.844.473-1.424.548-1.847c.076-.428.001-.525-.037-.562c-.037-.038-.134-.113-.562-.037m-.175-.984c.51-.09 1.045-.085 1.445.314c.399.4.404.935.314 1.445c-.09.505-.306 1.154-.57 1.947l-.015.04l-2.163 6.492l-.005.015a45 45 0 0 1-.655 1.887c-.175.446-.35.82-.583 1.062a2.5 2.5 0 0 1-3.606 0c-.232-.243-.408-.616-.583-1.062c-.18-.461-.387-1.083-.655-1.887l-.005-.015c-.115-.345-.156-.463-.21-.564a1.5 1.5 0 0 0-.624-.625c-.1-.053-.219-.094-.564-.21l-.015-.004a46 46 0 0 1-1.887-.655c-.446-.175-.82-.35-1.062-.583a2.5 2.5 0 0 1 0-3.606c.243-.233.616-.408 1.062-.583c.461-.18 1.083-.387 1.887-.655l.015-.005l6.491-2.163l.041-.014c.793-.264 1.442-.48 1.947-.57" clip-rule="evenodd"/></svg>
             </button>
@@ -83,6 +92,8 @@
             var apiConfig = null;
             var isMultiSelect = false;
             var selectedIndices = {};
+            var currentQuote = null;
+            var wasBlocked = localStorage.getItem('chat_block_char') === 'true';
             
             function loadProfiles() {
                 var charData = localStorage.getItem('profile_char');
@@ -111,12 +122,13 @@
             
             function updateHeaderInfo() {
                 var charData = localStorage.getItem('profile_char');
-                var toName = charName;
+                var nickname = localStorage.getItem('char_nickname');
+                var toName = nickname || charName;
                 var signature = '';
                 if (charData) {
                     try {
                         var c = JSON.parse(charData);
-                        if (c.name) toName = c.name;
+                        if (!nickname && c.name) toName = c.name;
                         if (c.signature) signature = c.signature;
                     } catch(e) {}
                 }
@@ -136,16 +148,16 @@
             
             function showWaiting() {
                 var waiting = document.getElementById('waiting-text');
-                var online = document.getElementById('online-text');
+                var name = document.getElementById('to-name');
+                name.style.display = 'none';
                 waiting.style.display = 'inline';
-                online.style.display = 'none';
             }
             
             function hideWaiting() {
                 var waiting = document.getElementById('waiting-text');
-                var online = document.getElementById('online-text');
+                var name = document.getElementById('to-name');
+                name.style.display = 'inline';
                 waiting.style.display = 'none';
-                online.style.display = 'inline';
             }
             
             function buildSystemPrompt() {
@@ -154,6 +166,24 @@
                     prompt += '\n\n你的人设设定：\n' + systemPrompt;
                 }
                 prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话，不要机械问答。';
+                
+                // Include memory
+                var memoryData = localStorage.getItem('char_memory');
+                if (memoryData) {
+                    try {
+                        var parsed = JSON.parse(memoryData);
+                        var memoryContent = parsed.content || '';
+                        if (memoryContent) {
+                            prompt += '\n\n【你的记忆：\n' + memoryContent + '\n】';
+                        }
+                    } catch(e) {
+                        prompt += '\n\n【你的记忆：\n' + memoryData + '\n】';
+                    }
+                }
+                
+                if (localStorage.getItem('chat_block_char') === 'true') {
+                    prompt += '\n\n【注意：你已被User拉黑。你可以表达被拉黑的情绪（困惑、难过、委屈、生气等），但仍然以你的性格自然地回应。】';
+                }
                 return prompt;
             }
             
@@ -168,8 +198,12 @@
                             el.className = 'message ' + msg.role;
                             el.dataset.index = index;
                             var blocked = localStorage.getItem('chat_block_char') === 'true';
-                            var warningIcon = (msg.role === 'received' && blocked) ? '<span class="block-warning">!</span>' : '';
-                            el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + warningIcon;
+                            var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
+                            var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
+                            var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
+                            var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
+                            var quoteHtml = msg.quote ? '<div class="message-quote"><span class="quote-sender">' + msg.quote.sender + '</span><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
+                            el.innerHTML = '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' + quoteHtml + warningIcon;
                             
                             // Add select checkbox
                             var checkEl = document.createElement('span');
@@ -248,13 +282,15 @@
                 }
             });
             
-            function saveMessage(text, role) {
+            function saveMessage(text, role, quote) {
                 var messages = [];
                 var saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
                     try { messages = JSON.parse(saved); } catch(e) {}
                 }
-                messages.push({ text: text, role: role, time: new Date().toISOString() });
+                var msg = { text: text, role: role, time: new Date().toISOString() };
+                if (quote) msg.quote = quote;
+                messages.push(msg);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
             }
             
@@ -322,10 +358,14 @@
                     
                     // Add block warning if blocked
                     if (localStorage.getItem('chat_block_char') === 'true') {
-                        var warningSpan = document.createElement('span');
-                        warningSpan.className = 'block-warning';
-                        warningSpan.textContent = '!';
-                        replyEl.appendChild(warningSpan);
+                        var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
+                        var replyTime = Date.now();
+                        if (replyTime >= blockedAt) {
+                            var warningSpan = document.createElement('span');
+                            warningSpan.className = 'block-warning';
+                            warningSpan.textContent = '!';
+                            replyEl.appendChild(warningSpan);
+                        }
                     }
                     
                     // Add long press event
@@ -408,8 +448,11 @@
                     var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                     var msg = messages[currentMessageIndex];
                     if (msg) {
-                        var prefix = currentMessageRole === 'sent' ? userName + ': ' : charName + ': ';
-                        messageInput.value = '「' + prefix + msg.text + '」\n';
+                        currentQuote = {
+                            text: msg.text,
+                            sender: currentMessageRole === 'sent' ? 'You' : charName
+                        };
+                        messageInput.placeholder = 'Replying to ' + currentQuote.sender + '...';
                         messageInput.focus();
                     }
                 }
@@ -489,6 +532,112 @@
                 loadMessages();
             });
             
+            // Emoji picker
+            document.getElementById('emoji-btn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                var picker = document.getElementById('emoji-picker');
+                if (picker.style.display === 'flex') {
+                    picker.style.display = 'none';
+                } else {
+                    loadEmojis();
+                    picker.style.display = 'flex';
+                }
+            });
+            
+            document.addEventListener('click', function(e) {
+                var picker = document.getElementById('emoji-picker');
+                if (picker.style.display === 'flex' && !e.target.closest('.emoji-picker') && !e.target.closest('#emoji-btn')) {
+                    picker.style.display = 'none';
+                }
+            });
+            
+            function loadEmojis() {
+                var grid = document.getElementById('emoji-grid');
+                var empty = document.getElementById('emoji-empty');
+                var emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]');
+                
+                grid.innerHTML = '';
+                if (emojis.length === 0) {
+                    empty.style.display = 'block';
+                    return;
+                }
+                empty.style.display = 'none';
+                
+                emojis.forEach(function(emoji, index) {
+                    var item = document.createElement('div');
+                    item.className = 'emoji-item';
+                    item.dataset.index = index;
+                    item.textContent = emoji.char || emoji;
+                    
+                    // Tap to insert
+                    item.addEventListener('click', function() {
+                        var input = document.getElementById('message-input');
+                        input.value += this.textContent;
+                        input.focus();
+                        document.getElementById('emoji-picker').style.display = 'none';
+                    });
+                    
+                    // Long press for delete/reorder
+                    var longTimer;
+                    item.addEventListener('touchstart', function(e) {
+                        longTimer = setTimeout(function() {
+                            e.preventDefault();
+                            showEmojiMenu(index);
+                        }, 500);
+                    });
+                    item.addEventListener('touchend', function() { clearTimeout(longTimer); });
+                    item.addEventListener('touchmove', function() { clearTimeout(longTimer); });
+                    item.addEventListener('contextmenu', function(e) {
+                        e.preventDefault();
+                        showEmojiMenu(index);
+                    });
+                    
+                    grid.appendChild(item);
+                });
+            }
+            
+            function showEmojiMenu(index) {
+                var emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]');
+                if (index < 0 || index >= emojis.length) return;
+                var emojiChar = emojis[index].char || emojis[index];
+                
+                var action = prompt(
+                    'Emoji: ' + emojiChar + '\n\n' +
+                    'Enter "delete" to remove this emoji\n' +
+                    'Or enter a new position (1-' + emojis.length + ') to move it'
+                );
+                
+                if (action === null) return;
+                
+                if (action.toLowerCase() === 'delete') {
+                    emojis.splice(index, 1);
+                    localStorage.setItem('user_emojis', JSON.stringify(emojis));
+                    loadEmojis();
+                } else {
+                    var newPos = parseInt(action);
+                    if (!isNaN(newPos) && newPos >= 1 && newPos <= emojis.length) {
+                        var item = emojis.splice(index, 1)[0];
+                        emojis.splice(newPos - 1, 0, item);
+                        localStorage.setItem('user_emojis', JSON.stringify(emojis));
+                        loadEmojis();
+                    }
+                }
+            }
+            
+            // Block char handler - save timestamp when toggled
+            var blockCheckInterval = setInterval(function() {
+                var currentBlocked = localStorage.getItem('chat_block_char') === 'true';
+                if (currentBlocked !== wasBlocked) {
+                    wasBlocked = currentBlocked;
+                    if (currentBlocked) {
+                        localStorage.setItem('chat_blocked_at', Date.now().toString());
+                    } else {
+                        localStorage.removeItem('chat_blocked_at');
+                        loadMessages(); // refresh to remove warnings
+                    }
+                }
+            }, 500);
+            
             document.getElementById('menu-delete').addEventListener('click', function() {
                 if (currentMessageIndex !== null) {
                     if (confirm('Delete this message?')) {
@@ -518,11 +667,15 @@
                     }
                     var newIndex = messages.length;
                     
-                    saveMessage(messageText, 'sent');
+                    saveMessage(messageText, 'sent', currentQuote);
+                    var savedQuote = currentQuote;
+                    currentQuote = null;
+                    messageInput.placeholder = 'Message...';
                     var el = document.createElement('div');
                     el.className = 'message sent';
                     el.dataset.index = newIndex;
-                    el.innerHTML = '<div class="message-content"><div class="message-text">' + messageText + '</div></div>';
+                    var quoteHtml = savedQuote ? '<div class="message-quote"><span class="quote-sender">' + savedQuote.sender + '</span><span class="quote-text">' + savedQuote.text + '</span></div>' : '';
+                    el.innerHTML = '<div class="message-content"><div class="message-text">' + messageText + '</div></div>' + quoteHtml;
                     
                     // Add long press event
                     el.addEventListener('contextmenu', function(e) {
