@@ -199,8 +199,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: 16px;
-    padding-bottom: 120px;
+    padding: 16px 12px 120px;
     background-color: transparent;
     scrollbar-width: none;
 }
@@ -226,13 +225,13 @@ body {
 .message.received {
     align-self: flex-start;
     flex-direction: row;
-    margin-left: 0;
+    margin-left: 4px;
 }
 
 .message.sent {
     align-self: flex-end;
     flex-direction: row-reverse;
-    margin-right: 0;
+    margin-right: 4px;
 }
 
 .message-avatar-wrapper {
