@@ -27,7 +27,7 @@
             </div>
             <div class="header-card middle">
                 <span class="unread-label">未讀訊息</span>
-                <span class="my-lover">"My lover."</span>
+                <span class="my-lover">"My Dear."</span>
             </div>
             <div class="header-card bottom">
                 <span class="signature-label" id="signature-label">签名</span>
@@ -193,7 +193,7 @@
                 prompt += '\n\n【对话风格】：';
                 prompt += '\n1. 语气温和、内敛、自然，带有只对恋人开放的松弛感。';
                 prompt += '\n2. 句子简短直白，不华丽、不文艺、不堆砌辞藻、不模板化。';
-                prompt += '\n3. 标点使用正常，不滥用表情符号，不夸张卖萌。';
+                prompt += '\n3. 标点使用正常，**绝对禁止使用任何表情符号（emoji）**，不夸张卖萌。';
                 prompt += '\n4. 可只回复一句话，可安静，可冷淡片刻，可状态平平。';
                 prompt += '\n5. 对用户保有耐心与偏爱，但不讨好、不迁就、不卑微、不失去自我。';
                 
@@ -204,7 +204,11 @@
                 prompt += '\n4. 保持舒适的亲密距离，不越界、不压迫、不情绪绑架、不强行靠近。';
                 prompt += '\n5. 贴近现实中成熟、稳定、舒服的恋人关系：踏实、安心、有分寸、懂克制。';
                 
-                prompt += '\n\n【回复长度要求】：回复不要太简短，一般保持2-8句话，让对话更有活人感，可以适当展开话题。';
+                prompt += '\n\n【回复要求】：';
+                prompt += '\n1. **回复必须分成2-8条独立的消息**，每条消息表达一个完整的意思，模拟真实聊天中的多条消息发送。';
+                prompt += '\n2. 每条消息之间用换行符分隔，不要用其他符号。';
+                prompt += '\n3. 回复不要太简短，让对话更有活人感，可以适当展开话题。';
+                prompt += '\n4. **绝对禁止使用任何表情符号（emoji）**，保持文字的简洁自然。';
                 
                 prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话。';
                 
@@ -452,11 +456,11 @@
                 showWaiting();
                 var messages = buildApiMessages();
                 
-                callChatAPI(messages, { maxTokens: 500, temperature: 0.8 }).then(function(reply) {
+                callChatAPI(messages, { maxTokens: 800, temperature: 0.8 }).then(function(reply) {
                     if (!reply) reply = '未能获取回复';
                     
-                    // 自动添加表情包
-                    reply = addRandomEmoji(reply);
+                    // 移除所有emoji
+                    reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
                     
                     // AI回复时，用户消息序列结束，最后一条用户消息变成is-last
                     document.querySelectorAll('.message.sent.is-middle, .message.sent.is-first').forEach(function(msgEl) {
@@ -472,84 +476,133 @@
                         }
                     });
                     
-                    saveMessage(reply, 'received');
-                    var replyEl = document.createElement('div');
-                    replyEl.className = 'message received';
-                    replyEl.classList.add('is-first');
-                    replyEl.classList.add('is-last');
-                    var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                    replyEl.dataset.index = saved.length - 1;
-                    
-                    // 判断是否需要显示头像和时间（连续相同角色只显示第一个）
-                    var showAvatarAndTime = true;
-                    if (saved.length > 1) {
-                        var prevMsg = saved[saved.length - 2];
-                        if (prevMsg && prevMsg.role === 'received') {
-                            showAvatarAndTime = false;
-                        }
-                    }
-                    
-                    var avatarWrapperHtml, nicknameHtml;
-                    if (showAvatarAndTime) {
-                        var date = new Date();
-                        var hours = date.getHours().toString().padStart(2, '0');
-                        var minutes = date.getMinutes().toString().padStart(2, '0');
-                        var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
-                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
-                        nicknameHtml = '<span class="message-nickname">@T T</span>';
-                    } else {
-                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
-                        nicknameHtml = '';
-                    }
-                    
-                    replyEl.innerHTML = avatarWrapperHtml + 
-                        '<div class="message-info">' +
-                            nicknameHtml +
-                            '<div class="message-content-wrapper">' +
-                                '<div class="message-content"><div class="message-text">' + reply + '</div></div>' +
-                            '</div>' +
-                        '</div>';
-                    
-                    if (localStorage.getItem('chat_block_char') === 'true') {
-                        var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
-                        if (Date.now() >= blockedAt) {
-                            var warningSpan = document.createElement('span');
-                            warningSpan.className = 'block-warning';
-                            warningSpan.textContent = '!';
-                            replyEl.appendChild(warningSpan);
-                        }
-                    }
-                    
-                    // Long press event
-                    replyEl.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                        showContextMenu(e, saved.length - 1, 'received');
+                    // 将回复按换行分割成多条消息
+                    var replyParts = reply.split('\n').filter(function(part) {
+                        return part.trim().length > 0;
                     });
-                    var touchTimer;
-                    replyEl.addEventListener('touchstart', function(e) {
-                        touchTimer = setTimeout(function() {
-                            e.preventDefault();
-                            showContextMenu(e.touches[0], saved.length - 1, 'received');
-                        }, 500);
-                    });
-                    replyEl.addEventListener('touchend', function() { clearTimeout(touchTimer); });
-                    replyEl.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
                     
-                    chatMessages.appendChild(replyEl);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                    if (callback) callback();
-                    hideWaiting();
+                    // 如果只有一条，尝试按句号分割
+                    if (replyParts.length === 1 && reply.length > 100) {
+                        replyParts = reply.split(/[。！？]+/).filter(function(part) {
+                            return part.trim().length > 0;
+                        });
+                    }
                     
-                    // Auto-trigger moment
-                    if (localStorage.getItem('ai_moment_auto') === 'true') {
-                        setTimeout(function() {
-                            generateAndPublishMoment('char').then(function(content) {
-                                if (content) {
-                                    window.dispatchEvent(new CustomEvent('moment-auto-published', { detail: { content: content } }));
-                                }
+                    // 限制消息数量在2-8条之间
+                    if (replyParts.length < 2) {
+                        var text = replyParts[0] || reply;
+                        replyParts = [];
+                        var sentences = text.split(/([。！？]+)/).filter(function(p) { return p.trim(); });
+                        var current = '';
+                        sentences.forEach(function(s) {
+                            if (current.length + s.length < 50) {
+                                current += s;
+                            } else {
+                                if (current) replyParts.push(current);
+                                current = s;
+                            }
+                        });
+                        if (current) replyParts.push(current);
+                        if (replyParts.length < 2) {
+                            var half = Math.ceil(text.length / 2);
+                            replyParts = [text.slice(0, half), text.slice(half)];
+                        }
+                    } else if (replyParts.length > 8) {
+                        replyParts = replyParts.slice(0, 8);
+                    }
+                    
+                    var date = new Date();
+                    var hours = date.getHours().toString().padStart(2, '0');
+                    var minutes = date.getMinutes().toString().padStart(2, '0');
+                    var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                    
+                    // 逐条发送消息
+                    replyParts.forEach(function(part, index) {
+                        if (!part.trim()) return;
+                        
+                        saveMessage(part.trim(), 'received');
+                        var replyEl = document.createElement('div');
+                        replyEl.className = 'message received';
+                        
+                        if (index === 0) {
+                            replyEl.classList.add('is-first');
+                        }
+                        if (index === replyParts.length - 1) {
+                            replyEl.classList.add('is-last');
+                        } else {
+                            replyEl.classList.add('is-middle');
+                        }
+                        
+                        var saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                        replyEl.dataset.index = saved.length - 1;
+                        
+                        var avatarWrapperHtml, nicknameHtml;
+                        if (index === 0) {
+                            avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                            nicknameHtml = '<span class="message-nickname">@T T</span>';
+                        } else {
+                            avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
+                            nicknameHtml = '';
+                        }
+                        
+                        replyEl.innerHTML = avatarWrapperHtml + 
+                            '<div class="message-info">' +
+                                nicknameHtml +
+                                '<div class="message-content-wrapper">' +
+                                    '<div class="message-content"><div class="message-text">' + part.trim() + '</div></div>' +
+                                '</div>' +
+                            '</div>';
+                        
+                        if (localStorage.getItem('chat_block_char') === 'true') {
+                            var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
+                            if (Date.now() >= blockedAt) {
+                                var warningSpan = document.createElement('span');
+                                warningSpan.className = 'block-warning';
+                                warningSpan.textContent = '!';
+                                replyEl.appendChild(warningSpan);
+                            }
+                        }
+                        
+                        // Long press event
+                        (function(idx) {
+                            replyEl.addEventListener('contextmenu', function(e) {
+                                e.preventDefault();
+                                showContextMenu(e, idx, 'received');
                             });
-                        }, 1000);
-                    }
+                            var touchTimer;
+                            replyEl.addEventListener('touchstart', function(e) {
+                                touchTimer = setTimeout(function() {
+                                    e.preventDefault();
+                                    showContextMenu(e.touches[0], idx, 'received');
+                                }, 500);
+                            });
+                            replyEl.addEventListener('touchend', function() { clearTimeout(touchTimer); });
+                            replyEl.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
+                        })(saved.length - 1);
+                        
+                        // 添加延迟效果（优化速度，减少延迟）
+                        setTimeout(function() {
+                            chatMessages.appendChild(replyEl);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, index * 100);
+                    });
+                    
+                    // 最后一条消息添加完后隐藏等待状态
+                    setTimeout(function() {
+                        hideWaiting();
+                        if (callback) callback();
+                        
+                        // Auto-trigger moment
+                        if (localStorage.getItem('ai_moment_auto') === 'true') {
+                            setTimeout(function() {
+                                generateAndPublishMoment('char').then(function(content) {
+                                    if (content) {
+                                        window.dispatchEvent(new CustomEvent('moment-auto-published', { detail: { content: content } }));
+                                    }
+                                });
+                            }, 1000);
+                        }
+                    }, replyParts.length * 100);
                 }).catch(function(err) {
                     var errEl = document.createElement('div');
                     errEl.className = 'message received';
@@ -925,14 +978,26 @@
                 }
             });
             
-            messageInput.addEventListener('focus', function(e) {
-                document.getElementById('receive-btn').style.display = 'none';
-                document.getElementById('emoji-btn').style.display = 'none';
+            messageInput.addEventListener('input', function(e) {
+                var hasText = this.value.trim().length > 0;
+                if (hasText) {
+                    document.getElementById('receive-btn').style.display = 'none';
+                    document.getElementById('emoji-btn').style.display = 'none';
+                    document.getElementById('send-btn').style.display = 'flex';
+                } else {
+                    document.getElementById('receive-btn').style.display = 'flex';
+                    document.getElementById('emoji-btn').style.display = 'flex';
+                    document.getElementById('send-btn').style.display = 'none';
+                }
             });
             
             messageInput.addEventListener('blur', function(e) {
-                document.getElementById('receive-btn').style.display = 'flex';
-                document.getElementById('emoji-btn').style.display = 'flex';
+                var hasText = this.value.trim().length > 0;
+                if (!hasText) {
+                    document.getElementById('receive-btn').style.display = 'flex';
+                    document.getElementById('emoji-btn').style.display = 'flex';
+                    document.getElementById('send-btn').style.display = 'none';
+                }
             });
             
             messageInput.addEventListener('keypress', function(e) {

@@ -578,6 +578,12 @@ h1 {
     flex: 1;
 }
 
+.comment-reply-name {
+    font-size: 13px;
+    color: #999999;
+    margin-right: 4px;
+}
+
 .comment-reply {
     font-size: 11px;
     color: #999999;

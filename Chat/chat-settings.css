@@ -266,13 +266,11 @@ label {
 }
 
 .card h2 {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1a1a1a;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
     margin-bottom: 16px;
     text-align: center;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #eee;
 }
 
 /* 预设列表样式 */

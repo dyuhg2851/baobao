@@ -132,7 +132,7 @@ async function callMomentAPI(promptText) {
   return callChatAPI([
     { role: 'system', content: systemPrompt },
     { role: 'user', content: promptText }
-  ], { maxTokens: 400, temperature: 0.8 });
+  ], { maxTokens: 800, temperature: 0.8 });
 }
 
 function publishMoment(content, image, from) {

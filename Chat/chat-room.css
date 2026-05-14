@@ -371,7 +371,7 @@ body {
     max-width: 580px;
     display: flex;
     align-items: center;
-    padding: 4px 16px;
+    padding: 4px 12px;
     background-color: rgba(255,255,255,0.95);
     border-radius: 50px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -418,7 +418,7 @@ body {
     border-radius: 50%;
     background: none;
     margin-left: 12px;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     cursor: pointer;
