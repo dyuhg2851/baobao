@@ -331,6 +331,7 @@ h2 {
     color: #333;
     outline: none;
     resize: none;
+    box-sizing: border-box;
 }
 
 .css-actions {

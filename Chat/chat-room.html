@@ -55,6 +55,18 @@
             </div>
         </div>
         
+        <!-- 删除确认弹窗 -->
+        <div class="delete-confirm-modal" id="delete-confirm-modal">
+            <div class="delete-confirm-content">
+                <div class="delete-confirm-title">Delete Message</div>
+                <div class="delete-confirm-text">Are you sure you want to delete this message?</div>
+                <div class="delete-confirm-buttons">
+                    <button class="delete-confirm-btn cancel" id="delete-confirm-cancel">Cancel</button>
+                    <button class="delete-confirm-btn confirm" id="delete-confirm-ok">Delete</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="emoji-picker" id="emoji-picker" style="display:none">
             <div class="emoji-grid" id="emoji-grid"></div>
             <div class="emoji-empty" id="emoji-empty">No emojis yet. Add them in Me page.</div>
@@ -314,7 +326,20 @@
                                     var minutes = date.getMinutes().toString().padStart(2, '0');
                                     timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
                                 }
-                                avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                                // 获取头像
+                                var avatarUrl = '';
+                                if (msg.role === 'sent') {
+                                    avatarUrl = localStorage.getItem('profile_user_avatar') || '';
+                                } else {
+                                    avatarUrl = localStorage.getItem('profile_char_avatar') || '';
+                                }
+                                var avatarHtml = '';
+                                if (avatarUrl) {
+                                    avatarHtml = '<img src="' + avatarUrl + '" class="message-avatar-img" />';
+                                } else {
+                                    avatarHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                                }
+                                avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div>';
                                 nicknameHtml = '<span class="message-nickname">' + nickname + '</span>';
                             } else {
                                 avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
@@ -538,7 +563,15 @@
                         
                         var avatarWrapperHtml, nicknameHtml;
                         if (index === 0) {
-                            avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                            // 获取char头像
+                            var charAvatarUrl = localStorage.getItem('profile_char_avatar') || '';
+                            var charAvatarHtml = '';
+                            if (charAvatarUrl) {
+                                charAvatarHtml = '<img src="' + charAvatarUrl + '" class="message-avatar-img" />';
+                            } else {
+                                charAvatarHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                            }
+                            avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar">' + charAvatarHtml + '</div>' + timeHtml + '</div>';
                             nicknameHtml = '<span class="message-nickname">@T T</span>';
                         } else {
                             avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
@@ -857,14 +890,24 @@
             
             document.getElementById('menu-delete').addEventListener('click', function() {
                 if (currentMessageIndex !== null) {
-                    if (confirm('Delete this message?')) {
-                        var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                        messages.splice(currentMessageIndex, 1);
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-                        loadMessages();
-                    }
+                    document.getElementById('delete-confirm-modal').style.display = 'flex';
                 }
                 hideContextMenu();
+            });
+            
+            // 删除确认弹窗事件
+            document.getElementById('delete-confirm-cancel').addEventListener('click', function() {
+                document.getElementById('delete-confirm-modal').style.display = 'none';
+            });
+            
+            document.getElementById('delete-confirm-ok').addEventListener('click', function() {
+                if (currentMessageIndex !== null) {
+                    var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    messages.splice(currentMessageIndex, 1);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                    loadMessages();
+                }
+                document.getElementById('delete-confirm-modal').style.display = 'none';
             });
             
             if (backBtn) {
@@ -934,7 +977,15 @@
                         var hours = date.getHours().toString().padStart(2, '0');
                         var minutes = date.getMinutes().toString().padStart(2, '0');
                         var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
-                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>' + timeHtml + '</div>';
+                        // 获取用户头像
+                        var userAvatarUrl = localStorage.getItem('profile_user_avatar') || '';
+                        var userAvatarHtml = '';
+                        if (userAvatarUrl) {
+                            userAvatarHtml = '<img src="' + userAvatarUrl + '" class="message-avatar-img" />';
+                        } else {
+                            userAvatarHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                        }
+                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar">' + userAvatarHtml + '</div>' + timeHtml + '</div>';
                         nicknameHtml = '<span class="message-nickname">@> <</span>';
                     } else {
                         avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';

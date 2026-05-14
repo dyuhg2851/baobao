@@ -154,6 +154,10 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化删除弹窗状态
+            window.currentDeleteIndex = null;
+            document.getElementById('delete-modal').style.display = 'none';
+            
             const backBtn = document.getElementById('back-btn');
             if (backBtn) {
                 backBtn.addEventListener('click', function() {
