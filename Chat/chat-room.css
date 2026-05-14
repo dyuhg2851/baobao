@@ -199,7 +199,8 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: 116px 16px 80px;
+    padding: 16px;
+    padding-bottom: 120px;
     background-color: transparent;
     scrollbar-width: none;
 }
@@ -369,9 +370,11 @@ body {
 }
 
 .chat-input {
+    position: sticky;
+    bottom: env(safe-area-inset-bottom, 0);
     flex-shrink: 0;
     margin: 0 auto;
-    margin-bottom: 8px;
+    margin-bottom: 0;
     width: calc(100% - 40px);
     max-width: 560px;
     display: flex;
@@ -402,9 +405,9 @@ body {
     }
 
     .chat-input {
-        margin-bottom: 4px;
+        margin-bottom: 0;
         width: calc(100% - 24px);
-        border-radius: 20px;
+        border-radius: 50px;
     }
     
     .chat-input-inner {
