@@ -144,7 +144,7 @@ body {
     align-items: center;
     gap: 12px;
     border-radius: 0 0 24px 24px;
-    width: 92%;
+    width: 96%;
 }
 
 .header-card.bottom {
@@ -155,7 +155,7 @@ body {
     z-index: 1;
     text-align: center;
     border-radius: 0 0 24px 24px;
-    width: 84%;
+    width: 92%;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
@@ -225,13 +225,13 @@ body {
 .message.received {
     align-self: flex-start;
     flex-direction: row;
-    margin-left: 0;
+    margin-left: 3px;
 }
 
 .message.sent {
     align-self: flex-end;
     flex-direction: row-reverse;
-    margin-right: 0;
+    margin-right: 3px;
 }
 
 .message-avatar-wrapper {
@@ -335,16 +335,14 @@ body {
     display: flex;
     flex-direction: row;
     align-items: stretch;
-    margin-top: 8px;
-    align-self: flex-start;
+    margin-top: 4px;
     gap: 6px;
     max-width: 100%;
 }
 
 .message-quote .quote-bar {
     width: 3px;
-    background-color: #ffffff;
-    border: 1px solid #d0d0d0;
+    background-color: #d0d0d0;
     border-radius: 2px;
     flex-shrink: 0;
 }
@@ -356,12 +354,15 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 140px;
+    min-width: 0;
 }
 
-.message.sent .message-quote {
-    align-self: flex-end;
-    flex-direction: row-reverse;
+.message.sent .message-quote .quote-text {
+    color: #aaaaaa;
+}
+
+.message.sent .message-quote .quote-bar {
+    background-color: #aaaaaa;
 }
 
 .quote-sender {
@@ -398,12 +399,13 @@ body {
     flex: 1;
     height: 44px;
     border: none;
-    border-radius: 24px;
-    background-color: #f1f3f4;
-    padding: 0 16px;
+    border-bottom: 1.5px solid #000000;
+    background: none;
+    padding: 0 4px;
     font-size: 15px;
     outline: none;
     margin: 0;
+    border-radius: 0;
 }
 
 .receive-btn,
@@ -443,6 +445,7 @@ body {
     .message-input {
         height: 36px;
         font-size: 16px;
+        border-bottom-width: 1.5px;
     }
 
     .receive-btn,

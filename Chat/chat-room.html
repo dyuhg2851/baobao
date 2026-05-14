@@ -348,8 +348,7 @@
                                 '<div class="message-info">' +
                                     nicknameHtml +
                                     '<div class="message-content-wrapper">' +
-                                        '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
-                                        quoteHtml +
+                                        '<div class="message-content"><div class="message-text">' + msg.text + '</div>' + quoteHtml + '</div>' +
                                     '</div>' +
                                 '</div>' + 
                                 warningIcon;
@@ -573,7 +572,7 @@
                         var avatarWrapperHtml, nicknameHtml;
                         if (index === 0) {
                             // 获取char头像
-                            var charAvatarUrl = localStorage.getItem('profile_char_avatar') || '';
+                            var charAvatarUrl = localStorage.getItem('char_avatar') || '';
                             var charAvatarHtml = '';
                             if (charAvatarUrl) {
                                 charAvatarHtml = '<img src="' + charAvatarUrl + '" class="message-avatar-img" />';
