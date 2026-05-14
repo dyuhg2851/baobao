@@ -23,6 +23,7 @@ body {
     width: 100%;
     display: flex;
     flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .settings-container {
@@ -198,7 +199,7 @@ body {
     flex-direction: column;
     min-height: 0;
     padding: 16px;
-    padding-bottom: 80px;
+    padding-bottom: 120px;
     background-color: transparent;
     scrollbar-width: none;
 }
@@ -370,7 +371,7 @@ body {
 .chat-input {
     flex-shrink: 0;
     margin: 0 auto;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     width: calc(100% - 24px);
     max-width: 580px;
     display: flex;
@@ -395,7 +396,7 @@ body {
 .message-input {
     flex: 1;
     max-width: 400px;
-    height: 28px;
+    height: 36px;
     border: none;
     border-radius: 50px;
     background-color: #f8f8f8;
@@ -406,8 +407,8 @@ body {
 }
 
 .receive-btn {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border: none;
     border-radius: 50%;
     background: none;
@@ -422,15 +423,15 @@ body {
 
 .receive-btn svg {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
 }
 
 
 
 .emoji-btn {
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     border: none;
     border-radius: 50%;
     background: none;
@@ -445,8 +446,8 @@ body {
 
 .emoji-btn svg {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
 }
 
 .emoji-picker {

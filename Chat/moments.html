@@ -387,10 +387,12 @@ ${recentChats || '暂无'}
 ${moment.content || '（图片）'}
 
 要求：
-1. 评论必须符合角色性格和设定
-2. 语言自然
-3. 符合朋友间的互动语气
-4. 可以参考聊天记录和记忆，让回复更有连贯性
+1. 评论必须严格符合角色性格和设定，体现角色的独特个性
+2. 仔细阅读用户动态内容，针对具体内容进行有针对性的回复
+3. 语言自然，像真人朋友间的互动
+4. 可以参考聊天记录和记忆，让回复更有连贯性和个性化
+5. 回复要简短自然，不要太长
+6. 保持角色的一致性，不要随意改变语气
 
 生成评论：`;
                 
@@ -418,11 +420,11 @@ ${moment.content || '（图片）'}
                         body: JSON.stringify({
                             model: apiConfig.selectedModel || 'gpt-3.5-turbo',
                             messages: [
-                                { role: 'system', content: `你是${charName}，一个性格鲜明的AI角色。` },
+                                { role: 'system', content: `你是${charName}，严格按照角色设定回复。性格：${charData.personality || charData.settings || '友好'}。描述：${charData.bio || '暂无'}。` },
                                 { role: 'user', content: prompt }
                             ],
-                            max_tokens: 50,
-                            temperature: 0.8
+                            max_tokens: 100,
+                            temperature: 0.7
                         })
                     });
                     

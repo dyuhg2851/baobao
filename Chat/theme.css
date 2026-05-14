@@ -56,7 +56,7 @@
 .message {
     margin-bottom: 8px;
     display: flex;
-    max-width: 85%;
+    max-width: 90%;
 }
 
 .message + .message.received {

@@ -522,7 +522,7 @@
                         });
                     }
                     
-                    // 限制消息数量在2-8条之间
+                    // 限制消息数量在2-5条之间
                     if (replyParts.length < 2) {
                         var text = replyParts[0] || reply;
                         replyParts = [];
@@ -541,8 +541,8 @@
                             var half = Math.ceil(text.length / 2);
                             replyParts = [text.slice(0, half), text.slice(half)];
                         }
-                    } else if (replyParts.length > 8) {
-                        replyParts = replyParts.slice(0, 8);
+                    } else if (replyParts.length > 5) {
+                        replyParts = replyParts.slice(0, 5);
                     }
                     
                     var date = new Date();
