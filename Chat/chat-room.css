@@ -224,13 +224,13 @@ body {
 .message.received {
     align-self: flex-start;
     flex-direction: row;
-    margin-left: 15px;
+    margin-left: 0;
 }
 
 .message.sent {
     align-self: flex-end;
     flex-direction: row-reverse;
-    margin-right: 15px;
+    margin-right: 0;
 }
 
 .message-avatar-wrapper {
@@ -386,10 +386,10 @@ body {
 
 .chat-input-inner {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
     width: 100%;
-    padding: 8px 8px;
+    padding: 4px 8px 8px;
 }
 
 .message-input {

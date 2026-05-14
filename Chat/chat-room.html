@@ -490,7 +490,7 @@
                 showWaiting();
                 var messages = buildApiMessages();
                 
-                callChatAPI(messages, { maxTokens: 800, temperature: 0.8 }).then(function(reply) {
+                callChatAPI(messages, { maxTokens: 10000, temperature: 0.8 }).then(function(reply) {
                     if (!reply) reply = '未能获取回复';
                     
                     // 移除所有emoji

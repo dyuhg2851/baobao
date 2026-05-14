@@ -79,7 +79,7 @@ async function callChatAPI(messages, options) {
   const apiUrl = config.url || '';
   const apiKey = config.key || '';
   const model = options?.model || config.selectedModel || 'gpt-3.5-turbo';
-  const maxTokens = options?.maxTokens || 200;
+  const maxTokens = options?.maxTokens || 10000;
   const temperature = options?.temperature ?? 0.8;
 
   if (!apiUrl || !apiKey) {
