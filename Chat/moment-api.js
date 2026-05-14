@@ -12,7 +12,7 @@ function getChatHistory() {
   const chatData = JSON.parse(localStorage.getItem('chat_messages') || '[]');
   const charData = getCharData();
   return chatData.slice(-10).map(c => ({
-    role: c.role === 'sent' ? 'User' : (charData.name || 'Char'),
+    role: c.role === 'sent' ? 'User' : (localStorage.getItem('char_nickname') || charData.name || 'Char'),
     content: c.text
   }));
 }

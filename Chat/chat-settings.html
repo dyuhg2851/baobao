@@ -156,8 +156,9 @@
                 }
 
                 const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                const nickname = localStorage.getItem('char_nickname') || charData.name || 'Char';
                 const chatText = chatData.map(c => 
-                    (c.role === 'sent' ? 'User' : (charData.name || 'Char')) + ': ' + c.text
+                    (c.role === 'sent' ? 'User' : nickname) + ': ' + c.text
                 ).join('\n');
 
                 const defaultPrompt = 'Summarize the key information, personality traits, preferences, and relationship dynamics revealed in this conversation. Output as concise character memory notes.';
