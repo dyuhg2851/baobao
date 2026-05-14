@@ -154,9 +154,13 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 初始化删除弹窗状态
+            // 初始化所有弹窗状态，确保页面加载时弹窗都是隐藏的
             window.currentDeleteIndex = null;
+            window.currentDeleteMomentIndex = null;
+            window.currentDeleteCommentIndex = null;
+            
             document.getElementById('delete-modal').style.display = 'none';
+            document.getElementById('comment-delete-modal').style.display = 'none';
             
             const backBtn = document.getElementById('back-btn');
             if (backBtn) {
@@ -328,7 +332,9 @@
                     const commentContent = await generateCharComment(moment);
                     if (commentContent) {
                         if (!moment.comments) moment.comments = [];
-                        const charName = localStorage.getItem('char_nickname') || 'Char';
+                        // 获取char名称（与chatroom保持一致，读取档案人设）
+                        const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                        const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
                         moment.comments.push({
                             name: charName,
                             content: commentContent,
@@ -343,22 +349,48 @@
             
             // 生成char评论内容
             async function generateCharComment(moment) {
+                // 读取人设数据（从档案模块）
                 const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
                 const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+                const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
                 
-                const prompt = `你是${charData.name || 'Char'}，根据以下角色设定和用户的动态内容，生成一条自然的评论回复：
+                // 获取聊天提示词（与chatroom使用同一个）
+                const chatPrompt = localStorage.getItem('chat_system_prompt') || '';
+                
+                // 获取聊天记录（最近50条）
+                const chatMessages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+                const recentChats = chatMessages.slice(-50).map(m => 
+                    `${m.role === 'sent' ? userData.name || 'User' : charName}: ${m.content}`
+                ).join('\n');
+                
+                // 获取记忆信息
+                const memoryData = JSON.parse(localStorage.getItem('memory_data') || '{}');
+                const memorySummary = memoryData.summary || '';
+                
+                const prompt = `你是${charName}，根据以下所有信息生成一条自然的评论回复：
 
-角色设定：
+=== 角色设定 ===
 - 性格：${charData.personality || charData.settings || '友好'}
 - 描述：${charData.bio || '暂无'}
+- 生活习惯：${charData.lifestyle || '暂无'}
 
-用户动态：
+=== 聊天提示词 ===
+${chatPrompt || '暂无'}
+
+=== 记忆信息 ===
+${memorySummary || '暂无'}
+
+=== 最近聊天记录 ===
+${recentChats || '暂无'}
+
+=== 用户动态 ===
 ${moment.content || '（图片）'}
 
 要求：
-1. 评论要符合角色性格
-2. 语言自然，不超过30字
+1. 评论必须符合角色性格和设定
+2. 语言自然
 3. 符合朋友间的互动语气
+4. 可以参考聊天记录和记忆，让回复更有连贯性
 
 生成评论：`;
                 
@@ -386,7 +418,7 @@ ${moment.content || '（图片）'}
                         body: JSON.stringify({
                             model: apiConfig.selectedModel || 'gpt-3.5-turbo',
                             messages: [
-                                { role: 'system', content: `你是${charData.name || 'Char'}，一个性格鲜明的AI角色。` },
+                                { role: 'system', content: `你是${charName}，一个性格鲜明的AI角色。` },
                                 { role: 'user', content: prompt }
                             ],
                             max_tokens: 50,
@@ -581,7 +613,11 @@ ${moment.content || '（图片）'}
                     const isCharLiked = localStorage.getItem(charLikedKey) === 'true';
                     const totalLikes = (isUserLiked ? 1 : 0) + (isCharLiked ? 1 : 0);
                     
-                    const sender = moment.sender || { user: 'User', char: 'Char' };
+                    // 获取char名称（与chatroom保持一致）
+                    const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                    const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
+                    
+                    const sender = moment.sender || { user: 'User', char: charName };
                     const fromUser = moment.from === 'user';
                     
                     let namesHtml = '';
@@ -760,44 +796,63 @@ ${moment.content || '（图片）'}
                     const moment = moments[momentIndex];
                     if (!moment || !moment.comments || moment.comments.length === 0) return;
                     
-                    // 获取最后一条评论（用户的评论）
-                    const lastComment = moment.comments[moment.comments.length - 1];
-                    if (!lastComment || lastComment.name === (localStorage.getItem('char_nickname') || 'Char')) {
-                        return; // 跳过char自己的评论
-                    }
-                    
+                    // 获取char名称（与chatroom保持一致）
                     const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
                     const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
                     
-                    // 获取完整的人设设定
-                    const systemPrompt = localStorage.getItem('chat_system_prompt') || '';
+                    // 获取最后一条评论（用户的评论）
+                    const lastComment = moment.comments[moment.comments.length - 1];
+                    if (!lastComment || lastComment.name === charName) {
+                        return; // 跳过char自己的评论
+                    }
                     
-                    const prompt = `你是${charName}。
-${systemPrompt ? `
+                    // 获取聊天提示词（与chatroom使用同一个）
+                    const chatPrompt = localStorage.getItem('chat_system_prompt') || '';
+                    
+                    // 获取聊天记录（最近50条）
+                    const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+                    const chatMessages = JSON.parse(localStorage.getItem('chat_messages') || '[]');
+                    const recentChats = chatMessages.slice(-50).map(m => 
+                        `${m.role === 'sent' ? userData.name || 'User' : charName}: ${m.content}`
+                    ).join('\n');
+                    
+                    // 获取记忆信息
+                    const memoryData = JSON.parse(localStorage.getItem('memory_data') || '{}');
+                    const memorySummary = memoryData.summary || '';
+                    
+                    const prompt = `你是${charName}，根据以下所有信息生成一条自然的回复：
 
-你的人设设定：
-${systemPrompt}` : `
-
-角色设定：
+=== 角色设定 ===
 - 性格：${charData.personality || charData.settings || '友好'}
 - 描述：${charData.bio || '暂无'}
 - 生活习惯：${charData.lifestyle || '暂无'}
+
+=== 聊天提示词 ===
+${chatPrompt || '暂无'}
+
+=== 记忆信息 ===
+${memorySummary || '暂无'}
+
+=== 最近聊天记录 ===
+${recentChats || '暂无'}
+
+=== 动态内容 ===
+${moment.content || '（图片）'}
+
+=== 用户评论 ===
+${lastComment.name}: ${lastComment.content}
 
 核心法则：
 1. 第一反应必须是情绪/本能，而不是分析/解决
 2. 语言要有"人味儿痕迹"，可以有语气词（嗯… 那个…）、说一半的话、停顿
 3. 先接住情绪再解决问题
 
-对话风格：语气温和、内敛、自然，句子简短直白，不华丽不文艺，标点正常，不滥用表情`}
-
-动态内容：${moment.content || '（图片）'}
-
-用户评论：${lastComment.name}: ${lastComment.content}
+对话风格：语气温和、内敛、自然，句子简短直白，不华丽不文艺，标点正常，不滥用表情
 
 要求：
 1. 回复要符合角色性格和人设
 2. 语言自然真实，像真人回复，不超过50字
-3. 符合恋人之间的互动语气，温柔但不卑微
+3. 可以参考聊天记录和记忆，让回复更有连贯性
 4. 不要AI味，要有活人感
 
 生成回复：`;
@@ -927,14 +982,6 @@ ${systemPrompt}` : `
                     document.getElementById('comment-delete-modal').style.display = 'none';
                     window.currentDeleteMomentIndex = null;
                     window.currentDeleteCommentIndex = null;
-                });
-                
-                // 点击遮罩层关闭删除弹窗
-                document.getElementById('delete-modal').addEventListener('click', function(e) {
-                    if (e.target === this) {
-                        this.style.display = 'none';
-                        window.currentDeleteIndex = null;
-                    }
                 });
                 
                 // 虚拟图片点击事件
