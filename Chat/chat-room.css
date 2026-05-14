@@ -376,9 +376,8 @@ body {
     max-width: 580px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 1px 10px;
+    justify-content: space-between;
+    padding: 4px 8px;
     background-color: rgba(255,255,255,0.95);
     border-radius: 50px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -387,6 +386,7 @@ body {
 
 .message-input {
     flex: 1;
+    max-width: 400px;
     height: 36px;
     border: none;
     border-radius: 50px;
@@ -394,6 +394,7 @@ body {
     padding: 0 16px;
     font-size: 14px;
     outline: none;
+    margin: 0 8px;
 }
 
 .receive-btn {
@@ -417,33 +418,7 @@ body {
     height: 24px;
 }
 
-.send-btn {
-    display: none;
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: 50%;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-    padding: 0;
-    line-height: 0;
-    flex-shrink: 0;
-}
 
-.send-btn:hover {
-    opacity: 0.9;
-}
-
-.send-btn svg {
-    display: block;
-    width: 30px;
-    height: 30px;
-}
 
 .emoji-btn {
     width: 36px;

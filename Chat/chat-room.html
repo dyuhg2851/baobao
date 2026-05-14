@@ -80,9 +80,7 @@
             <button id="emoji-btn" class="emoji-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none"><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M8.913 15.934c1.258.315 2.685.315 4.122-.07s2.673-1.099 3.605-2.001"/><ellipse cx="14.509" cy="9.774" fill="#000000" rx="1" ry="1.5" transform="rotate(-15 14.51 9.774)"/><ellipse cx="8.714" cy="11.328" fill="#000000" rx="1" ry="1.5" transform="rotate(-15 8.714 11.328)"/><path stroke="#000000" stroke-width="1.5" d="m13 16l.478.974a1.5 1.5 0 1 0 2.693-1.322l-.46-.935"/><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M4.928 4.927A9.95 9.95 0 0 1 9.412 2.34C14.746.91 20.23 4.077 21.659 9.411c1.43 5.335-1.736 10.818-7.07 12.248S3.77 19.922 2.34 14.588a9.95 9.95 0 0 1-.002-5.176"/></g></svg>
             </button>
-            <button id="send-btn" class="send-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" fill-rule="evenodd" d="M18.21 5.19c-.424.076-1.003.268-1.847.55l-6.49 2.163c-.823.274-1.42.473-1.855.643c-.452.176-.65.293-.733.372a1.5 1.5 0 0 0 0 2.164c.083.08.281.196.733.372a45 45 0 0 0 1.893.656c.292.097.494.164.677.261a2.5 2.5 0 0 1 1.04 1.041c.098.183.165.385.262.677l.013.039c.274.822.473 1.42.643 1.854c.176.452.293.65.373.733a1.5 1.5 0 0 0 2.163 0c.08-.083.196-.281.372-.733c.17-.434.37-1.032.643-1.854l2.164-6.491c.281-.844.473-1.424.548-1.847c.076-.428.001-.525-.037-.562c-.037-.038-.134-.113-.562-.037m-.175-.984c.51-.09 1.045-.085 1.445.314c.399.4.404.935.314 1.445c-.09.505-.306 1.154-.57 1.947l-.015.04l-2.163 6.492l-.005.015a45 45 0 0 1-.655 1.887c-.175.446-.35.82-.583 1.062a2.5 2.5 0 0 1-3.606 0c-.232-.243-.408-.616-.583-1.062c-.18-.461-.387-1.083-.655-1.887l-.005-.015c-.115-.345-.156-.463-.21-.564a1.5 1.5 0 0 0-.624-.625c-.1-.053-.219-.094-.564-.21l-.015-.004a46 46 0 0 1-1.887-.655c-.446-.175-.82-.35-1.062-.583a2.5 2.5 0 0 1 0-3.606c.243-.233.616-.408 1.062-.583c.461-.18 1.083-.387 1.887-.655l.015-.005l6.491-2.163l.041-.014c.793-.264 1.442-.48 1.947-.57" clip-rule="evenodd"/></svg>
-            </button>
+            
         </div>
         
         <div class="multi-select-bar" id="multi-select-bar" style="display:none">
@@ -94,7 +92,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const backBtn = document.getElementById('back-btn');
-            const sendBtn = document.getElementById('send-btn');
             const messageInput = document.getElementById('message-input');
             const chatMessages = document.getElementById('chat-messages');
             const STORAGE_KEY = 'chat_messages';
@@ -916,129 +913,16 @@
                 });
             }
             
-            sendBtn.addEventListener('click', function() {
-                if (isMultiSelect) return;
-                var messageText = messageInput.value.trim();
-                if (messageText) {
-                    var messages = [];
-                    var saved = localStorage.getItem(STORAGE_KEY);
-                    if (saved) {
-                        try { messages = JSON.parse(saved); } catch(e) {}
-                    }
-                    var newIndex = messages.length;
-                    
-                    // 判断是否需要显示头像（连续相同角色只显示第一个）
-                    var showAvatar = true;
-                    if (messages.length > 0) {
-                        var prevMsg = messages[messages.length - 1];
-                        if (prevMsg && prevMsg.role === 'sent') {
-                            showAvatar = false;
-                        }
-                    }
-                    
-                    saveMessage(messageText, 'sent', currentQuote);
-                    var savedQuote = currentQuote;
-                    currentQuote = null;
-                    messageInput.placeholder = 'Message...';
-                    var el = document.createElement('div');
-                    el.className = 'message sent';
-                    el.dataset.index = newIndex;
-                    
-                    // 更新之前char消息的class（char消息序列结束）
-                    document.querySelectorAll('.message.received.is-middle, .message.received.is-first').forEach(function(msgEl) {
-                        msgEl.classList.remove('is-middle', 'is-first');
-                        msgEl.classList.add('is-last');
-                    });
-                    
-                    // 更新之前用户消息的class（移除is-last）
-                    document.querySelectorAll('.message.sent').forEach(function(msgEl) {
-                        if (msgEl.classList.contains('is-last')) {
-                            msgEl.classList.remove('is-last');
-                            msgEl.classList.add('is-middle');
-                        }
-                    });
-                    
-                    // 新消息是第一条也是最后一条（单条）
-                    el.classList.add('is-first');
-                    el.classList.add('is-last');
-                    
-                    // 判断是否需要显示头像和时间（连续相同角色只显示第一个）
-                    var showAvatarAndTime = true;
-                    if (messages.length > 0) {
-                        var prevMsg = messages[messages.length - 1];
-                        if (prevMsg && prevMsg.role === 'sent') {
-                            showAvatarAndTime = false;
-                        }
-                    }
-                    
-                    var avatarWrapperHtml, nicknameHtml;
-                    if (showAvatarAndTime) {
-                        var date = new Date();
-                        var hours = date.getHours().toString().padStart(2, '0');
-                        var minutes = date.getMinutes().toString().padStart(2, '0');
-                        var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
-                        // 获取用户头像
-                        var userAvatarUrl = localStorage.getItem('profile_user_avatar') || '';
-                        var userAvatarHtml = '';
-                        if (userAvatarUrl) {
-                            userAvatarHtml = '<img src="' + userAvatarUrl + '" class="message-avatar-img" />';
-                        } else {
-                            userAvatarHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-                        }
-                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar">' + userAvatarHtml + '</div>' + timeHtml + '</div>';
-                        nicknameHtml = '<span class="message-nickname">@> <</span>';
-                    } else {
-                        avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
-                        nicknameHtml = '';
-                    }
-                    
-                    var quoteHtml = savedQuote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + savedQuote.text + '</span></div>' : '';
-                    
-                    el.innerHTML = avatarWrapperHtml + 
-                        '<div class="message-info">' +
-                            nicknameHtml +
-                            '<div class="message-content-wrapper">' +
-                                '<div class="message-content"><div class="message-text">' + messageText + '</div></div>' +
-                                quoteHtml +
-                            '</div>' +
-                        '</div>';
-                    messageInput.value = '';
-                    
-                    // Add long press event
-                    el.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                        showContextMenu(e, newIndex, 'sent');
-                    });
-                    let touchTimer;
-                    el.addEventListener('touchstart', function(e) {
-                        touchTimer = setTimeout(function() {
-                            e.preventDefault();
-                            showContextMenu(e.touches[0], newIndex, 'sent');
-                        }, 500);
-                    });
-                    el.addEventListener('touchend', function() {
-                        clearTimeout(touchTimer);
-                    });
-                    el.addEventListener('touchmove', function() {
-                        clearTimeout(touchTimer);
-                    });
-                    
-                    chatMessages.appendChild(el);
-                    messageInput.value = '';
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }
-            });
+            
             
             messageInput.addEventListener('input', function(e) {
                 var hasText = this.value.trim().length > 0;
                 if (hasText) {
                     document.getElementById('receive-btn').style.display = 'none';
                     document.getElementById('emoji-btn').style.display = 'none';
-                    document.getElementById('send-btn').style.display = 'flex';
                 } else {
                     document.getElementById('receive-btn').style.display = 'flex';
                     document.getElementById('emoji-btn').style.display = 'flex';
-                    document.getElementById('send-btn').style.display = 'none';
                 }
             });
             
@@ -1047,15 +931,10 @@
                 if (!hasText) {
                     document.getElementById('receive-btn').style.display = 'flex';
                     document.getElementById('emoji-btn').style.display = 'flex';
-                    document.getElementById('send-btn').style.display = 'none';
                 }
             });
             
-            messageInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendBtn.click();
-                }
-            });
+            
             
             // Load custom CSS from localStorage
             const customCSS = localStorage.getItem('chat_custom_css');
