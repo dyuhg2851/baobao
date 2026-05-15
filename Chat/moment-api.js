@@ -101,13 +101,12 @@ function buildMomentPromptText() {
 对话风格：语气温和、内敛、自然，句子简短直白，不华丽不文艺，标点正常，不滥用表情
 
 核心要求：
-1. 文案必须符合角色性格和人设
+1. **必须严格读取档案人设**，文案必须符合角色性格和人设设定
 2. 结合最近对话内容和情绪状态，自然融入对话中提到的关键词
-3. 内容要自然真实，像真人发的朋友圈，不超过100字
+3. 内容要自然真实，像真人发的朋友圈，不超过50字
 4. 结合时间场景（早晨、深夜、周末）让内容更真实
-5. 可以适当使用emoji表情增加生动感
-6. 结尾可以加入互动引导（提问、征求意见等）
-7. 不要AI味，要有活人感
+5. 结尾可以加入互动引导（提问、征求意见等）
+6. 不要AI味，要有活人感，回复评论时不要胡言乱语
 
 角色设定：
 ${charInfo}
@@ -225,7 +224,8 @@ async function generateAndPublishMoment(from) {
 
   if (result) {
     // 生成虚拟图片内容（与用户发布虚拟图片格式一致）
-    const virtualImageContent = 'AI generated moment image';
+    // 使用文案内容作为图片描述，点击可查看
+    const virtualImageContent = result;
     const imageData = 'virtual:' + virtualImageContent;
     publishMoment(result, imageData, from || 'char');
     return result;
