@@ -473,6 +473,17 @@
                 if (saved) {
                     try { messages = JSON.parse(saved); } catch(e) {}
                 }
+                // 去重：最后一条同角色消息内容相同则跳过
+                if (messages.length > 0) {
+                    var last = messages[messages.length - 1];
+                    if (last.role === role && last.text === text) return messages.length;
+                }
+                var msg = { text: text, role: role, time: new Date().toISOString() };
+                if (quote) msg.quote = quote;
+                messages.push(msg);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                return messages.length - 1;
+            }
                 var msg = { text: text, role: role, time: new Date().toISOString() };
                 if (quote) msg.quote = quote;
                 messages.push(msg);
@@ -730,7 +741,7 @@
                         // 只有第一条回复消息带引用
                         saveMessage(part.trim(), 'received', index === 0 ? replyQuote : null);
                         var replyEl = document.createElement('div');
-                        replyEl.className = 'message received typing-effect';
+                        replyEl.className = 'message received new-message';
                         
                         if (index === 0) {
                             replyEl.classList.add('is-first');
@@ -944,7 +955,7 @@
             });
             
             document.getElementById('menu-edit').addEventListener('click', function() {
-                if (currentMessageIndex !== null && currentMessageRole === 'sent') {
+                if (currentMessageIndex !== null) {
                     var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                     var msg = messages[currentMessageIndex];
                     if (msg) {
@@ -955,8 +966,6 @@
                             loadMessages();
                         }
                     }
-                } else if (currentMessageIndex !== null) {
-                    alert('Can only edit your own messages');
                 }
                 hideContextMenu();
             });

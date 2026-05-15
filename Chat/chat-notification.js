@@ -31,7 +31,14 @@
       var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
       if (processed.includes(req.id)) return;
 
-      // 如果 chat-room 正在处理中（< 15 秒），等待它完成
+      // 不在 chat-room 页面则立即处理，不等待
+      if (!isOnChatRoom()) {
+        if (executing) return;
+        execute(req);
+        return;
+      }
+
+      // 在 chat-room 时，等待它完成（< 15 秒）
       var processingStamp = localStorage.getItem('processing_on_chatroom');
       if (processingStamp) {
         var elapsed = Date.now() - parseInt(processingStamp);
@@ -43,9 +50,18 @@
     } catch(e) {}
   }
 
+  function retryOrRemove(req) {
+    req.retryCount = (req.retryCount || 0) + 1;
+    if (req.retryCount >= 3) {
+      localStorage.removeItem('pending_ai_request');
+    } else {
+      req.timestamp = Date.now();
+      localStorage.setItem('pending_ai_request', JSON.stringify(req));
+    }
+  }
+
   async function execute(req) {
     executing = true;
-    localStorage.removeItem('pending_ai_request');
     var config = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
     if (!config.url || !config.key) { executing = false; return; }
     try {
@@ -60,15 +76,32 @@
           temperature: 0.8
         })
       });
-      if (!response.ok) { executing = false; return; }
+      if (!response.ok) {
+        retryOrRemove(req);
+        executing = false;
+        return;
+      }
       var data = await response.json();
       var reply = data.choices?.[0]?.message?.content?.trim();
-      if (!reply) { executing = false; return; }
+      if (!reply) {
+        retryOrRemove(req);
+        executing = false;
+        return;
+      }
       reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
+      localStorage.removeItem('pending_ai_request');
       var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
       if (!processed.includes(req.id)) {
         processed.push(req.id);
         localStorage.setItem('processed_requests', JSON.stringify(processed));
+      }
+      // 如果 chat-room 已经保存了通知，不再重复保存
+      var existingNotif = localStorage.getItem('ai_notification');
+      if (existingNotif) {
+        try {
+          var n = JSON.parse(existingNotif);
+          if (n.id === req.id) { executing = false; return; }
+        } catch(e) {}
       }
       localStorage.setItem('ai_notification', JSON.stringify({
         id: req.id, text: reply, timestamp: Date.now(), read: false
@@ -83,6 +116,7 @@
       } catch(e) {}
     } catch(e) {
       console.error('Background AI request failed:', e);
+      retryOrRemove(req);
     }
     executing = false;
   }

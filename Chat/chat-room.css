@@ -56,47 +56,10 @@
 }
 
 /* 打字效果样式 */
-.typing-effect .message-content {
-    opacity: 0;
-    animation: typingFadeIn 0.3s ease-out forwards;
-    animation-delay: 0.2s;
-}
 
-.typing-effect .message-text {
-    overflow: hidden;
-    white-space: nowrap;
-    animation: typingText 0.4s steps(20, end) forwards;
-    animation-delay: 0.2s;
-}
 
-@keyframes typingFadeIn {
-    from {
-        opacity: 0;
-        transform: translateX(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
 
-@keyframes typingText {
-    from {
-        max-width: 0;
-    }
-    to {
-        max-width: 280px;
-    }
-}
 
-.message.sent .typing-effect .message-text {
-    animation-name: typingTextSent;
-}
-
-@keyframes typingTextSent {
-    from {
-        max-width: 0;
-    }
     to {
         max-width: 280px;
     }
@@ -328,6 +291,10 @@ body {
     align-self: flex-start;
     flex-direction: row;
     margin-left: 5px !important;
+}
+
+.message.received.new-message {
+    animation: messagePopIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .message.sent {
@@ -910,4 +877,10 @@ body {
 .delete-confirm-btn.confirm {
     background-color: transparent;
     color: #ff3b30;
+}
+
+@keyframes messagePopIn {
+    0% { transform: scale(0.85); opacity: 0; }
+    70% { transform: scale(1.03); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
