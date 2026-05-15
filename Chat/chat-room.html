@@ -291,7 +291,7 @@
                         
                         messages.forEach(function(msg, index) {
                             var el = document.createElement('div');
-                            el.className = 'message ' + msg.role;
+                            el.className = 'message ' + msg.role + ' no-animation';
                             el.dataset.index = index;
                             
                             // 判断消息的位置
@@ -476,9 +476,9 @@
                 var el = document.createElement('div');
                 el.className = 'message ' + msg.role;
                 if (isNew && msg.role === 'received') {
-                    // 只有新接收到的消息才有动画
-                } else if (!isNew) {
-                    // 旧消息添加no-animation类
+                    // 只有新接收到的AI消息才有动画
+                } else {
+                    // 用户发送的消息和旧消息都不显示动画
                     el.classList.add('no-animation');
                 }
                 el.dataset.index = index;
