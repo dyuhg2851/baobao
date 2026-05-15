@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="chat-room.css">
     <link rel="stylesheet" href="theme.css" id="theme-css">
     <script src="moment-api.js"></script>
+    <script src="chat-notification.js"></script>
     <title>Chat Room</title>
 </head>
 <body>
@@ -588,7 +589,7 @@
                 return msgs;
             }
             
-            function callApi(userText, callback) {
+            function callApi(userText, requestId, callback) {
                 var apiConfig = getApiConfig();
                 if (!apiConfig || !apiConfig.url || !apiConfig.key) {
                     var replyEl = document.createElement('div');
@@ -616,6 +617,14 @@
                 
                 callChatAPI(messages, { maxTokens: 10000, temperature: 0.8 }).then(function(reply) {
                     if (!reply) reply = '未能获取回复';
+                    
+                    // 清除后台通知 pending 请求，避免重复
+                    localStorage.removeItem('pending_ai_request');
+                    if (requestId) {
+                        var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
+                        processed.push(requestId);
+                        localStorage.setItem('processed_requests', JSON.stringify(processed));
+                    }
                     
                     // 移除所有emoji
                     reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
@@ -878,8 +887,17 @@
                     return;
                 }
                 
+                // Save pending request for background notification
+                var requestId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                var pending = {
+                    id: requestId,
+                    messages: buildApiMessages(),
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('pending_ai_request', JSON.stringify(pending));
+                
                 // Call API to get response
-                callApi(null);
+                callApi(null, requestId);
             });
             
             loadProfiles();
