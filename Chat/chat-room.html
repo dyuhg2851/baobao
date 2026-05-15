@@ -47,6 +47,10 @@
                 <span>Edit</span>
             </div>
             <div class="context-menu-divider"></div>
+            <div class="context-menu-item" id="menu-reroll">
+                <span>Reroll</span>
+            </div>
+            <div class="context-menu-divider"></div>
             <div class="context-menu-item" id="menu-multiselect">
                 <span>Select</span>
             </div>
@@ -419,6 +423,8 @@
             
             let currentMessageIndex = null;
             let currentMessageRole = null;
+            let pendingDeleteIndex = null;
+            let pendingDeleteRole = null;
             
             function showContextMenu(e, index, role) {
                 currentMessageIndex = index;
@@ -571,9 +577,11 @@
             function buildApiMessages() {
                 var msgs = [{ role: 'system', content: buildSystemPrompt() }];
                 var saved = localStorage.getItem(STORAGE_KEY);
+                var hasHistory = false;
                 if (saved) {
                     try {
                         var history = JSON.parse(saved);
+                        if (history.length > 0) hasHistory = true;
                         history.forEach(function(m) {
                             var content = m.text;
                             if (m.quote) {
@@ -585,6 +593,10 @@
                             });
                         });
                     } catch(e) {}
+                }
+                // 无历史消息时，用日常分享提示触发AI
+                if (!hasHistory) {
+                    msgs.push({ role: 'user', content: '请根据人设分享自己的日常及感想感受' });
                 }
                 return msgs;
             }
@@ -628,6 +640,15 @@
                     
                     // 移除所有emoji
                     reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
+                    
+                    // 保存通知（同样的 reply 内容，保证弹窗和聊天一致）
+                    localStorage.setItem('ai_notification', JSON.stringify({
+                        id: requestId,
+                        text: reply,
+                        timestamp: Date.now(),
+                        read: false
+                    }));
+                    localStorage.removeItem('processing_on_chatroom');
                     
                     // AI回复时，用户消息序列结束，最后一条用户消息变成is-last
                     document.querySelectorAll('.message.sent.is-middle, .message.sent.is-first').forEach(function(msgEl) {
@@ -875,16 +896,14 @@
             document.getElementById('receive-btn').addEventListener('click', function() {
                 if (isMultiSelect) return;
                 var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                if (messages.length === 0) {
-                    alert('No messages yet. Send a message first.');
-                    return;
-                }
                 
                 // Check if there's already a pending response
-                var lastMsg = messages[messages.length - 1];
-                if (lastMsg.role === 'received') {
-                    alert('Already got a response.');
-                    return;
+                if (messages.length > 0) {
+                    var lastMsg = messages[messages.length - 1];
+                    if (lastMsg.role === 'received') {
+                        alert('Already got a response.');
+                        return;
+                    }
                 }
                 
                 // Save pending request for background notification
@@ -895,6 +914,7 @@
                     timestamp: Date.now()
                 };
                 localStorage.setItem('pending_ai_request', JSON.stringify(pending));
+                localStorage.setItem('processing_on_chatroom', Date.now().toString());
                 
                 // Call API to get response
                 callApi(null, requestId);
@@ -1104,6 +1124,8 @@
             
             document.getElementById('menu-delete').addEventListener('click', function() {
                 if (currentMessageIndex !== null) {
+                    pendingDeleteIndex = currentMessageIndex;
+                    pendingDeleteRole = currentMessageRole;
                     document.getElementById('delete-confirm-modal').style.display = 'flex';
                 }
                 hideContextMenu();
@@ -1112,16 +1134,35 @@
             // 删除确认弹窗事件
             document.getElementById('delete-confirm-cancel').addEventListener('click', function() {
                 document.getElementById('delete-confirm-modal').style.display = 'none';
+                pendingDeleteIndex = null;
+                pendingDeleteRole = null;
             });
             
             document.getElementById('delete-confirm-ok').addEventListener('click', function() {
-                if (currentMessageIndex !== null) {
+                if (pendingDeleteIndex !== null) {
                     var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                    messages.splice(currentMessageIndex, 1);
+                    messages.splice(pendingDeleteIndex, 1);
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
                     loadMessages();
                 }
                 document.getElementById('delete-confirm-modal').style.display = 'none';
+                pendingDeleteIndex = null;
+                pendingDeleteRole = null;
+            });
+            
+            // Reroll - 删除选中消息及之后所有消息，重新生成AI回复
+            document.getElementById('menu-reroll').addEventListener('click', function() {
+                if (currentMessageIndex !== null && currentMessageRole === 'received') {
+                    var idx = currentMessageIndex;
+                    hideContextMenu();
+                    var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    messages.splice(idx);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                    loadMessages();
+                    document.getElementById('receive-btn').click();
+                } else {
+                    hideContextMenu();
+                }
             });
             
             if (backBtn) {

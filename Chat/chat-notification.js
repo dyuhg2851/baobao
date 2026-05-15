@@ -1,6 +1,7 @@
 (function() {
   var CHECK_INTERVAL = 2000;
   var interval = null;
+  var executing = false;
   var swipeY = 0;
   var isSwiping = false;
 
@@ -14,6 +15,10 @@
     }, CHECK_INTERVAL);
   }
 
+  function isOnChatRoom() {
+    return window.location.pathname.indexOf('chat-room.html') !== -1;
+  }
+
   function checkPending() {
     var data = localStorage.getItem('pending_ai_request');
     if (!data) return;
@@ -25,18 +30,25 @@
       }
       var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
       if (processed.includes(req.id)) return;
+
+      // 如果 chat-room 正在处理中（< 15 秒），等待它完成
+      var processingStamp = localStorage.getItem('processing_on_chatroom');
+      if (processingStamp) {
+        var elapsed = Date.now() - parseInt(processingStamp);
+        if (elapsed < 15000) return;
+      }
+
+      if (executing) return;
       execute(req);
     } catch(e) {}
   }
 
   async function execute(req) {
+    executing = true;
     localStorage.removeItem('pending_ai_request');
-    var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
-    processed.push(req.id);
-    localStorage.setItem('processed_requests', JSON.stringify(processed));
+    var config = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
+    if (!config.url || !config.key) { executing = false; return; }
     try {
-      var config = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
-      if (!config.url || !config.key) return;
       var fullUrl = config.url.replace(/\/+$/, '') + '/chat/completions';
       var response = await fetch(fullUrl, {
         method: 'POST',
@@ -48,13 +60,19 @@
           temperature: 0.8
         })
       });
-      if (!response.ok) return;
+      if (!response.ok) { executing = false; return; }
       var data = await response.json();
       var reply = data.choices?.[0]?.message?.content?.trim();
-      if (!reply) return;
+      if (!reply) { executing = false; return; }
       reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
-      var notification = { id: req.id, text: reply, timestamp: Date.now(), read: false };
-      localStorage.setItem('ai_notification', JSON.stringify(notification));
+      var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
+      if (!processed.includes(req.id)) {
+        processed.push(req.id);
+        localStorage.setItem('processed_requests', JSON.stringify(processed));
+      }
+      localStorage.setItem('ai_notification', JSON.stringify({
+        id: req.id, text: reply, timestamp: Date.now(), read: false
+      }));
       try {
         var saved = JSON.parse(localStorage.getItem('chat_messages') || '[]');
         var parts = reply.split('\n').filter(function(p) { return p.trim(); });
@@ -66,9 +84,11 @@
     } catch(e) {
       console.error('Background AI request failed:', e);
     }
+    executing = false;
   }
 
   function checkNotification() {
+    if (isOnChatRoom()) return;
     var notifData = localStorage.getItem('ai_notification');
     if (!notifData) return;
     try {
@@ -141,7 +161,6 @@
       window.location.href = getChatRoomUrl();
     };
 
-    // Swipe up to dismiss
     popup.addEventListener('touchstart', function(e) {
       swipeY = e.touches[0].clientY;
       isSwiping = false;
@@ -188,7 +207,7 @@
   var style = document.createElement('style');
   style.textContent =
     '.ai-notif-popup{' +
-      'position:fixed;top:20px;left:50%;transform:translateX(-50%);' +
+      'position:fixed;top:calc(80px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);' +
       'width:calc(100% - 40px);max-width:400px;z-index:99999;cursor:pointer;' +
       'animation:aiNotifIn 0.3s ease' +
     '}' +
@@ -196,23 +215,23 @@
       'animation:aiNotifOut 0.25s ease forwards' +
     '}' +
     '.ai-notif-inner{' +
-      'background:#fff;border-radius:16px;padding:12px 16px;' +
+      'background:#fff;border-radius:16px;padding:10px 16px;' +
       'box-shadow:0 8px 40px rgba(0,0,0,0.12)' +
     '}' +
     '.ai-notif-top{' +
-      'display:flex;justify-content:space-between;align-items:center;margin-bottom:2px' +
+      'display:flex;justify-content:space-between;align-items:center;margin-bottom:4px' +
     '}' +
     '.ai-notif-label{' +
-      'font-size:11px;font-weight:600;color:#333;letter-spacing:0.5px' +
+      'font-size:12px;font-weight:600;color:#333;letter-spacing:0.5px' +
     '}' +
     '.ai-notif-close{' +
       'font-size:18px;color:#bbb;line-height:1;padding:0 2px;background:none;border:none;cursor:pointer' +
     '}' +
     '.ai-notif-from{' +
-      'font-size:10px;color:#aaa;margin-bottom:6px' +
+      'font-size:12px;color:#666;margin-bottom:6px;font-weight:500' +
     '}' +
     '.ai-notif-text{' +
-      'font-size:13px;color:#888;line-height:1.45' +
+      'font-size:11px;color:#999;line-height:1.4' +
     '}' +
     '@keyframes aiNotifIn{' +
       'from{transform:translateX(-50%) translateY(-120px);opacity:0}' +
