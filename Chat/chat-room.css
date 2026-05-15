@@ -305,7 +305,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: 16px 2px 80px;
+    padding: 16px 2px 40px;
     background-color: transparent;
     scrollbar-width: none;
 }
