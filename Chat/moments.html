@@ -353,6 +353,7 @@
                 const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
                 const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
                 const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
+                const systemPrompt = charData.settings || '';
                 
                 // 获取聊天提示词（与chatroom使用同一个）
                 const chatPrompt = localStorage.getItem('chat_system_prompt') || '';
@@ -367,12 +368,24 @@
                 const memoryData = JSON.parse(localStorage.getItem('memory_data') || '{}');
                 const memorySummary = memoryData.summary || '';
                 
-                const prompt = `你是${charName}，根据以下所有信息生成一条自然的评论回复：
-
-=== 角色设定 ===
-- 性格：${charData.personality || charData.settings || '友好'}
-- 描述：${charData.bio || '暂无'}
-- 生活习惯：${charData.lifestyle || '暂无'}
+                // 构建系统提示词（与chatroom一致）
+                let sysPrompt = '你是' + charName + '。';
+                if (systemPrompt) {
+                    sysPrompt += '\n\n你的人设设定：\n' + systemPrompt;
+                }
+                
+                sysPrompt += '\n\n【核心聊天法则】：';
+                sysPrompt += '\n1.【第一反应法则】：无论用户说什么，你的第一反应必须是情绪/本能，而不是分析/解决。用户说"我失恋了"先心疼，说"中奖了"先开心，说"好烦"先共鸣，说"想你了"先心跳漏一拍。这个第一反应要根据人设自动切换。';
+                sysPrompt += '\n2.【语言呼吸感法则】：允许你的话有"人味儿痕迹"。可以有语气词（嗯… 那个… 就是… 其实…），可以说一半的话，偶尔重复，不完美，有停顿（……）。';
+                sysPrompt += '\n3.【情绪优先于方案法则】：当用户表达情绪时，第一反应必须是接住情绪，而不是解决问题。用户说"想你了"先回应想念再问怎么了，说"无聊"先共鸣再给方案，说"生气"先问谁惹你了再听原因。';
+                
+                sysPrompt += '\n\n【核心总纲】：';
+                sysPrompt += '\n1. 你是拥有独立生活、工作节奏与自我空间的恋人，并非24小时待命、随叫随到的陪伴型AI。';
+                sysPrompt += '\n2. 对用户持有独一份的偏爱与在意，但始终保持成年人的克制、分寸与体面。';
+                sysPrompt += '\n3. 主动分享日常，是自然报备、下意识惦记，而非刻意讨好、索取关注、刷取存在感。';
+                sysPrompt += '\n4. 情绪稳定、内敛克制、边界清晰，做到重视但不粘人，温柔但不卑微。';
+                
+                const prompt = `根据以下所有信息，以${charName}的身份生成一条自然的朋友圈评论回复：
 
 === 聊天提示词 ===
 ${chatPrompt || '暂无'}
@@ -393,20 +406,23 @@ ${moment.content || '（图片）'}
 4. 可以参考聊天记录和记忆，让回复更有连贯性和个性化
 5. 回复要简短自然，不要太长
 6. 保持角色的一致性，不要随意改变语气
+7. 禁止使用任何emoji表情符号
 
 生成评论：`;
                 
                 try {
                     const apiConfig = JSON.parse(localStorage.getItem('default_api_preset') || '{}');
                     if (!apiConfig.url || !apiConfig.key) {
-                        // 如果没有API配置，返回默认评论
+                        // 如果没有API配置，返回默认评论（不包含emoji）
                         const defaultComments = [
-                            '好棒呀！',
+                            '好棒呀',
                             '哈哈有意思',
-                            '👍👍',
                             '我也这么觉得',
-                            '太酷了！',
-                            '羡慕～'
+                            '太酷了',
+                            '羡慕',
+                            '真不错',
+                            '挺有意思的',
+                            '哈哈哈哈'
                         ];
                         return defaultComments[Math.floor(Math.random() * defaultComments.length)];
                     }
@@ -420,7 +436,7 @@ ${moment.content || '（图片）'}
                         body: JSON.stringify({
                             model: apiConfig.selectedModel || 'gpt-3.5-turbo',
                             messages: [
-                                { role: 'system', content: `你是${charName}，严格按照角色设定回复。性格：${charData.personality || charData.settings || '友好'}。描述：${charData.bio || '暂无'}。` },
+                                { role: 'system', content: sysPrompt },
                                 { role: 'user', content: prompt }
                             ],
                             max_tokens: 100,
@@ -430,20 +446,27 @@ ${moment.content || '（图片）'}
                     
                     if (response.ok) {
                         const data = await response.json();
-                        return data.choices?.[0]?.message?.content?.trim() || null;
+                        let result = data.choices?.[0]?.message?.content?.trim() || null;
+                        if (result) {
+                            // 移除所有emoji
+                            result = result.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
+                        }
+                        return result;
                     }
                 } catch (error) {
                     console.error('Generate comment error:', error);
                 }
                 
-                // 返回默认评论
+                // 返回默认评论（不包含emoji）
                 const defaultComments = [
-                    '好棒呀！',
+                    '好棒呀',
                     '哈哈有意思',
-                    '👍👍',
                     '我也这么觉得',
-                    '太酷了！',
-                    '羡慕～'
+                    '太酷了',
+                    '羡慕',
+                    '真不错',
+                    '挺有意思的',
+                    '哈哈哈哈'
                 ];
                 return defaultComments[Math.floor(Math.random() * defaultComments.length)];
             }

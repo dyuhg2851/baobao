@@ -548,6 +548,17 @@
                     var bt = formatBeijingTime(date);
                     var timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                     
+                    // 准备引用信息（如果有引用）
+                    var replyQuote = null;
+                    if (currentQuote) {
+                        replyQuote = {
+                            sender: currentQuote.sender,
+                            text: currentQuote.text
+                        };
+                        // 重置currentQuote
+                        currentQuote = null;
+                    }
+                    
                     // 逐条发送消息，根据内容长度计算延迟
                     var baseDelay = 300; // 基础延迟
                     var charDelay = 50;  // 每个字符的延迟
@@ -558,7 +569,8 @@
                         // 计算这条消息的延迟：基础延迟 + 字符数 * 字符延迟
                         var partDelay = baseDelay + part.trim().length * charDelay;
                         
-                        saveMessage(part.trim(), 'received');
+                        // 只有第一条回复消息带引用
+                        saveMessage(part.trim(), 'received', index === 0 ? replyQuote : null);
                         var replyEl = document.createElement('div');
                         replyEl.className = 'message received typing-effect';
                         

@@ -31,26 +31,43 @@
         
         // DOM加载完成后执行其他初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 北京时间格式化函数 (UTC+8)
+            // 北京时间格式化函数 (UTC+8) - 使用Intl确保准确的时区转换
             window.formatBeijingTime = function(date) {
                 if (!(date instanceof Date)) {
                     date = new Date(date);
                 }
-                var tzOffset = date.getTimezoneOffset();
-                var beijingTime = new Date(date.getTime() + (8 * 60 - tzOffset) * 60 * 1000);
-                var hours = beijingTime.getHours().toString().padStart(2, '0');
-                var minutes = beijingTime.getMinutes().toString().padStart(2, '0');
-                var year = beijingTime.getFullYear();
-                var month = (beijingTime.getMonth() + 1).toString().padStart(2, '0');
-                var day = beijingTime.getDate().toString().padStart(2, '0');
-                return {
-                    hours: hours,
-                    minutes: minutes,
-                    year: year,
-                    month: month,
-                    day: day,
-                    date: beijingTime
+                
+                const formatter = new Intl.DateTimeFormat('zh-CN', {
+                    timeZone: 'Asia/Shanghai',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                });
+                
+                const parts = formatter.formatToParts(date);
+                let result = {
+                    year: '',
+                    month: '',
+                    day: '',
+                    hours: '',
+                    minutes: '',
+                    date: new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }))
                 };
+                
+                parts.forEach(part => {
+                    switch(part.type) {
+                        case 'year': result.year = part.value; break;
+                        case 'month': result.month = part.value; break;
+                        case 'day': result.day = part.value; break;
+                        case 'hour': result.hours = part.value; break;
+                        case 'minute': result.minutes = part.value; break;
+                    }
+                });
+                
+                return result;
             };
             
             // 格式化完整日期时间（北京时间）

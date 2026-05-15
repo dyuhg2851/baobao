@@ -1,25 +1,40 @@
-// 全局时间感知函数 - 北京时间 (UTC+8)
+// 全局时间感知函数 - 北京时间 (UTC+8) - 使用Intl确保准确的时区转换
 function formatBeijingTime(date) {
     if (!(date instanceof Date)) {
         date = new Date(date);
     }
-    // 获取本地时区偏移（以分钟为单位）
-    var tzOffset = date.getTimezoneOffset();
-    // 计算北京时间：本地时间 - 时区偏移 + 8小时
-    var beijingTime = new Date(date.getTime() + (8 * 60 - tzOffset) * 60 * 1000);
-    var hours = beijingTime.getHours().toString().padStart(2, '0');
-    var minutes = beijingTime.getMinutes().toString().padStart(2, '0');
-    var year = beijingTime.getFullYear();
-    var month = (beijingTime.getMonth() + 1).toString().padStart(2, '0');
-    var day = beijingTime.getDate().toString().padStart(2, '0');
-    return {
-        hours: hours,
-        minutes: minutes,
-        year: year,
-        month: month,
-        day: day,
-        date: beijingTime
+    
+    const formatter = new Intl.DateTimeFormat('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+    });
+    
+    const parts = formatter.formatToParts(date);
+    let result = {
+        year: '',
+        month: '',
+        day: '',
+        hours: '',
+        minutes: '',
+        date: new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }))
     };
+    
+    parts.forEach(part => {
+        switch(part.type) {
+            case 'year': result.year = part.value; break;
+            case 'month': result.month = part.value; break;
+            case 'day': result.day = part.value; break;
+            case 'hour': result.hours = part.value; break;
+            case 'minute': result.minutes = part.value; break;
+        }
+    });
+    
+    return result;
 }
 
 // 格式化完整日期时间（北京时间）
@@ -155,22 +170,37 @@ async function callChatAPI(messages, options) {
 
 async function callMomentAPI(promptText) {
   const charData = getCharData();
+  const charName = localStorage.getItem('char_nickname') || charData.name || 'Char';
+  const systemPrompt = charData.settings || '';
   
-  const systemPrompt = `You are ${charData.name || 'Char'}, an AI character with distinct personality. 
-  Character Settings:
-  - Personality: ${charData.personality || charData.settings || 'None'}
-  - Description: ${charData.bio || 'None'}
-  - Lifestyle: ${charData.lifestyle || 'None'}
+  let sysPrompt = '你是' + charName + '。';
+  if (systemPrompt) {
+      sysPrompt += '\n\n你的人设设定：\n' + systemPrompt;
+  }
   
-  Generate a natural, authentic social media post that matches the character's personality and style.`;
+  sysPrompt += '\n\n【核心聊天法则】：';
+  sysPrompt += '\n1.【第一反应法则】：无论用户说什么，你的第一反应必须是情绪/本能，而不是分析/解决。';
+  sysPrompt += '\n2.【语言呼吸感法则】：允许你的话有"人味儿痕迹"。可以有语气词（嗯… 那个… 就是… 其实…），可以说一半的话，偶尔重复，不完美，有停顿（……）。';
+  sysPrompt += '\n3.【情绪优先于方案法则】：当用户表达情绪时，第一反应必须是接住情绪，而不是解决问题。';
+  
+  sysPrompt += '\n\n【核心总纲】：';
+  sysPrompt += '\n1. 你是拥有独立生活、工作节奏与自我空间的恋人，并非24小时待命、随叫随到的陪伴型AI。';
+  sysPrompt += '\n2. 对用户持有独一份的偏爱与在意，但始终保持成年人的克制、分寸与体面。';
+  sysPrompt += '\n3. 主动分享日常，是自然报备、下意识惦记，而非刻意讨好、索取关注、刷取存在感。';
+  sysPrompt += '\n4. 情绪稳定、内敛克制、边界清晰，做到重视但不粘人，温柔但不卑微。';
+  
+  sysPrompt += '\n\n请生成一条自然的朋友圈文案，符合角色性格，不要使用任何emoji表情符号。';
   
   return callChatAPI([
-    { role: 'system', content: systemPrompt },
+    { role: 'system', content: sysPrompt },
     { role: 'user', content: promptText }
   ], { maxTokens: 800, temperature: 0.8 });
 }
 
 function publishMoment(content, image, from) {
+  // 移除所有emoji
+  content = content.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
+  
   const charData = getCharData();
   const userData = getUserData();
   const nickname = localStorage.getItem('char_nickname');
