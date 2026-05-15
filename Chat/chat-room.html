@@ -609,22 +609,9 @@
             function callApi(userText, requestId, callback) {
                 var apiConfig = getApiConfig();
                 if (!apiConfig || !apiConfig.url || !apiConfig.key) {
-                    var replyEl = document.createElement('div');
-                    replyEl.className = 'message received is-first is-last';
-                    // 获取char头像
-                    var charAvatarUrl = localStorage.getItem('char_avatar') || '';
-                    var charAvatarHtml = charAvatarUrl ? 
-                        '<img src="' + charAvatarUrl + '" class="message-avatar-img" />' : 
-                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-                    replyEl.innerHTML = '<div class="message-avatar-wrapper"><div class="message-avatar">' + charAvatarHtml + '</div></div>' +
-                        '<div class="message-info">' +
-                            '<span class="message-nickname">@T T</span>' +
-                            '<div class="message-content-wrapper">' +
-                                '<div class="message-content"><div class="message-text">请先在设置中配置 API</div></div>' +
-                            '</div>' +
-                        '</div>';
-                    chatMessages.appendChild(replyEl);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    showErrorToast('请先在设置中配置 API');
+                    localStorage.removeItem('pending_ai_request');
+                    localStorage.removeItem('processing_on_chatroom');
                     if (callback) callback();
                     return;
                 }
@@ -633,8 +620,14 @@
                 var messages = buildApiMessages();
                 
                 callChatAPI(messages, { maxTokens: 10000, temperature: 0.8 }).then(function(reply) {
-                    if (!reply) reply = '未能获取回复';
-                    
+                    if (!reply) {
+                        showErrorToast('未能获取回复，请检查 API 配置');
+                        localStorage.removeItem('pending_ai_request');
+                        localStorage.removeItem('processing_on_chatroom');
+                        hideWaiting();
+                        if (callback) callback();
+                        return;
+                    }
                     // 清除后台通知 pending 请求，避免重复
                     localStorage.removeItem('pending_ai_request');
                     if (requestId) {
@@ -857,22 +850,9 @@
                         }
                     }, totalDelay + 200);
                 }).catch(function(err) {
-                    var errEl = document.createElement('div');
-                    errEl.className = 'message received is-first is-last';
-                    // 获取char头像
-                    var charAvatarUrl = localStorage.getItem('char_avatar') || '';
-                    var charAvatarHtml = charAvatarUrl ? 
-                        '<img src="' + charAvatarUrl + '" class="message-avatar-img" />' : 
-                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-                    errEl.innerHTML = '<div class="message-avatar-wrapper"><div class="message-avatar">' + charAvatarHtml + '</div></div>' +
-                        '<div class="message-info">' +
-                            '<span class="message-nickname">@T T</span>' +
-                            '<div class="message-content-wrapper">' +
-                                '<div class="message-content"><div class="message-text">请求失败: ' + err.message + '</div></div>' +
-                            '</div>' +
-                        '</div>';
-                    chatMessages.appendChild(errEl);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    showErrorToast('请求失败: ' + (err.message || '网络错误'));
+                    localStorage.removeItem('pending_ai_request');
+                    localStorage.removeItem('processing_on_chatroom');
                     if (callback) callback();
                     hideWaiting();
                 });
@@ -1223,6 +1203,22 @@
                 const styleEl = document.createElement('style');
                 styleEl.textContent = customCSS;
                 document.head.appendChild(styleEl);
+            }
+
+            function showErrorToast(msg) {
+                var existing = document.querySelector('.error-toast');
+                if (existing) existing.remove();
+                var toast = document.createElement('div');
+                toast.className = 'error-toast';
+                toast.textContent = msg;
+                document.body.appendChild(toast);
+                setTimeout(function() {
+                    if (toast.parentNode) {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translateX(-50%) translateY(-10px)';
+                        setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
+                    }
+                }, 4000);
             }
         });
     </script>
