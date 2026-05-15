@@ -55,23 +55,6 @@
     animation-delay: 0.2s;
 }
 
-/* 打字效果样式 */
-
-
-
-
-    to {
-        max-width: 280px;
-    }
-}
-
-.message.received.typing-done .message-text,
-.message.sent.typing-done .message-text {
-    white-space: normal;
-    animation: none;
-    max-width: none;
-}
-
 html, body {
     height: 100vh;
     margin: 0;

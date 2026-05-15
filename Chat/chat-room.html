@@ -484,12 +484,6 @@
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
                 return messages.length - 1;
             }
-                var msg = { text: text, role: role, time: new Date().toISOString() };
-                if (quote) msg.quote = quote;
-                messages.push(msg);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-                return messages.length - 1; // 返回新消息的索引
-            }
             
             function appendSingleMessage(msg, index, isNew) {
                 var el = document.createElement('div');
