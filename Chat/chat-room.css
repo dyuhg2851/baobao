@@ -305,7 +305,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding: 16px 0 40px;
+    padding: 16px 12px 40px;
     background-color: transparent;
     scrollbar-width: none;
 }
@@ -317,28 +317,24 @@ body {
 .message {
     margin-bottom: 8px;
     display: flex;
-    max-width: 85%;
+    max-width: 75%;
 }
 
-.message + .message.received {
-    margin-top: 6px;
-}
-
-.message + .message.sent {
-    margin-top: 6px;
+.message + .message {
+    margin-top: 10px;
 }
 
 .message.received {
     align-self: flex-start;
     flex-direction: row;
-    margin-left: 8px;
+    margin-left: 5px !important;
 }
 
 .message.sent {
     align-self: flex-end !important;
     flex-direction: row-reverse !important;
     justify-content: flex-end;
-    margin-right: 8px;
+    margin-right: 5px !important;
 }
 
 .message-avatar-wrapper {
