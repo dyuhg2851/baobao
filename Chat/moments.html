@@ -680,8 +680,7 @@ ${moment.content || '（图片）'}
                                     </div>
                                 `).join('')}
                                 <div class="comment-input-wrapper">
-                                    <input type="text" class="comment-input" placeholder="Write..." data-moment-index="${index}">
-                                    <button class="comment-send-btn" data-moment-index="${index}">Send</button>
+                                    <input type="text" class="comment-input" placeholder="Write..." data-moment-index="${index}" onkeydown="handleCommentKeydown(event, ${index})">
                                 </div>
                             </div>
                         `;
@@ -689,8 +688,7 @@ ${moment.content || '（图片）'}
                         commentsHtml = `
                             <div class="moment-card-comments">
                                 <div class="comment-input-wrapper">
-                                    <input type="text" class="comment-input" placeholder="Write..." data-moment-index="${index}">
-                                    <button class="comment-send-btn" data-moment-index="${index}">Send</button>
+                                    <input type="text" class="comment-input" placeholder="Write..." data-moment-index="${index}" onkeydown="handleCommentKeydown(event, ${index})">
                                 </div>
                             </div>
                         `;
@@ -765,11 +763,10 @@ ${moment.content || '（图片）'}
                 
                 
                 
-                // 添加评论发送事件
-                document.querySelectorAll('.comment-send-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const momentIndex = this.getAttribute('data-moment-index');
+                // 处理评论回车键发送
+                function handleCommentKeydown(e, momentIndex) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
                         const input = document.querySelector(`.comment-input[data-moment-index="${momentIndex}"]`);
                         const content = input.value.trim();
                         const replyTo = input.getAttribute('data-reply-to');
@@ -812,6 +809,15 @@ ${moment.content || '（图片）'}
                                 }, 1500);
                             }
                         }
+                    }
+                }
+                
+                // 添加评论发送事件（保留用于点击发送，如果需要的话）
+                document.querySelectorAll('.comment-send-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const momentIndex = this.getAttribute('data-moment-index');
+                        handleCommentKeydown({ key: 'Enter', preventDefault: () => {} }, momentIndex);
                     });
                 });
                 
@@ -899,7 +905,7 @@ ${lastComment.name}: ${lastComment.content}
                             body: JSON.stringify({
                                 model: apiConfig.selectedModel || 'gpt-3.5-turbo',
                                 messages: [
-                                    { role: 'system', content: `你是${charName}，一个性格鲜明的AI角色。` },
+                                    { role: 'system', content: `你是${charName}，性格：${charData.personality || charData.settings || '友好'}。${charData.bio || ''}。回复要符合角色性格和人设，语言自然真实，简短直白，像真人一样回复朋友圈评论。禁止使用任何emoji表情。` },
                                     { role: 'user', content: prompt }
                                 ],
                                 max_tokens: 50,
@@ -920,9 +926,10 @@ ${lastComment.name}: ${lastComment.content}
                         const defaultReplies = [
                             '哈哈～',
                             '是的呢！',
-                            '😆',
                             '你也这么觉得吗？',
-                            '嗯嗯！'
+                            '嗯嗯！',
+                            '我也这么想～',
+                            '说得对呀'
                         ];
                         replyContent = defaultReplies[Math.floor(Math.random() * defaultReplies.length)];
                     }

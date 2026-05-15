@@ -106,6 +106,35 @@
             var currentQuote = null;
             var wasBlocked = localStorage.getItem('chat_block_char') === 'true';
             
+            // 判断是否应该根据聊天内容发朋友圈
+            function shouldPostMomentBasedOnContent(content) {
+                if (!content || typeof content !== 'string') return false;
+                
+                // 情感相关关键词 - 表示有情绪波动时可能想分享
+                var emotionKeywords = ['开心', '高兴', '快乐', '幸福', '感动', '想念', '想你', '爱你', '喜欢', '甜蜜', '温暖', '美好', '难过', '伤心', '失落', '孤独'];
+                
+                // 生活相关话题 - 日常分享
+                var lifeKeywords = ['吃饭', '午餐', '晚餐', '早餐', '美食', '做饭', '好吃', '好吃的', '咖啡', '奶茶', '甜点', '旅行', '出去玩', '散步', '运动', '健身', '跑步', '看电影', '电影', '音乐', '听歌', '看书', '学习', '工作', '加班', '周末', '放假', '休息', '天气', '下雨', '晴天', '夕阳', '晚霞', '月亮', '星星'];
+                
+                // 特殊时刻
+                var specialKeywords = ['生日快乐', '纪念日', '节日', '礼物', '惊喜', '庆祝', '周末快乐', '早安', '晚安', '今天', '明天'];
+                
+                // 分享意愿相关
+                var shareKeywords = ['分享', '告诉你', '想说', '觉得', '认为', '心情', '感觉'];
+                
+                var allKeywords = emotionKeywords.concat(lifeKeywords).concat(specialKeywords).concat(shareKeywords);
+                
+                // 检查是否包含触发词
+                for (var i = 0; i < allKeywords.length; i++) {
+                    if (content.includes(allKeywords[i])) {
+                        // 有触发词时，50%概率发朋友圈
+                        return Math.random() < 0.5;
+                    }
+                }
+                
+                return false;
+            }
+            
             function loadProfiles() {
                 var charData = localStorage.getItem('profile_char');
                 var userData = localStorage.getItem('profile_user');
@@ -440,6 +469,101 @@
                 if (quote) msg.quote = quote;
                 messages.push(msg);
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+                return messages.length - 1; // 返回新消息的索引
+            }
+            
+            function appendSingleMessage(msg, index, isNew) {
+                var el = document.createElement('div');
+                el.className = 'message ' + msg.role;
+                if (isNew && msg.role === 'received') {
+                    // 只有新接收到的消息才有动画
+                } else if (!isNew) {
+                    // 旧消息添加no-animation类
+                    el.classList.add('no-animation');
+                }
+                el.dataset.index = index;
+                
+                var showAvatarAndTime = true;
+                var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                if (index > 0) {
+                    var prevMsg = messages[index - 1];
+                    if (prevMsg && prevMsg.role === msg.role) {
+                        showAvatarAndTime = false;
+                    }
+                }
+                
+                var blocked = localStorage.getItem('chat_block_char') === 'true';
+                var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
+                var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
+                var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
+                var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
+                
+                var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
+                
+                var nickname = msg.role === 'sent' ? '@> <' : '@T T';
+                
+                var avatarWrapperHtml, nicknameHtml;
+                if (showAvatarAndTime) {
+                    var timeHtml = '';
+                    if (msg.time) {
+                        var date = new Date(msg.time);
+                        var bt = formatBeijingTime(date);
+                        timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
+                    }
+                    var avatarUrl = '';
+                    if (msg.role === 'sent') {
+                        avatarUrl = localStorage.getItem('user_avatar') || '';
+                    } else {
+                        avatarUrl = localStorage.getItem('char_avatar') || '';
+                    }
+                    var avatarHtml = '';
+                    if (avatarUrl) {
+                        avatarHtml = '<img src="' + avatarUrl + '" class="message-avatar-img" />';
+                    } else {
+                        avatarHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                    }
+                    avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div>';
+                    nicknameHtml = '<span class="message-nickname">' + nickname + '</span>';
+                } else {
+                    avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
+                    nicknameHtml = '';
+                }
+                
+                el.innerHTML = avatarWrapperHtml + 
+                    '<div class="message-info">' +
+                        nicknameHtml +
+                        quoteHtml +
+                        '<div class="message-content-wrapper">' +
+                            '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
+                        '</div>' +
+                    '</div>' + 
+                    warningIcon;
+                
+                var checkEl = document.createElement('span');
+                checkEl.className = 'select-check';
+                el.insertBefore(checkEl, el.firstChild);
+                
+                el.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    showContextMenu(e, index, msg.role);
+                });
+                
+                let touchTimer;
+                el.addEventListener('touchstart', function(e) {
+                    touchTimer = setTimeout(function() {
+                        e.preventDefault();
+                        showContextMenu(e.touches[0], index, msg.role);
+                    }, 500);
+                });
+                el.addEventListener('touchend', function() {
+                    clearTimeout(touchTimer);
+                });
+                el.addEventListener('touchmove', function() {
+                    clearTimeout(touchTimer);
+                });
+                
+                chatMessages.appendChild(el);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
             
             function buildApiMessages() {
@@ -603,9 +727,12 @@
                             nicknameHtml = '';
                         }
                         
+                        var quoteHtml = (index === 0 && replyQuote) ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + replyQuote.text + '</span></div>' : '';
+                        
                         replyEl.innerHTML = avatarWrapperHtml + 
                             '<div class="message-info">' +
                                 nicknameHtml +
+                                quoteHtml +
                                 '<div class="message-content-wrapper">' +
                                     '<div class="message-content"><div class="message-text">' + part.trim() + '</div></div>' +
                                 '</div>' +
@@ -668,15 +795,26 @@
                         hideWaiting();
                         if (callback) callback();
                         
-                        // Auto-trigger moment
+                        // Auto-trigger moment - 根据聊天内容触发
                         if (localStorage.getItem('ai_moment_auto') === 'true') {
-                            setTimeout(function() {
-                                generateAndPublishMoment('char').then(function(content) {
-                                    if (content) {
-                                        window.dispatchEvent(new CustomEvent('moment-auto-published', { detail: { content: content } }));
-                                    }
-                                });
-                            }, 1000);
+                            // 分析聊天内容是否适合发朋友圈
+                            if (shouldPostMomentBasedOnContent(reply)) {
+                                // 检查上次发朋友圈的时间，至少间隔30分钟
+                                const lastMomentTime = parseInt(localStorage.getItem('last_char_moment_time') || '0');
+                                const now = Date.now();
+                                const thirtyMinutes = 30 * 60 * 1000;
+                                
+                                if (now - lastMomentTime > thirtyMinutes) {
+                                    setTimeout(function() {
+                                        generateAndPublishMoment('char').then(function(content) {
+                                            if (content) {
+                                                localStorage.setItem('last_char_moment_time', now.toString());
+                                                window.dispatchEvent(new CustomEvent('moment-auto-published', { detail: { content: content } }));
+                                            }
+                                        });
+                                    }, 1000);
+                                }
+                            }
                         }
                     }, totalDelay + 200);
                 }).catch(function(err) {
@@ -705,7 +843,7 @@
             function addRandomEmoji(text) {
                 var emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]');
                 if (emojis.length === 0) {
-                    emojis = ['😊', '😄', '🥰', '😆', '😘', '💕', '✨', '🌟', '💪', '👍', '🎉', '🤔', '😌', '😋', '🤗'];
+                    emojis = []; // 禁用emoji
                 }
                 
                 var hasEmoji = text.match(/[\u{1f300}-\u{1f5ff}\u{1f900}-\u{1f9ff}\u{1f600}-\u{1f64f}\u{1f680}-\u{1f6ff}\u{2600}-\u{26ff}\u{2700}-\u{27bf}]/u);
@@ -990,8 +1128,9 @@
                     var text = this.value.trim();
                     if (text.length > 0) {
                         // 保存并发送消息
-                        saveMessage(text, 'sent', currentQuote);
-                        loadMessages();
+                        var newIndex = saveMessage(text, 'sent', currentQuote);
+                        var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                        appendSingleMessage(messages[newIndex], newIndex, true);
                         this.value = '';
                         currentQuote = null;
                         this.placeholder = 'Message...';

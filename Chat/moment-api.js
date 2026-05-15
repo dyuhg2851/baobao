@@ -224,7 +224,10 @@ async function generateAndPublishMoment(from) {
   const result = await callMomentAPI(promptText);
 
   if (result) {
-    publishMoment(result, null, from || 'char');
+    // 生成虚拟图片内容（与用户发布虚拟图片格式一致）
+    const virtualImageContent = 'AI generated moment image';
+    const imageData = 'virtual:' + virtualImageContent;
+    publishMoment(result, imageData, from || 'char');
     return result;
   }
   return null;
