@@ -672,15 +672,18 @@
                     var bt = formatBeijingTime(date);
                     var timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                     
-                    // 准备引用信息（如果有引用）
+                    // 准备引用信息（只检查用户上一条消息）
                     var replyQuote = null;
-                    if (currentQuote) {
-                        replyQuote = {
-                            sender: currentQuote.sender,
-                            text: currentQuote.text
-                        };
-                        // 重置currentQuote
-                        currentQuote = null;
+                    var allMessages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    if (allMessages.length > 0) {
+                        // 只检查最后一条消息是否有quote
+                        var lastMsg = allMessages[allMessages.length - 1];
+                        if (lastMsg && lastMsg.role === 'sent' && lastMsg.quote) {
+                            replyQuote = {
+                                sender: lastMsg.quote.sender,
+                                text: lastMsg.quote.text
+                            };
+                        }
                     }
                     
                     // 逐条发送消息，根据内容长度计算延迟

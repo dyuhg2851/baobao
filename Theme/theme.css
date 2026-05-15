@@ -33,9 +33,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: hidden;
 }
 
 /* 头部样式 */
@@ -277,6 +275,16 @@ h2 {
     font-size: 12px;
     outline: none;
     background: transparent;
+}
+
+/* 隐藏滚动条 */
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .input-hint {
