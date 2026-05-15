@@ -1,3 +1,38 @@
+// 全局时间感知函数 - 北京时间 (UTC+8)
+function formatBeijingTime(date) {
+    if (!(date instanceof Date)) {
+        date = new Date(date);
+    }
+    // 获取本地时区偏移（以分钟为单位）
+    var tzOffset = date.getTimezoneOffset();
+    // 计算北京时间：本地时间 - 时区偏移 + 8小时
+    var beijingTime = new Date(date.getTime() + (8 * 60 - tzOffset) * 60 * 1000);
+    var hours = beijingTime.getHours().toString().padStart(2, '0');
+    var minutes = beijingTime.getMinutes().toString().padStart(2, '0');
+    var year = beijingTime.getFullYear();
+    var month = (beijingTime.getMonth() + 1).toString().padStart(2, '0');
+    var day = beijingTime.getDate().toString().padStart(2, '0');
+    return {
+        hours: hours,
+        minutes: minutes,
+        year: year,
+        month: month,
+        day: day,
+        date: beijingTime
+    };
+}
+
+// 格式化完整日期时间（北京时间）
+function formatBeijingDateTime(date) {
+    var bt = formatBeijingTime(date);
+    return bt.year + '-' + bt.month + '-' + bt.day + ' ' + bt.hours + ':' + bt.minutes;
+}
+
+// 获取当前北京时间
+function getBeijingNow() {
+    return formatBeijingTime(new Date());
+}
+
 // Moment generation API - compatible with auto-trigger and manual trigger
 
 function getCharData() {

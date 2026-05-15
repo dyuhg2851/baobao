@@ -170,8 +170,8 @@
                 name.style.display = 'inline';
                 waiting.style.display = 'none';
             }
-            
-            function buildSystemPrompt() {
+             
+             function buildSystemPrompt() {
                 var prompt = '你是' + charName + '。';
                 if (systemPrompt) {
                     prompt += '\n\n你的人设设定：\n' + systemPrompt;
@@ -320,9 +320,8 @@
                                 var timeHtml = '';
                                 if (msg.time) {
                                     var date = new Date(msg.time);
-                                    var hours = date.getHours().toString().padStart(2, '0');
-                                    var minutes = date.getMinutes().toString().padStart(2, '0');
-                                    timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                                    var bt = formatBeijingTime(date);
+                                    timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                                 }
                                 // 获取头像
                                 var avatarUrl = '';
@@ -347,8 +346,9 @@
                             el.innerHTML = avatarWrapperHtml + 
                                 '<div class="message-info">' +
                                     nicknameHtml +
+                                    quoteHtml +
                                     '<div class="message-content-wrapper">' +
-                                        '<div class="message-content"><div class="message-text">' + msg.text + '</div>' + quoteHtml + '</div>' +
+                                        '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
                                     '</div>' +
                                 '</div>' + 
                                 warningIcon;
@@ -545,17 +545,22 @@
                     }
                     
                     var date = new Date();
-                    var hours = date.getHours().toString().padStart(2, '0');
-                    var minutes = date.getMinutes().toString().padStart(2, '0');
-                    var timeHtml = '<span class="message-time">' + hours + ':' + minutes + '</span>';
+                    var bt = formatBeijingTime(date);
+                    var timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                     
-                    // 逐条发送消息
+                    // 逐条发送消息，根据内容长度计算延迟
+                    var baseDelay = 300; // 基础延迟
+                    var charDelay = 50;  // 每个字符的延迟
+                    
                     replyParts.forEach(function(part, index) {
                         if (!part.trim()) return;
                         
+                        // 计算这条消息的延迟：基础延迟 + 字符数 * 字符延迟
+                        var partDelay = baseDelay + part.trim().length * charDelay;
+                        
                         saveMessage(part.trim(), 'received');
                         var replyEl = document.createElement('div');
-                        replyEl.className = 'message received';
+                        replyEl.className = 'message received typing-effect';
                         
                         if (index === 0) {
                             replyEl.classList.add('is-first');
@@ -621,12 +626,30 @@
                             replyEl.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
                         })(saved.length - 1);
                         
-                        // 添加延迟效果（优化速度，减少延迟）
+                        // 计算累积延迟
+                        var cumulativeDelay = 0;
+                        for (var i = 0; i < index; i++) {
+                            cumulativeDelay += baseDelay + replyParts[i].trim().length * charDelay;
+                        }
+                        
+                        // 添加打字效果延迟
                         setTimeout(function() {
                             chatMessages.appendChild(replyEl);
                             chatMessages.scrollTop = chatMessages.scrollHeight;
-                        }, index * 100);
+                            
+                            // 添加打字效果类
+                            setTimeout(function() {
+                                replyEl.classList.add('typing-done');
+                            }, 400);
+                        }, cumulativeDelay);
                     });
+                    
+                    // 最后一条消息添加完后隐藏等待状态
+                    // 计算总延迟
+                    var totalDelay = 0;
+                    for (var i = 0; i < replyParts.length; i++) {
+                        totalDelay += baseDelay + replyParts[i].trim().length * charDelay;
+                    }
                     
                     // 最后一条消息添加完后隐藏等待状态
                     setTimeout(function() {
@@ -643,7 +666,7 @@
                                 });
                             }, 1000);
                         }
-                    }, replyParts.length * 100);
+                    }, totalDelay + 200);
                 }).catch(function(err) {
                     var errEl = document.createElement('div');
                     errEl.className = 'message received is-first is-last';

@@ -74,6 +74,28 @@
     </div>
     
     <script>
+        // 北京时间格式化函数 (UTC+8)
+        function formatBeijingTime(date) {
+            if (!(date instanceof Date)) {
+                date = new Date(date);
+            }
+            var tzOffset = date.getTimezoneOffset();
+            var beijingTime = new Date(date.getTime() + (8 * 60 - tzOffset) * 60 * 1000);
+            var hours = beijingTime.getHours().toString().padStart(2, '0');
+            var minutes = beijingTime.getMinutes().toString().padStart(2, '0');
+            var year = beijingTime.getFullYear();
+            var month = (beijingTime.getMonth() + 1).toString().padStart(2, '0');
+            var day = beijingTime.getDate().toString().padStart(2, '0');
+            return {
+                hours: hours,
+                minutes: minutes,
+                year: year,
+                month: month,
+                day: day,
+                date: beijingTime
+            };
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             const backBtn = document.getElementById('back-btn');
             if (backBtn) {
@@ -147,7 +169,8 @@
                             if (msgEl) msgEl.textContent = (last.role === 'sent' ? 'Me: ' : 'Ta: ') + last.text;
                             if (timeEl) {
                                 const d = new Date(last.time);
-                                timeEl.textContent = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+                                const bt = formatBeijingTime(d);
+                                timeEl.textContent = bt.month + '/' + bt.day + ' ' + bt.hours + ':' + bt.minutes;
                             }
                         }
                     } catch(e) {}

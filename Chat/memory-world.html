@@ -32,6 +32,28 @@
     </div>
 
     <script>
+        // 北京时间格式化函数 (UTC+8)
+        function formatBeijingTime(date) {
+            if (!(date instanceof Date)) {
+                date = new Date(date);
+            }
+            var tzOffset = date.getTimezoneOffset();
+            var beijingTime = new Date(date.getTime() + (8 * 60 - tzOffset) * 60 * 1000);
+            var hours = beijingTime.getHours().toString().padStart(2, '0');
+            var minutes = beijingTime.getMinutes().toString().padStart(2, '0');
+            var year = beijingTime.getFullYear();
+            var month = (beijingTime.getMonth() + 1).toString().padStart(2, '0');
+            var day = beijingTime.getDate().toString().padStart(2, '0');
+            return {
+                hours: hours,
+                minutes: minutes,
+                year: year,
+                month: month,
+                day: day,
+                date: beijingTime
+            };
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('back-btn').addEventListener('click', function() {
                 window.location.replace('chat-settings.html');
@@ -69,7 +91,8 @@
 
                 memories.forEach(function(memory, index) {
                     var date = new Date(memory.timestamp || Date.now());
-                    var dateStr = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes();
+                    var bt = formatBeijingTime(date);
+                    var dateStr = bt.month + '/' + bt.day + '/' + bt.year + ' ' + bt.hours + ':' + bt.minutes;
 
                     var card = document.createElement('div');
                     card.className = 'memory-card';
