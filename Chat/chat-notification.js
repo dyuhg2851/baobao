@@ -192,7 +192,7 @@
       setTimeout(function() {
         if (document.querySelector('.ai-notif-popup')) return;
         showPopup(part.trim());
-      }, i * 2500);
+      }, i * 2000);
     });
   }
 
@@ -259,7 +259,7 @@
         popup.classList.add('dismiss');
         setTimeout(function() { if (popup.parentNode) popup.remove(); }, 250);
       }
-    }, 6000);
+    }, 2000);
   }
 
   function escapeHtml(text) {

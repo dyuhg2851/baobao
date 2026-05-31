@@ -177,19 +177,19 @@ h1 {
 
 /* 纪念日模块 */
 .anniversary-container {
-    margin-top: 12px;
+    margin-top: 0;
 }
 
 .anniversary-card {
     position: relative;
-    background: linear-gradient(135deg, #fffafb 0%, #fff5f6 100%);
+    background: transparent;
     border-radius: 16px;
-    padding: 16px;
+    padding: 12px 16px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    overflow: hidden;
-    border: 1px solid rgba(255, 182, 193, 0.2);
+    justify-content: center;
+    gap: 16px;
+    overflow: visible;
 }
 
 .anniversary-card::before,
@@ -270,35 +270,33 @@ h1 {
 }
 
 .heart-avatar-inner {
-    width: 50px;
-    height: 50px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    background-color: #ffb6c1;
+    background-color: #f0f0f0;
     display: flex;
     align-items: center;
     justify-content: center;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    border: 3px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(255, 182, 193, 0.5);
 }
 
 .heart-avatar-inner svg {
-    width: 30px;
-    height: 30px;
+    width: 36px;
+    height: 36px;
     color: #ffffff;
 }
 
 .anniversary-content {
     flex: 1;
     text-align: center;
-    padding: 0 16px;
+    padding: 0 8px;
 }
 
 .anniversary-label {
     font-size: 14px;
-    color: #ff6b8a;
+    color: #cccccc;
     font-weight: 500;
     margin-bottom: 4px;
 }
@@ -306,14 +304,14 @@ h1 {
 .anniversary-dashed-line {
     width: 60px;
     height: 1px;
-    border-top: 2px dashed #ffccd5;
+    border-top: 2px dashed #cccccc;
     margin: 4px auto;
 }
 
 .anniversary-days {
     font-size: 32px;
     font-weight: 700;
-    color: #ff4757;
+    color: #000000;
     cursor: pointer;
     transition: transform 0.2s ease;
     -webkit-tap-highlight-color: transparent;
