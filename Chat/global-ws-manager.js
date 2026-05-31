@@ -179,7 +179,12 @@
     }
 
     function connect() {
-        if (isConnecting || (ws && ws.readyState === WebSocket.OPEN)) return;
+        if (isConnecting) return;
+        if (ws && ws.readyState === WebSocket.OPEN) return;
+        if (ws && ws.readyState === WebSocket.CONNECTING) {
+            console.log('WebSocket already connecting, skipping');
+            return;
+        }
 
         isConnecting = true;
 
@@ -244,11 +249,12 @@
     }
 
     function handleMessage(data) {
-        console.log('Global WebSocket message:', data);
+        console.log('Global WebSocket message received:', data);
 
         if (data.type === 'new_message' || data.type === 'notification') {
             var chatRoomUrl = getChatRoomUrl();
 
+            console.log('Showing toast for message from:', data.from);
             showToast({
                 from: data.from,
                 message: data.message,
@@ -257,6 +263,7 @@
             });
 
             if (!isOnChatRoom()) {
+                console.log('Not on chatroom, showing browser notification');
                 showBrowserNotification({
                     from: data.from,
                     message: data.message,
@@ -266,6 +273,7 @@
             }
 
             if (window.GlobalChatHandlers && window.GlobalChatHandlers.onMessage) {
+                console.log('Calling GlobalChatHandlers.onMessage');
                 window.GlobalChatHandlers.onMessage(data);
             }
         }
@@ -284,8 +292,19 @@
     }
 
     function send(data) {
-        if (ws && ws.readyState === WebSocket.OPEN) {
+        if (!ws) {
+            console.log('WebSocket not initialized, connecting...');
+            connect();
+            return;
+        }
+        if (ws.readyState === WebSocket.CONNECTING) {
+            console.log('WebSocket still connecting, message will not be sent');
+            return;
+        }
+        if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify(data));
+        } else {
+            console.log('WebSocket not open, state:', ws.readyState);
         }
     }
 
@@ -307,10 +326,21 @@
 
     function init() {
         requestNotificationPermission();
+
+        console.log('Initializing GlobalChat...');
         connect();
+
+        var connectionCheckInterval = setInterval(function() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                console.log('WebSocket not connected, attempting to connect...');
+                reconnectAttempts = 0;
+                connect();
+            }
+        }, 10000);
 
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
+                console.log('Page visible, checking WebSocket connection');
                 if (!isConnected && !isConnecting) {
                     console.log('Page visible, reconnecting WebSocket');
                     reconnectAttempts = 0;
@@ -320,6 +350,7 @@
         });
 
         window.addEventListener('focus', function() {
+            console.log('Window focused, checking WebSocket connection');
             if (!isConnected && !isConnecting) {
                 console.log('Window focused, reconnecting WebSocket');
                 reconnectAttempts = 0;

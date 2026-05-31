@@ -61,19 +61,24 @@
       var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
       if (processed.includes(req.id)) return;
 
+      var processingStamp = localStorage.getItem('processing_on_chatroom');
+      if (processingStamp) {
+        var elapsed = Date.now() - parseInt(processingStamp);
+        if (elapsed < 30000) {
+          console.log('Chatroom is processing, skipping background check');
+          return;
+        }
+      }
+
       if (!isOnChatRoom()) {
         if (executing) return;
+        console.log('Executing background API request:', req.id);
         execute(req);
         return;
       }
 
-      var processingStamp = localStorage.getItem('processing_on_chatroom');
-      if (processingStamp) {
-        var elapsed = Date.now() - parseInt(processingStamp);
-        if (elapsed < 15000) return;
-      }
-
       if (executing) return;
+      console.log('Executing on chatroom API request:', req.id);
       execute(req);
     } catch(e) {}
   }

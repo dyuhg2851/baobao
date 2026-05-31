@@ -768,6 +768,42 @@
                         read: false
                     }));
                     localStorage.removeItem('processing_on_chatroom');
+
+                    // Broadcast message via WebSocket so all pages receive it
+                    var charNickname = localStorage.getItem('char_nickname') || charName;
+                    var fullMessage = replyParts.join(' ');
+                    var broadcastData = {
+                        type: 'new_message',
+                        message: fullMessage,
+                        from: charNickname,
+                        timestamp: Date.now()
+                    };
+
+                    if (window.GlobalChat && window.GlobalChat.send) {
+                        try {
+                            window.GlobalChat.send(broadcastData);
+                            console.log('Message broadcast via WebSocket:', fullMessage);
+                        } catch (e) {
+                            console.error('WebSocket send error:', e);
+                            // Fallback to HTTP broadcast
+                            httpBroadcast(fullMessage, charNickname);
+                        }
+                    } else {
+                        console.warn('GlobalChat.send not available, using HTTP broadcast');
+                        httpBroadcast(fullMessage, charNickname);
+                    }
+
+                    function httpBroadcast(message, from) {
+                         fetch('/receiveMsg', {
+                             method: 'POST',
+                             headers: { 'Content-Type': 'application/json' },
+                             body: JSON.stringify({ message: message, from: from })
+                         }).then(function(res) {
+                             console.log('HTTP broadcast result:', res.ok);
+                         }).catch(function(e) {
+                             console.error('HTTP broadcast failed:', e);
+                         });
+                     }
                     
                     var date = new Date();
                     var bt = formatBeijingTime(date);
@@ -951,9 +987,10 @@
             
             // Receive button - triggers AI response
             document.getElementById('receive-btn').addEventListener('click', function() {
+                console.log('Receive button clicked');
                 if (isMultiSelect) return;
                 var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                
+
                 if (messages.length > 0) {
                     var lastMsg = messages[messages.length - 1];
                     if (lastMsg.role === 'received') {
@@ -961,7 +998,7 @@
                         return;
                     }
                 }
-                
+
                 var requestId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 var pending = {
                     id: requestId,
@@ -970,7 +1007,9 @@
                 };
                 localStorage.setItem('pending_ai_request', JSON.stringify(pending));
                 localStorage.setItem('processing_on_chatroom', Date.now().toString());
-                
+                console.log('Pending AI request set:', requestId);
+
+                console.log('Calling API with requestId:', requestId);
                 callApi(null, requestId);
             });
             
