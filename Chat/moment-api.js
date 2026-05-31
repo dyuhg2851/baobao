@@ -223,11 +223,10 @@ async function generateAndPublishMoment(from) {
   const result = await callMomentAPI(promptText);
 
   if (result) {
-    // 生成虚拟图片内容（与用户发布虚拟图片格式一致）
-    // 使用文案内容作为图片描述，点击可查看
-    const virtualImageContent = result;
-    const imageData = 'virtual:' + virtualImageContent;
-    publishMoment(result, imageData, from || 'char');
+    // 生成虚拟图片内容，点击图片弹窗显示
+    // 文案部分为空，让用户点击图片查看内容
+    const imageData = 'virtual:' + result;
+    publishMoment('', imageData, from || 'char');
     return result;
   }
   return null;
