@@ -36,6 +36,32 @@
                 <div class="calendar-dates" id="calendar-dates"></div>
             </div>
             
+            <!-- 纪念日模块 -->
+            <div class="anniversary-container">
+                <div class="anniversary-card">
+                    <!-- 粉色光斑效果 -->
+                    <div class="sparkle-1"></div>
+                    <div class="sparkle-2"></div>
+                    <div class="sparkle-3"></div>
+                    
+                    <div class="avatar-heart avatar-char">
+                        <div class="heart-avatar-inner" id="anniversary-char-avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#ffffff" d="M23 9A7 7 0 1 1 9 9a7 7 0 0 1 14 0m-2 0a5 5 0 1 0-10 0a5 5 0 0 0 10 0M7.5 18A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5zM6 21.5A1.5 1.5 0 0 1 7.5 20h17a1.5 1.5 0 0 1 1.5 1.5v.5c0 1.473-.94 2.949-2.759 4.106C21.434 27.256 18.877 28 16 28s-5.434-.744-7.241-1.894C6.939 24.95 6 23.472 6 22z"/></svg>
+                        </div>
+                    </div>
+                    <div class="anniversary-content" id="anniversary-content">
+                        <div class="anniversary-label">幸福</div>
+                        <div class="anniversary-dashed-line"></div>
+                        <div class="anniversary-days" id="anniversary-days">--</div>
+                    </div>
+                    <div class="avatar-heart avatar-user">
+                        <div class="heart-avatar-inner" id="anniversary-user-avatar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#ffffff" d="M23 9A7 7 0 1 1 9 9a7 7 0 0 1 14 0m-2 0a5 5 0 1 0-10 0a5 5 0 0 0 10 0M7.5 18A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5zM6 21.5A1.5 1.5 0 0 1 7.5 20h17a1.5 1.5 0 0 1 1.5 1.5v.5c0 1.473-.94 2.949-2.759 4.106C21.434 27.256 18.877 28 16 28s-5.434-.744-7.241-1.894C6.939 24.95 6 23.472 6 22z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="character-list" style="margin-top: 160px;">
                 <div class="character-card">
                     <div class="card-header">
@@ -201,6 +227,9 @@
             // 日历功能
             initCalendar();
             
+            // 纪念日功能
+            initAnniversary();
+            
             // Chat按钮点击事件
             const chatBtn = document.getElementById('chat-btn');
             if (chatBtn) {
@@ -291,6 +320,220 @@
                 datesContainer.appendChild(dateElement);
             }
         }
+        
+        // 纪念日功能
+        function initAnniversary() {
+            // 初始化日期选择器选项
+            initDatePickers();
+            
+            // 加载头像
+            loadAnniversaryAvatars();
+            
+            // 加载并显示纪念日天数
+            updateAnniversaryDays();
+            
+            // 绑定点击事件
+            bindAnniversaryEvents();
+        }
+        
+        function initDatePickers() {
+            const yearSelect = document.getElementById('anniversary-year');
+            const monthSelect = document.getElementById('anniversary-month');
+            const daySelect = document.getElementById('anniversary-day');
+            
+            // 添加年份选项（最近50年到当前年）
+            const currentYear = new Date().getFullYear();
+            for (let i = currentYear; i >= currentYear - 50; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearSelect.appendChild(option);
+            }
+            
+            // 添加月份选项
+            for (let i = 1; i <= 12; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                monthSelect.appendChild(option);
+            }
+            
+            // 添加日期选项
+            updateDays(12); // 默认12月有31天
+            
+            // 监听月份变化更新日期选项
+            monthSelect.addEventListener('change', function() {
+                const year = parseInt(yearSelect.value);
+                const month = parseInt(monthSelect.value);
+                updateDays(month, year);
+            });
+            
+            yearSelect.addEventListener('change', function() {
+                const year = parseInt(yearSelect.value);
+                const month = parseInt(monthSelect.value);
+                updateDays(month, year);
+            });
+        }
+        
+        function updateDays(month, year = new Date().getFullYear()) {
+            const daySelect = document.getElementById('anniversary-day');
+            // 清空现有选项
+            daySelect.innerHTML = '';
+            
+            // 获取该月的天数
+            const daysInMonth = new Date(year, month, 0).getDate();
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                daySelect.appendChild(option);
+            }
+        }
+        
+        function loadAnniversaryAvatars() {
+            // 加载Char头像
+            const savedData = localStorage.getItem('profile_char');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                const charAvatar = document.getElementById('anniversary-char-avatar');
+                if (data.avatar && charAvatar) {
+                    charAvatar.style.backgroundImage = `url(${data.avatar})`;
+                    charAvatar.innerHTML = '';
+                }
+            }
+            
+            // 加载用户头像（可以从localStorage获取或使用默认）
+            const userAvatar = document.getElementById('anniversary-user-avatar');
+            const userData = localStorage.getItem('profile_user');
+            if (userData) {
+                const data = JSON.parse(userData);
+                if (data.avatar && userAvatar) {
+                    userAvatar.style.backgroundImage = `url(${data.avatar})`;
+                    userAvatar.innerHTML = '';
+                }
+            }
+        }
+        
+        function updateAnniversaryDays() {
+            const savedDate = localStorage.getItem('anniversary_date');
+            const daysElement = document.getElementById('anniversary-days');
+            
+            if (savedDate) {
+                const anniversaryDate = new Date(savedDate);
+                const today = new Date();
+                
+                // 确保使用相同的时区
+                const timezoneOffset = 8 * 60; // 北京时区 UTC+8
+                const utc = today.getTime() + today.getTimezoneOffset() * 60000;
+                const beijingToday = new Date(utc + timezoneOffset * 60000);
+                
+                // 设置纪念日为同一天的零时
+                anniversaryDate.setHours(0, 0, 0, 0);
+                beijingToday.setHours(0, 0, 0, 0);
+                
+                // 计算天数差（包含第一天）
+                const diffTime = beijingToday.getTime() - anniversaryDate.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                
+                if (diffDays >= 1) {
+                    daysElement.textContent = diffDays;
+                } else {
+                    daysElement.textContent = '--';
+                }
+            } else {
+                daysElement.textContent = '--';
+            }
+        }
+        
+        function bindAnniversaryEvents() {
+            const daysElement = document.getElementById('anniversary-days');
+            const modal = document.getElementById('anniversary-modal');
+            const cancelBtn = document.getElementById('modal-cancel');
+            const confirmBtn = document.getElementById('modal-confirm');
+            const yearSelect = document.getElementById('anniversary-year');
+            const monthSelect = document.getElementById('anniversary-month');
+            const daySelect = document.getElementById('anniversary-day');
+            
+            // 点击天数打开弹窗
+            daysElement.addEventListener('click', function() {
+                // 加载已保存的日期
+                const savedDate = localStorage.getItem('anniversary_date');
+                if (savedDate) {
+                    const date = new Date(savedDate);
+                    yearSelect.value = date.getFullYear();
+                    monthSelect.value = date.getMonth() + 1;
+                    daySelect.value = date.getDate();
+                    
+                    // 更新日期选项
+                    updateDays(date.getMonth() + 1, date.getFullYear());
+                } else {
+                    // 默认选中今天
+                    const today = new Date();
+                    yearSelect.value = today.getFullYear();
+                    monthSelect.value = today.getMonth() + 1;
+                    daySelect.value = today.getDate();
+                    updateDays(today.getMonth() + 1, today.getFullYear());
+                }
+                
+                modal.classList.add('show');
+            });
+            
+            // 取消按钮
+            cancelBtn.addEventListener('click', function() {
+                modal.classList.remove('show');
+            });
+            
+            // 确定按钮
+            confirmBtn.addEventListener('click', function() {
+                const year = parseInt(yearSelect.value);
+                const month = parseInt(monthSelect.value) - 1; // 月份从0开始
+                const day = parseInt(daySelect.value);
+                
+                const anniversaryDate = new Date(year, month, day);
+                localStorage.setItem('anniversary_date', anniversaryDate.toISOString());
+                
+                // 更新显示
+                updateAnniversaryDays();
+                
+                modal.classList.remove('show');
+            });
+            
+            // 点击遮罩层关闭弹窗
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        }
     </script>
+    
+    <!-- 日期选择弹窗 -->
+    <div class="anniversary-modal-overlay" id="anniversary-modal">
+        <div class="anniversary-modal">
+            <div class="modal-title">设置纪念日</div>
+            <div class="date-picker-container">
+                <div class="date-picker-item">
+                    <div class="date-picker-label">年</div>
+                    <select class="date-picker-select" id="anniversary-year">
+                    </select>
+                </div>
+                <div class="date-picker-item">
+                    <div class="date-picker-label">月</div>
+                    <select class="date-picker-select" id="anniversary-month">
+                    </select>
+                </div>
+                <div class="date-picker-item">
+                    <div class="date-picker-label">日</div>
+                    <select class="date-picker-select" id="anniversary-day">
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" id="modal-cancel">取消</button>
+                <button class="modal-btn confirm" id="modal-confirm">确定</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

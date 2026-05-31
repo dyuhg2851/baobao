@@ -289,6 +289,14 @@
                         });
                         
                         messages.forEach(function(msg, index) {
+                            // 检查是否需要显示时间戳（间隔超过5分钟）
+                            if (index > 0) {
+                                var prevMsg = messages[index - 1];
+                                if (shouldShowTimeStamp(msg, prevMsg)) {
+                                    appendTimeStamp(new Date(msg.time));
+                                }
+                            }
+                            
                             var el = document.createElement('div');
                             el.className = 'message ' + msg.role + ' no-animation';
                             el.dataset.index = index;
@@ -412,6 +420,36 @@
                         chatMessages.scrollTop = chatMessages.scrollHeight;
                     } catch(e) {}
                 }
+                
+                function shouldShowTimeStamp(currentMsg, prevMsg) {
+                    if (!prevMsg || !prevMsg.time || !currentMsg.time) return false;
+                    
+                    var currentTime = new Date(currentMsg.time).getTime();
+                    var prevTime = new Date(prevMsg.time).getTime();
+                    var diffMinutes = (currentTime - prevTime) / (1000 * 60);
+                    
+                    return diffMinutes >= 5;
+                }
+                
+                function formatTimeStamp(date) {
+                    var weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    var weekday = weekdayNames[date.getDay()];
+                    
+                    var hours = date.getHours();
+                    var minutes = date.getMinutes();
+                    var period = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12 || 12;
+                    minutes = minutes.toString().padStart(2, '0');
+                    
+                    return weekday + ' ' + hours + ':' + minutes + ' ' + period;
+                }
+                
+                function appendTimeStamp(date) {
+                    var timestampEl = document.createElement('div');
+                    timestampEl.className = 'message-timestamp';
+                    timestampEl.textContent = formatTimeStamp(date);
+                    chatMessages.appendChild(timestampEl);
+                }
             }
             
             let currentMessageIndex = null;
@@ -479,6 +517,15 @@
             }
             
             function appendSingleMessage(msg, index, isNew) {
+                // 检查是否需要显示时间戳（间隔超过5分钟）
+                var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                if (index > 0) {
+                    var prevMsg = messages[index - 1];
+                    if (shouldShowTimeStamp(msg, prevMsg)) {
+                        appendTimeStamp(new Date(msg.time));
+                    }
+                }
+                
                 var el = document.createElement('div');
                 el.className = 'message ' + msg.role;
                 if (isNew && msg.role === 'received') {
@@ -490,7 +537,6 @@
                 el.dataset.index = index;
                 
                 var showAvatarAndTime = true;
-                var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                 if (index > 0) {
                     var prevMsg = messages[index - 1];
                     if (prevMsg && prevMsg.role === msg.role) {

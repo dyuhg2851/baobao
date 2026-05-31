@@ -175,6 +175,275 @@ h1 {
     height: 26px;
 }
 
+/* 纪念日模块 */
+.anniversary-container {
+    margin-top: 12px;
+}
+
+.anniversary-card {
+    position: relative;
+    background: linear-gradient(135deg, #fffafb 0%, #fff5f6 100%);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    border: 1px solid rgba(255, 182, 193, 0.2);
+}
+
+.anniversary-card::before,
+.anniversary-card::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
+    animation: sparkle 4s ease-in-out infinite;
+}
+
+.anniversary-card::before {
+    width: 60px;
+    height: 60px;
+    top: -20px;
+    right: -10px;
+    animation-delay: 0s;
+}
+
+.anniversary-card::after {
+    width: 40px;
+    height: 40px;
+    bottom: -10px;
+    left: 20%;
+    animation-delay: 2s;
+}
+
+.anniversary-card .sparkle-1 {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 30%;
+    right: 30%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.2) 0%, transparent 70%);
+    animation: sparkle 5s ease-in-out infinite;
+    animation-delay: 1s;
+}
+
+.anniversary-card .sparkle-2 {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    bottom: 20%;
+    right: 15%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.25) 0%, transparent 70%);
+    animation: sparkle 6s ease-in-out infinite;
+    animation-delay: 3s;
+}
+
+.anniversary-card .sparkle-3 {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    top: 50%;
+    left: 10%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.15) 0%, transparent 70%);
+    animation: sparkle 4.5s ease-in-out infinite;
+    animation-delay: 1.5s;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+.avatar-heart {
+    flex-shrink: 0;
+    animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+.heart-avatar-inner {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ffb6c1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 8px rgba(255, 182, 193, 0.5);
+}
+
+.heart-avatar-inner svg {
+    width: 30px;
+    height: 30px;
+    color: #ffffff;
+}
+
+.anniversary-content {
+    flex: 1;
+    text-align: center;
+    padding: 0 16px;
+}
+
+.anniversary-label {
+    font-size: 14px;
+    color: #ff6b8a;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.anniversary-dashed-line {
+    width: 60px;
+    height: 1px;
+    border-top: 2px dashed #ffccd5;
+    margin: 4px auto;
+}
+
+.anniversary-days {
+    font-size: 32px;
+    font-weight: 700;
+    color: #ff4757;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.anniversary-days:hover {
+    transform: scale(1.05);
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* 日期选择弹窗 */
+.anniversary-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.anniversary-modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.anniversary-modal {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    width: 85%;
+    max-width: 320px;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.anniversary-modal-overlay.show .anniversary-modal {
+    transform: scale(1);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.date-picker-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.date-picker-item {
+    text-align: center;
+}
+
+.date-picker-label {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 8px;
+}
+
+.date-picker-select {
+    width: 70px;
+    height: 44px;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid #ffb6c1;
+    border-radius: 12px;
+    background-color: #fff5f5;
+    color: #ff4757;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    padding: 0 8px;
+}
+
+.date-picker-select:hover {
+    border-color: #ff6b8a;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 22px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-btn.cancel {
+    background-color: #f0f0f0;
+    color: #666;
+}
+
+.modal-btn.confirm {
+    background-color: #ff4757;
+    color: #ffffff;
+}
+
+.modal-btn:hover {
+    opacity: 0.9;
+}
+
 /* 日历组件 */
 .calendar {
     background-color: #ffffff;
