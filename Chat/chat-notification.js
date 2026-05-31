@@ -89,6 +89,37 @@
         return;
       }
       reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
+      
+      var replyParts = reply.split('\n').filter(function(p) { return p.trim().length > 0; });
+      
+      if (replyParts.length === 1 && reply.length > 100) {
+        replyParts = reply.split(/[。！？]+/).filter(function(p) { return p.trim().length > 0; });
+      }
+      
+      if (replyParts.length < 2) {
+        var text = replyParts[0] || reply;
+        replyParts = [];
+        var sentences = text.split(/([。！？]+)/).filter(function(p) { return p.trim(); });
+        var current = '';
+        sentences.forEach(function(s) {
+          if (current.length + s.length < 50) {
+            current += s;
+          } else {
+            if (current) replyParts.push(current);
+            current = s;
+          }
+        });
+        if (current) replyParts.push(current);
+        if (replyParts.length < 2) {
+          var half = Math.ceil(text.length / 2);
+          replyParts = [text.slice(0, half), text.slice(half)];
+        }
+      } else if (replyParts.length > 5) {
+        replyParts = replyParts.slice(0, 5);
+      }
+      
+      replyParts = replyParts.map(function(p) { return p.trim(); });
+      
       localStorage.removeItem('pending_ai_request');
       var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
       if (!processed.includes(req.id)) {
@@ -104,12 +135,11 @@
         } catch(e) {}
       }
       localStorage.setItem('ai_notification', JSON.stringify({
-        id: req.id, text: reply, timestamp: Date.now(), read: false
+        id: req.id, parts: replyParts, timestamp: Date.now(), read: false
       }));
       try {
         var saved = JSON.parse(localStorage.getItem('chat_messages') || '[]');
-        var parts = reply.split('\n').filter(function(p) { return p.trim(); });
-        parts.forEach(function(part) {
+        replyParts.forEach(function(part) {
           saved.push({ text: part.trim(), role: 'received', time: new Date().toISOString() });
         });
         localStorage.setItem('chat_messages', JSON.stringify(saved));
@@ -134,7 +164,7 @@
       }
       notif.read = true;
       localStorage.setItem('ai_notification', JSON.stringify(notif));
-      showPopupSequence(notif.text);
+      showPopupSequence(notif);
     } catch(e) {
       localStorage.removeItem('ai_notification');
     }
@@ -155,9 +185,9 @@
     }
   }
 
-  function showPopupSequence(text) {
-    var parts = text.split('\n').filter(function(p) { return p.trim(); });
-    if (parts.length === 0) parts = [text];
+  function showPopupSequence(data) {
+    var parts = data.parts || [data.text || ''];
+    if (parts.length === 0) parts = [''];
     parts.forEach(function(part, i) {
       setTimeout(function() {
         if (document.querySelector('.ai-notif-popup')) return;

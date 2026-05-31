@@ -13,11 +13,8 @@
     <div class="settings-container">
         <div class="chat-header-stack">
             <div class="header-card top" id="header-card-top">
-                <button id="back-btn" class="back-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><path fill="#000000" d="m9.55 12l7.35 7.35q.375.375.363.875t-.388.875t-.875.375t-.875-.375l-7.7-7.675q-.3-.3-.45-.675t-.15-.75t.15-.75t.45-.675l7.7-7.7q.375-.375.888-.363t.887.388t.375.875t-.375.875z"/></svg>
-                </button>
                 <div class="to-row">
-                    <span class="to-label">To</span>
+                    <span class="to-label" id="back-btn">To</span>
                     <div class="to-info">
                         <span class="to-name" id="to-name">Char</span>
                         <span class="waiting-text" id="waiting-text" style="display:none">Waiting for reply...</span>
@@ -27,10 +24,6 @@
                 </div>
             </div>
             <div class="header-card middle">
-                <span class="unread-label">未讀訊息</span>
-                <span class="my-lover">"My Dear."</span>
-            </div>
-            <div class="header-card bottom">
                 <span class="signature-label" id="signature-label">签名</span>
             </div>
         </div>
@@ -639,15 +632,6 @@
                     // 移除所有emoji
                     reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
                     
-                    // 保存通知（同样的 reply 内容，保证弹窗和聊天一致）
-                    localStorage.setItem('ai_notification', JSON.stringify({
-                        id: requestId,
-                        text: reply,
-                        timestamp: Date.now(),
-                        read: false
-                    }));
-                    localStorage.removeItem('processing_on_chatroom');
-                    
                     // AI回复时，用户消息序列结束，最后一条用户消息变成is-last
                     document.querySelectorAll('.message.sent.is-middle, .message.sent.is-first').forEach(function(msgEl) {
                         msgEl.classList.remove('is-middle', 'is-first');
@@ -696,6 +680,15 @@
                     } else if (replyParts.length > 5) {
                         replyParts = replyParts.slice(0, 5);
                     }
+                    
+                    // 保存通知（使用处理后的 replyParts，保证与聊天内容一致）
+                    localStorage.setItem('ai_notification', JSON.stringify({
+                        id: requestId,
+                        parts: replyParts.map(function(p) { return p.trim(); }),
+                        timestamp: Date.now(),
+                        read: false
+                    }));
+                    localStorage.removeItem('processing_on_chatroom');
                     
                     var date = new Date();
                     var bt = formatBeijingTime(date);
@@ -882,7 +875,6 @@
                 if (isMultiSelect) return;
                 var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                 
-                // Check if there's already a pending response
                 if (messages.length > 0) {
                     var lastMsg = messages[messages.length - 1];
                     if (lastMsg.role === 'received') {
@@ -891,7 +883,6 @@
                     }
                 }
                 
-                // Save pending request for background notification
                 var requestId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 var pending = {
                     id: requestId,
@@ -901,7 +892,8 @@
                 localStorage.setItem('pending_ai_request', JSON.stringify(pending));
                 localStorage.setItem('processing_on_chatroom', Date.now().toString());
                 
-                // Call API to get response
+                showErrorToast('正在接收消息，可离开页面等待');
+                
                 callApi(null, requestId);
             });
             
