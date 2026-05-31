@@ -507,7 +507,7 @@
                 // 去重：最后一条同角色消息内容相同则跳过
                 if (messages.length > 0) {
                     var last = messages[messages.length - 1];
-                    if (last.role === role && last.text === text) return messages.length;
+                    if (last.role === role && last.text === text) return messages.length - 1;
                 }
                 var msg = { text: text, role: role, time: new Date().toISOString() };
                 if (quote) msg.quote = quote;
@@ -937,8 +937,6 @@
                 };
                 localStorage.setItem('pending_ai_request', JSON.stringify(pending));
                 localStorage.setItem('processing_on_chatroom', Date.now().toString());
-                
-                showErrorToast('正在接收消息，可离开页面等待');
                 
                 callApi(null, requestId);
             });

@@ -36,7 +36,7 @@
     if (!data) return;
     try {
       var req = JSON.parse(data);
-      if (Date.now() - req.timestamp > 300000) {
+      if (Date.now() - req.timestamp > 600000) {
         localStorage.removeItem('pending_ai_request');
         return;
       }
@@ -170,7 +170,7 @@
     try {
       var notif = JSON.parse(notifData);
       if (notif.shown) return;
-      if (Date.now() - notif.timestamp > 60000) {
+      if (Date.now() - notif.timestamp > 600000) {
         localStorage.removeItem('ai_notification');
         return;
       }

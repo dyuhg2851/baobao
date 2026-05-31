@@ -206,7 +206,7 @@ h1 {
     content: '';
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.4) 0%, transparent 70%);
     animation: sparkle 4s ease-in-out infinite;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
@@ -236,7 +236,7 @@ h1 {
     top: 30%;
     right: 30%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 182, 193, 0.2) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.35) 0%, transparent 70%);
     animation: sparkle 5s ease-in-out infinite;
     animation-delay: 1s;
     transform: translateZ(0);
@@ -251,7 +251,7 @@ h1 {
     bottom: 20%;
     right: 15%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 182, 193, 0.25) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.4) 0%, transparent 70%);
     animation: sparkle 6s ease-in-out infinite;
     animation-delay: 3s;
     transform: translateZ(0);
@@ -266,7 +266,7 @@ h1 {
     top: 50%;
     left: 10%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 182, 193, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
     animation: sparkle 4.5s ease-in-out infinite;
     animation-delay: 1.5s;
     transform: translateZ(0);
@@ -274,14 +274,65 @@ h1 {
     will-change: opacity, transform;
 }
 
+.anniversary-card .sparkle-4 {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    top: 15%;
+    left: 40%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.38) 0%, transparent 70%);
+    animation: sparkle 5.5s ease-in-out infinite;
+    animation-delay: 2.5s;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: opacity, transform;
+}
+
+.anniversary-card .sparkle-5 {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    bottom: 35%;
+    left: 25%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.32) 0%, transparent 70%);
+    animation: sparkle 4.2s ease-in-out infinite;
+    animation-delay: 3.5s;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: opacity, transform;
+}
+
+.anniversary-card .sparkle-6 {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    top: 25%;
+    right: 10%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 182, 193, 0.36) 0%, transparent 70%);
+    animation: sparkle 5.8s ease-in-out infinite;
+    animation-delay: 0.8s;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: opacity, transform;
+}
+
 @keyframes sparkle {
     0%, 100% {
-        opacity: 0.3;
-        transform: scale(1) translateZ(0);
+        opacity: 0;
+        transform: scale(0.8) translateZ(0);
+    }
+    25% {
+        opacity: 0.5;
     }
     50% {
-        opacity: 0.7;
-        transform: scale(1.1) translateZ(0);
+        opacity: 0.75;
+        transform: scale(1.15) translateZ(0);
+    }
+    75% {
+        opacity: 0.4;
     }
 }
 
@@ -378,8 +429,8 @@ h1 {
 
 .anniversary-modal {
     background-color: #ffffff;
-    border-radius: 20px;
-    padding: 24px;
+    border-radius: 16px;
+    padding: 32px 24px;
     width: 85%;
     max-width: 320px;
     transform: scale(0.9);
@@ -393,16 +444,16 @@ h1 {
 .modal-title {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: #000000;
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 
 .date-picker-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
-    margin-bottom: 24px;
+    gap: 16px;
+    margin-bottom: 32px;
 }
 
 .date-picker-item {
@@ -411,59 +462,65 @@ h1 {
 
 .date-picker-label {
     font-size: 12px;
-    color: #999;
+    color: #999999;
     margin-bottom: 8px;
 }
 
 .date-picker-select {
     width: 70px;
-    height: 44px;
-    font-size: 18px;
-    font-weight: 600;
+    height: 36px;
+    font-size: 16px;
+    font-weight: 500;
     text-align: center;
-    border: 2px solid #ffb6c1;
-    border-radius: 12px;
-    background-color: #fff5f5;
-    color: #ff4757;
+    border: none;
+    border-bottom: 1px solid #dddddd;
+    border-radius: 0;
+    background-color: transparent;
+    color: #000000;
     outline: none;
     cursor: pointer;
     appearance: none;
-    padding: 0 8px;
+    padding: 0;
 }
 
 .date-picker-select:hover {
-    border-color: #ff6b8a;
+    border-bottom-color: #999999;
+}
+
+.date-picker-select:focus {
+    border-bottom-color: #000000;
 }
 
 .modal-actions {
     display: flex;
-    gap: 12px;
+    gap: 8px;
 }
 
 .modal-btn {
     flex: 1;
-    height: 44px;
-    border-radius: 22px;
+    height: 40px;
+    border-radius: 0;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     border: none;
+    background: none;
     cursor: pointer;
-    transition: opacity 0.2s ease;
+    transition: color 0.2s ease;
     -webkit-tap-highlight-color: transparent;
 }
 
 .modal-btn.cancel {
-    background-color: #f0f0f0;
-    color: #666;
+    background-color: transparent;
+    color: #999999;
 }
 
 .modal-btn.confirm {
-    background-color: #ff4757;
-    color: #ffffff;
+    background-color: transparent;
+    color: #000000;
 }
 
 .modal-btn:hover {
-    opacity: 0.9;
+    opacity: 0.7;
 }
 
 /* 日历组件 */
