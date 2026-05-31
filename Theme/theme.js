@@ -173,16 +173,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // 加载字体预设
         function loadFontPresets() {
-            // 加载预设到下拉框
             const presetsToLoad = getFontPresets();
-            fontPresetSelect.innerHTML = '<option value="">选择预设</option>';
-            
-            presetsToLoad.forEach(font => {
-                const option = document.createElement('option');
-                option.value = font.name;
-                option.textContent = font.name;
-                fontPresetSelect.appendChild(option);
+            var html = '<option value="">选择预设</option>';
+            presetsToLoad.forEach(function(font) {
+                html += '<option value="' + font.name + '">' + font.name + '</option>';
             });
+            fontPresetSelect.innerHTML = html;
         }
         
         // 获取字体预设
@@ -495,17 +491,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 加载CSS预设
         function loadCSSPresets() {
             const presets = getCSSPresets();
-            // 保留第一个选项
-            const firstOption = cssPresetSelect.querySelector('option');
-            cssPresetSelect.innerHTML = '';
-            cssPresetSelect.appendChild(firstOption);
-            
-            Object.keys(presets).forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                cssPresetSelect.appendChild(option);
+            var html = '<option value="">选择预设</option>';
+            Object.keys(presets).forEach(function(name) {
+                html += '<option value="' + name + '">' + name + '</option>';
             });
+            cssPresetSelect.innerHTML = html;
         }
         
         // 获取CSS预设

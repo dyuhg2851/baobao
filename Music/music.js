@@ -624,40 +624,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 更新播放列表
     function updatePlaylist() {
-        playlistItems.innerHTML = '';
-
-        songs.forEach((song, index) => {
-            const playlistItem = document.createElement('div');
-            playlistItem.className = 'playlist-item';
-            playlistItem.innerHTML = `
-                <div class="playlist-item-info">
-                    <div class="playlist-item-title">${song.name}</div>
-                </div>
-                <button class="delete-item-btn" data-index="${index}">×</button>
-            `;
-
-            // 点击播放列表项播放歌曲
-            playlistItem.addEventListener('click', function(e) {
-                if (!e.target.classList.contains('delete-item-btn')) {
-                    loadSong(index);
-                    if (isPlaying) {
-                        audio.play();
-                    }
-                    playlistModal.style.display = 'none';
-                }
-            });
-
-            playlistItems.appendChild(playlistItem);
+        var html = '';
+        songs.forEach(function(song, index) {
+            html += '<div class="playlist-item" data-index="' + index + '">' +
+                '<div class="playlist-item-info">' +
+                    '<div class="playlist-item-title">' + song.name + '</div>' +
+                '</div>' +
+                '<button class="delete-item-btn" data-index="' + index + '">×</button>' +
+            '</div>';
         });
-
-        // 添加删除按钮事件
-        document.querySelectorAll('.delete-item-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const index = parseInt(this.getAttribute('data-index'));
-                showDeleteModal(index);
-            });
-        });
+        playlistItems.innerHTML = html;
     }
 
     // 显示删除确认弹窗
@@ -778,6 +754,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     closePlaylistBtn.addEventListener('click', function() {
         playlistModal.style.display = 'none';
+    });
+
+    playlistItems.addEventListener('click', function(e) {
+        var target = e.target;
+        if (target.classList.contains('delete-item-btn')) {
+            e.stopPropagation();
+            var index = parseInt(target.getAttribute('data-index'));
+            showDeleteModal(index);
+        } else {
+            var item = target.closest('.playlist-item');
+            if (item) {
+                var index = parseInt(item.getAttribute('data-index'));
+                loadSong(index);
+                if (isPlaying) {
+                    audio.play();
+                }
+                playlistModal.style.display = 'none';
+            }
+        }
     });
 
     cancelDeleteBtn.addEventListener('click', hideDeleteModal);

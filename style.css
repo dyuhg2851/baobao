@@ -127,10 +127,10 @@ body {
     cursor: pointer;
     transition: transform 0.08s ease;
     -webkit-transition: -webkit-transform 0.08s ease;
+    will-change: transform;
     -webkit-tap-highlight-color: transparent;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: transform;
 }
 
 .app-grid {
@@ -234,6 +234,7 @@ body {
     border-radius: 12px;
     transition: transform 0.08s ease;
     -webkit-transition: -webkit-transform 0.08s ease;
+    will-change: transform;
 }
 
 .id {
@@ -244,6 +245,7 @@ body {
     border-radius: 12px;
     transition: transform 0.08s ease;
     -webkit-transition: -webkit-transform 0.08s ease;
+    will-change: transform;
 }
 
 .content-section {
@@ -275,6 +277,7 @@ body {
     min-height: 22px;
     transition: transform 0.08s ease;
     -webkit-transition: -webkit-transform 0.08s ease;
+    will-change: transform;
     text-align: center;
 }
 

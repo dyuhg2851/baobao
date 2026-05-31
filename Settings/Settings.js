@@ -104,14 +104,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 加载预设列表
     function loadPresets() {
         const presets = getPresets();
-        apiPresetSelect.innerHTML = '<option value="">选择预设</option>';
-        
-        presets.forEach(preset => {
-            const option = document.createElement('option');
-            option.value = preset.name;
-            option.textContent = preset.name;
-            apiPresetSelect.appendChild(option);
+        var html = '<option value="">选择预设</option>';
+        presets.forEach(function(preset) {
+            html += '<option value="' + preset.name + '">' + preset.name + '</option>';
         });
+        apiPresetSelect.innerHTML = html;
     }
     
     // 获取预设列表
@@ -151,14 +148,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 加载模型列表
     function loadModels(models) {
-        apiModelSelect.innerHTML = '<option value="">选择模型</option>';
-        
-        models.forEach(model => {
-            const option = document.createElement('option');
-            option.value = model;
-            option.textContent = model;
-            apiModelSelect.appendChild(option);
+        var html = '<option value="">选择模型</option>';
+        models.forEach(function(model) {
+            html += '<option value="' + model + '">' + model + '</option>';
         });
+        apiModelSelect.innerHTML = html;
     }
     
     // 拉取API模型列表
