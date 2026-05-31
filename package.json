@@ -1,0 +1,15 @@
+{
+  "name": "char-chat-server",
+  "version": "1.0.0",
+  "description": "Char Chat Server with WebSocket and Push support",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "generate-vapid-keys": "node -e \"console.log(require('web-push').generateVAPIDKeys())\""
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "web-push": "^3.6.6",
+    "ws": "^8.14.2"
+  }
+}

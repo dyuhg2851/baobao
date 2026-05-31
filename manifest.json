@@ -1,7 +1,7 @@
 {
   "name": "晕倒料理",
   "short_name": "晕倒料理",
-  "description": "晕倒料理应用",
+  "description": "晕倒料理应用 - 跨设备消息推送",
   "start_url": "./splash.html",
   "display": "standalone",
   "orientation": "portrait",
@@ -9,15 +9,15 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "assets/app-icon.svg",
+      "src": "https://i.postimg.cc/vBY98wDL/IMG-9251.jpg",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     },
     {
-      "src": "assets/app-icon.svg",
+      "src": "https://i.postimg.cc/vBY98wDL/IMG-9251.jpg",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ],
@@ -29,11 +29,26 @@
       "url": "./splash.html",
       "icons": [
         {
-          "src": "assets/app-icon.svg",
+          "src": "https://i.postimg.cc/vBY98wDL/IMG-9251.jpg",
           "sizes": "192x192",
-          "type": "image/svg+xml"
+          "type": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "name": "聊天",
+      "short_name": "聊天",
+      "description": "打开聊天页面",
+      "url": "./Chat/chat.html",
+      "icons": [
+        {
+          "src": "https://i.postimg.cc/vBY98wDL/IMG-9251.jpg",
+          "sizes": "192x192",
+          "type": "image/jpeg"
         }
       ]
     }
-  ]
+  ],
+  "gcm_sender_id": "103953800507",
+  "gcm_user_visible_only": true
 }

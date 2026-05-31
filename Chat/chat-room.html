@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="theme.css" id="theme-css">
     <script src="moment-api.js"></script>
     <script src="chat-notification.js"></script>
+    <script src="global-ws-manager.js"></script>
     <title>Chat Room</title>
 </head>
 <body>
@@ -543,6 +544,7 @@
             }
             
             function appendSingleMessage(msg, index, isNew) {
+                try {
                 // 检查是否需要显示时间戳（间隔超过5分钟）
                 var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
                 if (index > 0) {
@@ -551,17 +553,15 @@
                         appendTimeStamp(new Date(msg.time));
                     }
                 }
-                
+
                 var el = document.createElement('div');
                 el.className = 'message ' + msg.role;
                 if (isNew && msg.role === 'received') {
-                    // 只有新接收到的AI消息才有动画
                 } else {
-                    // 用户发送的消息和旧消息都不显示动画
                     el.classList.add('no-animation');
                 }
                 el.dataset.index = index;
-                
+
                 var showAvatarAndTime = true;
                 if (index > 0) {
                     var prevMsg = messages[index - 1];
@@ -569,17 +569,17 @@
                         showAvatarAndTime = false;
                     }
                 }
-                
+
                 var blocked = localStorage.getItem('chat_block_char') === 'true';
                 var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
                 var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
                 var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                 var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
-                
+
                 var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
-                
+
                 var nickname = msg.role === 'sent' ? '@> <' : '@T T';
-                
+
                 var avatarWrapperHtml, nicknameHtml;
                 if (showAvatarAndTime) {
                     var timeHtml = '';
@@ -606,26 +606,26 @@
                     avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
                     nicknameHtml = '';
                 }
-                
-                el.innerHTML = avatarWrapperHtml + 
+
+                el.innerHTML = avatarWrapperHtml +
                     '<div class="message-info">' +
                         nicknameHtml +
                         quoteHtml +
                         '<div class="message-content-wrapper">' +
                             '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
                         '</div>' +
-                    '</div>' + 
+                    '</div>' +
                     warningIcon;
-                
+
                 var checkEl = document.createElement('span');
                 checkEl.className = 'select-check';
                 el.insertBefore(checkEl, el.firstChild);
-                
+
                 el.addEventListener('contextmenu', function(e) {
                     e.preventDefault();
                     showContextMenu(e, index, msg.role);
                 });
-                
+
                 let touchTimer;
                 el.addEventListener('touchstart', function(e) {
                     touchTimer = setTimeout(function() {
@@ -639,9 +639,16 @@
                 el.addEventListener('touchmove', function() {
                     clearTimeout(touchTimer);
                 });
-                
-                chatMessages.appendChild(el);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                if (chatMessages) {
+                    chatMessages.appendChild(el);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                } else {
+                    console.error('chatMessages is null, cannot append message');
+                }
+                } catch (err) {
+                    console.error('appendSingleMessage error:', err);
+                }
             }
             
             function buildApiMessages() {
@@ -968,6 +975,37 @@
             });
             
             loadProfiles();
+
+            // WebSocket connection for real-time messages
+            var chatWs = null;
+            function getWsUrl() {
+                var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                var host = window.location.hostname || '192.168.1.198';
+                var port = window.location.port || '3000';
+                return protocol + '//' + host + ':' + port;
+            }
+            function initChatWs() {
+                try {
+                    chatWs = new WebSocket(getWsUrl());
+                    chatWs.onopen = function() {
+                        console.log('Chat room WebSocket connected');
+                    };
+                    chatWs.onmessage = function(event) {
+                        try {
+                            var data = JSON.parse(event.data);
+                            if (data.type === 'new_message' && data.from !== charName) {
+                                loadMessages();
+                            }
+                        } catch(e) {}
+                    };
+                    chatWs.onerror = function(err) {
+                        console.error('Chat WebSocket error:', err);
+                    };
+                } catch(e) {
+                    console.error('WebSocket init error:', e);
+                }
+            }
+            initChatWs();
             
             // Load chat background
             loadChatBackground();
@@ -1237,18 +1275,22 @@
             messageInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    var text = this.value.trim();
-                    if (text.length > 0) {
-                        var newIndex = saveMessage(text, 'sent', currentQuote);
-                        var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                        if (messages[newIndex]) {
-                            appendSingleMessage(messages[newIndex], newIndex, true);
+                    try {
+                        var text = this.value.trim();
+                        if (text.length > 0) {
+                            saveMessage(text, 'sent', currentQuote);
+                            loadMessages();
+                            this.value = '';
+                            currentQuote = null;
+                            this.placeholder = 'Message...';
+                            document.getElementById('receive-btn').style.display = 'flex';
+                            document.getElementById('emoji-btn').style.display = 'flex';
+                            if (chatMessages) {
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
                         }
-                        this.value = '';
-                        currentQuote = null;
-                        this.placeholder = 'Message...';
-                        document.getElementById('receive-btn').style.display = 'flex';
-                        document.getElementById('emoji-btn').style.display = 'flex';
+                    } catch (err) {
+                        console.error('Send message error:', err);
                     }
                 }
             });

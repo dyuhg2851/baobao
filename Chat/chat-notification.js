@@ -4,6 +4,7 @@
   var executing = false;
   var swipeY = 0;
   var isSwiping = false;
+  var notifWs = null;
 
   function init() {
     if (interval) return;
@@ -13,18 +14,52 @@
       checkPending();
       checkNotification();
     }, CHECK_INTERVAL);
-    
+
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden) {
         checkPending();
         checkNotification();
       }
     });
-    
+
     window.addEventListener('focus', function() {
       checkPending();
       checkNotification();
     });
+
+    initWebSocket();
+  }
+
+  function getWsUrl() {
+    var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    var host = window.location.hostname || '192.168.1.198';
+    var port = window.location.port || '3000';
+    return protocol + '//' + host + ':' + port;
+  }
+
+  function initWebSocket() {
+    try {
+      notifWs = new WebSocket(getWsUrl());
+      notifWs.onopen = function() {
+        console.log('Notification WebSocket connected');
+      };
+      notifWs.onerror = function(err) {
+        console.error('Notification WebSocket error:', err);
+      };
+    } catch(e) {
+      console.error('WebSocket init error:', e);
+    }
+  }
+
+  function broadcastMessage(message, from) {
+    if (notifWs && notifWs.readyState === WebSocket.OPEN) {
+      notifWs.send(JSON.stringify({
+        type: 'new_message',
+        message: message,
+        from: from || 'Char',
+        timestamp: Date.now()
+      }));
+    }
   }
 
   function isOnChatRoom() {
@@ -155,6 +190,10 @@
           saved.push({ text: part.trim(), role: 'received', time: new Date().toISOString() });
         });
         localStorage.setItem('chat_messages', JSON.stringify(saved));
+
+        var charNickname = getCharNickname();
+        var fullMessage = replyParts.join(' ');
+        broadcastMessage(fullMessage, charNickname);
       } catch(e) {}
     } catch(e) {
       console.error('Background AI request failed:', e);
