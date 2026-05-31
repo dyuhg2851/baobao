@@ -446,12 +446,86 @@
                 
                 if (diffDays >= 1) {
                     daysElement.textContent = diffDays;
+                    
+                    // 检查是否是特殊纪念日
+                    checkSpecialAnniversary(diffDays);
                 } else {
                     daysElement.textContent = '--';
                 }
             } else {
                 daysElement.textContent = '--';
             }
+        }
+        
+        function checkSpecialAnniversary(days) {
+            // 检查是否已经提醒过今天的纪念日
+            const todayKey = new Date().toDateString();
+            const lastReminder = localStorage.getItem('last_anniversary_reminder');
+            
+            if (lastReminder === todayKey) {
+                return; // 今天已经提醒过了
+            }
+            
+            // 特殊纪念日：100, 200, 300... 以及 520, 1314
+            const isSpecialDay = (days % 100 === 0 && days >= 100) || days === 520 || days === 1314;
+            
+            if (isSpecialDay) {
+                // 显示纪念日提醒弹窗
+                showAnniversaryReminder(days);
+                
+                // 保存今天已经提醒过
+                localStorage.setItem('last_anniversary_reminder', todayKey);
+                
+                // 保存纪念日信息，让char也知道
+                localStorage.setItem('current_anniversary', JSON.stringify({
+                    days: days,
+                    date: new Date().toISOString()
+                }));
+            }
+        }
+        
+        function showAnniversaryReminder(days) {
+            const modal = document.getElementById('anniversary-reminder-modal');
+            const daysElement = document.getElementById('reminder-days');
+            const titleElement = document.querySelector('.reminder-title');
+            const userAvatar = document.getElementById('reminder-user-avatar');
+            const charAvatar = document.getElementById('reminder-char-avatar');
+            
+            // 获取char的本名
+            const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+            const charName = charData.name || 'Char';
+            
+            // 更新标题和天数
+            titleElement.textContent = `今天是你和${charName}幸福的`;
+            daysElement.textContent = `第${days}天`;
+            
+            // 加载用户头像
+            const userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+            if (userData.avatar) {
+                userAvatar.style.backgroundImage = `url(${userData.avatar})`;
+                userAvatar.innerHTML = '';
+            } else {
+                userAvatar.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 32 32">
+                        <path fill="currentColor" d="M16 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0 4c-4.97 0-15 2.507-15 7.5V30h30v-2.5c0-4.993-10.03-7.5-15-7.5z"/>
+                    </svg>
+                `;
+            }
+            
+            // 加载char头像
+            if (charData.avatar) {
+                charAvatar.style.backgroundImage = `url(${charData.avatar})`;
+                charAvatar.innerHTML = '';
+            } else {
+                charAvatar.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 32 32">
+                        <path fill="currentColor" d="M23 9A7 7 0 1 1 9 9a7 7 0 0 1 14 0m-2 0a5 5 0 1 0-10 0a5 5 0 0 0 10 0M7.5 18A3.5 3.5 0 0 0 4 21.5v.5c0 2.393 1.523 4.417 3.685 5.793C9.859 29.177 12.802 30 16 30s6.14-.823 8.315-2.207C26.477 26.417 28 24.393 28 22v-.5a3.5 3.5 0 0 0-3.5-3.5zM6 21.5A1.5 1.5 0 0 1 7.5 20h17a1.5 1.5 0 0 1 1.5 1.5v.5c0 1.473-.94 2.949-2.759 4.106C21.434 27.256 18.877 28 16 28s-5.434-.744-7.241-1.894C6.939 24.95 6 23.472 6 22z"/>
+                    </svg>
+                `;
+            }
+            
+            // 显示弹窗
+            modal.classList.add('show');
         }
         
         function bindAnniversaryEvents() {
@@ -462,6 +536,8 @@
             const yearSelect = document.getElementById('anniversary-year');
             const monthSelect = document.getElementById('anniversary-month');
             const daySelect = document.getElementById('anniversary-day');
+            const reminderModal = document.getElementById('anniversary-reminder-modal');
+            const reminderConfirmBtn = document.getElementById('reminder-confirm');
             
             // 点击天数打开弹窗
             daysElement.addEventListener('click', function() {
@@ -513,6 +589,18 @@
                     modal.classList.remove('show');
                 }
             });
+            
+            // 纪念日提醒弹窗的确定按钮
+            reminderConfirmBtn.addEventListener('click', function() {
+                reminderModal.classList.remove('show');
+            });
+            
+            // 点击纪念日提醒遮罩层关闭弹窗
+            reminderModal.addEventListener('click', function(e) {
+                if (e.target === reminderModal) {
+                    reminderModal.classList.remove('show');
+                }
+            });
         }
     </script>
     
@@ -540,6 +628,26 @@
             <div class="modal-actions">
                 <button class="modal-btn cancel" id="modal-cancel">Cancel</button>
                 <button class="modal-btn confirm" id="modal-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 纪念日提醒弹窗 -->
+    <div class="anniversary-reminder-overlay" id="anniversary-reminder-modal">
+        <div class="anniversary-reminder-modal">
+            <div class="reminder-avatars">
+                <div class="reminder-avatar" id="reminder-user-avatar"></div>
+                <div class="reminder-heart">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+                <div class="reminder-avatar" id="reminder-char-avatar"></div>
+            </div>
+            <div class="reminder-title">今天是你和Char幸福的</div>
+            <div class="reminder-days" id="reminder-days">第100天</div>
+            <div class="reminder-actions">
+                <button class="reminder-btn confirm" id="reminder-confirm">Confirm</button>
             </div>
         </div>
     </div>

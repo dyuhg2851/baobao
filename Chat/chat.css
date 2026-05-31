@@ -237,11 +237,12 @@ h1 {
     right: 30%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 182, 193, 0.35) 0%, transparent 70%);
-    animation: sparkle 5s ease-in-out infinite;
-    animation-delay: 1s;
+    opacity: 0;
+    animation: breathe 6s ease-in-out infinite;
+    animation-delay: 0s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: opacity, transform;
+    will-change: opacity;
 }
 
 .anniversary-card .sparkle-2 {
@@ -252,11 +253,12 @@ h1 {
     right: 15%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 182, 193, 0.4) 0%, transparent 70%);
-    animation: sparkle 6s ease-in-out infinite;
-    animation-delay: 3s;
+    opacity: 0;
+    animation: breathe 7s ease-in-out infinite;
+    animation-delay: 1.5s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: opacity, transform;
+    will-change: opacity;
 }
 
 .anniversary-card .sparkle-3 {
@@ -267,11 +269,12 @@ h1 {
     left: 10%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
-    animation: sparkle 4.5s ease-in-out infinite;
-    animation-delay: 1.5s;
+    opacity: 0;
+    animation: breathe 5.5s ease-in-out infinite;
+    animation-delay: 3s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: opacity, transform;
+    will-change: opacity;
 }
 
 .anniversary-card .sparkle-4 {
@@ -282,11 +285,12 @@ h1 {
     left: 40%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 182, 193, 0.38) 0%, transparent 70%);
-    animation: sparkle 5.5s ease-in-out infinite;
-    animation-delay: 2.5s;
+    opacity: 0;
+    animation: breathe 6.5s ease-in-out infinite;
+    animation-delay: 4.5s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: opacity, transform;
+    will-change: opacity;
 }
 
 .anniversary-card .sparkle-5 {
@@ -297,11 +301,12 @@ h1 {
     left: 25%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 182, 193, 0.32) 0%, transparent 70%);
-    animation: sparkle 4.2s ease-in-out infinite;
-    animation-delay: 3.5s;
+    opacity: 0;
+    animation: breathe 5.8s ease-in-out infinite;
+    animation-delay: 6s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: opacity, transform;
+    will-change: opacity;
 }
 
 .anniversary-card .sparkle-6 {
@@ -312,27 +317,29 @@ h1 {
     right: 10%;
     border-radius: 50%;
     background: radial-gradient(circle, rgba(255, 182, 193, 0.36) 0%, transparent 70%);
-    animation: sparkle 5.8s ease-in-out infinite;
-    animation-delay: 0.8s;
+    opacity: 0;
+    animation: breathe 7.2s ease-in-out infinite;
+    animation-delay: 7.5s;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
-    will-change: opacity, transform;
+    will-change: opacity;
 }
 
-@keyframes sparkle {
-    0%, 100% {
+@keyframes breathe {
+    0% {
         opacity: 0;
-        transform: scale(0.8) translateZ(0);
     }
-    25% {
-        opacity: 0.5;
+    15% {
+        opacity: 0.4;
     }
     50% {
-        opacity: 0.75;
-        transform: scale(1.15) translateZ(0);
+        opacity: 0.2;
     }
-    75% {
+    85% {
         opacity: 0.4;
+    }
+    100% {
+        opacity: 0;
     }
 }
 
@@ -726,4 +733,118 @@ h1 {
 .message-time {
     font-size: 12px;
     color: #cccccc;
+}
+
+/* 纪念日提醒弹窗 */
+.anniversary-reminder-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.anniversary-reminder-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.anniversary-reminder-modal {
+    background-color: #ffffff;
+    border: 2px solid #ffb6c1;
+    border-radius: 16px;
+    padding: 24px 20px;
+    width: 85%;
+    max-width: 280px;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.anniversary-reminder-overlay.show .anniversary-reminder-modal {
+    transform: scale(1);
+}
+
+.reminder-avatars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.reminder-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.reminder-avatar svg {
+    width: 20px;
+    height: 20px;
+    color: #ffffff;
+}
+
+.reminder-heart {
+    color: #ffb6c1;
+    animation: heartbeat 1.5s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+.reminder-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000000;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.reminder-days {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000000;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.reminder-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.reminder-btn {
+    font-size: 16px;
+    font-weight: 500;
+    color: #000000;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 24px;
+}
+
+.reminder-btn:hover {
+    opacity: 0.7;
 }

@@ -204,6 +204,32 @@
                     prompt += '\n\n你的人设设定：\n' + systemPrompt;
                 }
                 
+                // 实时获取纪念日信息
+                var savedDate = localStorage.getItem('anniversary_date');
+                if (savedDate) {
+                    try {
+                        var anniversaryDate = new Date(savedDate);
+                        var today = new Date();
+                        
+                        // 确保使用相同的时区
+                        var timezoneOffset = 8 * 60; // 北京时区 UTC+8
+                        var utc = today.getTime() + today.getTimezoneOffset() * 60000;
+                        var beijingToday = new Date(utc + timezoneOffset * 60000);
+                        
+                        // 设置纪念日为同一天的零时
+                        anniversaryDate.setHours(0, 0, 0, 0);
+                        beijingToday.setHours(0, 0, 0, 0);
+                        
+                        // 计算天数差（包含第一天）
+                        var diffTime = beijingToday.getTime() - anniversaryDate.getTime();
+                        var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                        
+                        if (diffDays >= 1) {
+                            prompt += '\n\n【重要信息：今天是你和User幸福的第' + diffDays + '天！请记住这个信息，在对话中可以自然地提及或庆祝这个特殊的日子。】';
+                        }
+                    } catch(e) {}
+                }
+                
                 prompt += '\n\n【核心聊天法则】：';
                 prompt += '\n1.【第一反应法则】：无论用户说什么，你的第一反应必须是情绪/本能，而不是分析/解决。用户说"我失恋了"先心疼，说"中奖了"先开心，说"好烦"先共鸣，说"想你了"先心跳漏一拍。这个第一反应要根据人设自动切换。';
                 prompt += '\n2.【语言呼吸感法则】：允许你的话有"人味儿痕迹"。可以有语气词（嗯… 那个… 就是… 其实…），可以说一半的话，偶尔重复，不完美，有停顿（……）。';
