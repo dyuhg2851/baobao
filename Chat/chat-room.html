@@ -947,7 +947,11 @@
             
             // Load chat background
             loadChatBackground();
-            loadMessages();
+            
+            // 使用requestAnimationFrame优化渲染
+            requestAnimationFrame(() => {
+                loadMessages();
+            });
             
             // Context menu functions
             document.getElementById('menu-quote').addEventListener('click', function() {
@@ -1206,7 +1210,7 @@
             });
             
             // Enter键发送消息
-            messageInput.addEventListener('keydown', function(e) {
+            messageInput.addEventListener('keyup', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     var text = this.value.trim();

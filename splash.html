@@ -254,27 +254,7 @@
 
     <script>
         (function() {
-            var splash = document.getElementById('splash');
-            var isLoaded = document.readyState === 'complete';
-            
-            function startAnimation() {
-                setTimeout(function() {
-                    splash.classList.add('fade-out');
-                }, 100);
-                
-                setTimeout(function() {
-                    window.location.href = 'index.html';
-                }, 2500);
-            }
-            
-            if (isLoaded) {
-                startAnimation();
-            } else {
-                window.addEventListener('load', startAnimation);
-                window.addEventListener('DOMContentLoaded', startAnimation);
-            }
-            
-            setTimeout(startAnimation, 500);
+            window.location.href = 'index.html';
         })();
     </script>
 </body>

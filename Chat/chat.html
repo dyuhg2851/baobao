@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="chat.css">
-    <script src="chat-notification.js"></script>
+    <script src="chat-notification.js" defer></script>
     <title>WeChat</title>
 </head>
 <body>
@@ -64,10 +64,6 @@
             
             <div class="character-list">
                 <div class="character-card">
-                    <div class="card-header">
-                        <span class="pinned-label">Pinned Message</span>
-                        <button class="chat-btn" id="chat-btn">Chat</button>
-                    </div>
                     <div class="card-content">
                         <div class="avatar">
                             <div class="avatar-placeholder">
@@ -79,6 +75,7 @@
                             <div class="last-message">Hey! How are you doing today?</div>
                             <div class="message-time">05/20 13:14</div>
                         </div>
+                        <button class="chat-btn" id="chat-btn">Chat</button>
                     </div>
                 </div>
             </div>
@@ -221,14 +218,21 @@
                 }
             };
             
-            loadCharProfile();
-            loadLastMessage();
+            // 使用requestAnimationFrame优化渲染
+            requestAnimationFrame(() => {
+                loadCharProfile();
+                loadLastMessage();
+            });
             
-            // 日历功能
-            initCalendar();
+            // 日历功能延迟加载
+            requestAnimationFrame(() => {
+                initCalendar();
+            });
             
-            // 纪念日功能
-            initAnniversary();
+            // 纪念日功能延迟加载
+            requestAnimationFrame(() => {
+                initAnniversary();
+            });
             
             // Chat按钮点击事件
             const chatBtn = document.getElementById('chat-btn');

@@ -13,6 +13,18 @@
       checkPending();
       checkNotification();
     }, CHECK_INTERVAL);
+    
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        checkPending();
+        checkNotification();
+      }
+    });
+    
+    window.addEventListener('focus', function() {
+      checkPending();
+      checkNotification();
+    });
   }
 
   function isOnChatRoom() {
@@ -135,7 +147,7 @@
         } catch(e) {}
       }
       localStorage.setItem('ai_notification', JSON.stringify({
-        id: req.id, parts: replyParts, timestamp: Date.now(), read: false
+        id: req.id, parts: replyParts, timestamp: Date.now(), shown: false
       }));
       try {
         var saved = JSON.parse(localStorage.getItem('chat_messages') || '[]');
@@ -157,13 +169,11 @@
     if (!notifData) return;
     try {
       var notif = JSON.parse(notifData);
-      if (notif.read) return;
+      if (notif.shown) return;
       if (Date.now() - notif.timestamp > 60000) {
         localStorage.removeItem('ai_notification');
         return;
       }
-      notif.read = true;
-      localStorage.setItem('ai_notification', JSON.stringify(notif));
       showPopupSequence(notif);
     } catch(e) {
       localStorage.removeItem('ai_notification');
@@ -192,6 +202,10 @@
       setTimeout(function() {
         if (document.querySelector('.ai-notif-popup')) return;
         showPopup(part.trim());
+        if (i === parts.length - 1) {
+          data.shown = true;
+          localStorage.setItem('ai_notification', JSON.stringify(data));
+        }
       }, i * 2000);
     });
   }
