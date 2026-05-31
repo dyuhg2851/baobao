@@ -176,19 +176,36 @@
             
             // 加载Char资料
             const loadCharProfile = () => {
+                const nameElement = document.querySelector('.character-card .character-name');
+                const signatureElement = document.querySelector('.character-card .last-message');
+                
+                // 优先读取备注名
+                const nickname = localStorage.getItem('char_nickname');
+                if (nickname && nameElement) {
+                    nameElement.textContent = nickname;
+                } else {
+                    // 如果没有备注名，读取profile_char
+                    const savedData = localStorage.getItem('profile_char');
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        if (data.nickname && nameElement) {
+                            nameElement.textContent = data.nickname;
+                        } else if (data.name && nameElement) {
+                            nameElement.textContent = data.name;
+                        }
+                    }
+                }
+                
+                // 加载签名（只在没有消息时显示）
                 const savedData = localStorage.getItem('profile_char');
                 if (savedData) {
                     const data = JSON.parse(savedData);
-                    const nameElement = document.querySelector('.character-card .character-name');
-                    const signatureElement = document.querySelector('.character-card .last-message');
-                    
-                    if (data.nickname && nameElement) {
-                        nameElement.textContent = data.nickname;
-                    } else if (data.name && nameElement) {
-                        nameElement.textContent = data.name;
-                    }
                     if (data.signature && signatureElement) {
-                        signatureElement.textContent = data.signature;
+                        // 检查是否有聊天消息
+                        const saved = localStorage.getItem('chat_messages');
+                        if (!saved || JSON.parse(saved).length === 0) {
+                            signatureElement.textContent = data.signature;
+                        }
                     }
                 }
             };

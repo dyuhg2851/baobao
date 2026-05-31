@@ -5,6 +5,8 @@
     var reconnectDelay = 3000;
     var isConnected = false;
     var notificationPermission = false;
+    var isConnecting = false;
+    var pendingReconnect = null;
 
     var toastContainer = null;
 
@@ -177,7 +179,9 @@
     }
 
     function connect() {
-        if (ws && ws.readyState === WebSocket.OPEN) return;
+        if (isConnecting || (ws && ws.readyState === WebSocket.OPEN)) return;
+
+        isConnecting = true;
 
         try {
             ws = new WebSocket(getWsUrl());
@@ -185,7 +189,12 @@
             ws.onopen = function() {
                 console.log('Global WebSocket connected');
                 isConnected = true;
+                isConnecting = false;
                 reconnectAttempts = 0;
+                if (pendingReconnect) {
+                    clearTimeout(pendingReconnect);
+                    pendingReconnect = null;
+                }
             };
 
             ws.onmessage = function(event) {
@@ -197,32 +206,41 @@
                 }
             };
 
-            ws.onclose = function() {
-                console.log('Global WebSocket disconnected');
+            ws.onclose = function(e) {
+                console.log('Global WebSocket disconnected, code:', e.code);
                 isConnected = false;
+                isConnecting = false;
                 ws = null;
-                attemptReconnect();
+                if (e.code !== 1000 && e.code !== 1001) {
+                    attemptReconnect();
+                }
             };
 
             ws.onerror = function(err) {
                 console.error('WebSocket error:', err);
                 isConnected = false;
+                isConnecting = false;
             };
         } catch(e) {
             console.error('WebSocket connection error:', e);
+            isConnecting = false;
             attemptReconnect();
         }
     }
 
     function attemptReconnect() {
+        if (pendingReconnect) return;
         if (reconnectAttempts >= maxReconnectAttempts) {
             console.log('Max reconnect attempts reached');
             return;
         }
         reconnectAttempts++;
-        var delay = reconnectDelay * reconnectAttempts;
+        var delay = reconnectDelay * Math.min(reconnectAttempts, 5);
         console.log('Reconnecting in ' + delay + 'ms...');
-        setTimeout(connect, delay);
+        pendingReconnect = setTimeout(function() {
+            pendingReconnect = null;
+            connect();
+        }, delay);
     }
 
     function handleMessage(data) {
@@ -246,6 +264,10 @@
                     link: chatRoomUrl
                 });
             }
+
+            if (window.GlobalChatHandlers && window.GlobalChatHandlers.onMessage) {
+                window.GlobalChatHandlers.onMessage(data);
+            }
         }
     }
 
@@ -267,16 +289,51 @@
         }
     }
 
+    function getStatus() {
+        return {
+            connected: isConnected,
+            connecting: isConnecting,
+            attempts: reconnectAttempts
+        };
+    }
+
     window.GlobalChat = {
         connect: connect,
         send: send,
         showToast: showToast,
-        getWsUrl: getWsUrl
+        getWsUrl: getWsUrl,
+        getStatus: getStatus
     };
 
     function init() {
         requestNotificationPermission();
         connect();
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                if (!isConnected && !isConnecting) {
+                    console.log('Page visible, reconnecting WebSocket');
+                    reconnectAttempts = 0;
+                    connect();
+                }
+            }
+        });
+
+        window.addEventListener('focus', function() {
+            if (!isConnected && !isConnecting) {
+                console.log('Window focused, reconnecting WebSocket');
+                reconnectAttempts = 0;
+                connect();
+            }
+        });
+
+        window.addEventListener('pageshow', function(e) {
+            if (e.persisted) {
+                console.log('Page restored from cache, reconnecting WebSocket');
+                reconnectAttempts = 0;
+                connect();
+            }
+        });
     }
 
     if (document.readyState === 'loading') {

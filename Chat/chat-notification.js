@@ -4,7 +4,6 @@
   var executing = false;
   var swipeY = 0;
   var isSwiping = false;
-  var notifWs = null;
 
   function init() {
     if (interval) return;
@@ -27,38 +26,22 @@
       checkNotification();
     });
 
-    initWebSocket();
-  }
-
-  function getWsUrl() {
-    var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    var host = window.location.hostname || '192.168.1.198';
-    var port = window.location.port || '3000';
-    return protocol + '//' + host + ':' + port;
-  }
-
-  function initWebSocket() {
-    try {
-      notifWs = new WebSocket(getWsUrl());
-      notifWs.onopen = function() {
-        console.log('Notification WebSocket connected');
-      };
-      notifWs.onerror = function(err) {
-        console.error('Notification WebSocket error:', err);
-      };
-    } catch(e) {
-      console.error('WebSocket init error:', e);
-    }
+    window.addEventListener('pageshow', function(e) {
+      if (e.persisted) {
+        checkPending();
+        checkNotification();
+      }
+    });
   }
 
   function broadcastMessage(message, from) {
-    if (notifWs && notifWs.readyState === WebSocket.OPEN) {
-      notifWs.send(JSON.stringify({
+    if (window.GlobalChat && window.GlobalChat.send) {
+      window.GlobalChat.send({
         type: 'new_message',
         message: message,
         from: from || 'Char',
         timestamp: Date.now()
-      }));
+      });
     }
   }
 
@@ -78,14 +61,12 @@
       var processed = JSON.parse(localStorage.getItem('processed_requests') || '[]');
       if (processed.includes(req.id)) return;
 
-      // 不在 chat-room 页面则立即处理，不等待
       if (!isOnChatRoom()) {
         if (executing) return;
         execute(req);
         return;
       }
 
-      // 在 chat-room 时，等待它完成（< 15 秒）
       var processingStamp = localStorage.getItem('processing_on_chatroom');
       if (processingStamp) {
         var elapsed = Date.now() - parseInt(processingStamp);
@@ -173,7 +154,6 @@
         processed.push(req.id);
         localStorage.setItem('processed_requests', JSON.stringify(processed));
       }
-      // 如果 chat-room 已经保存了通知，不再重复保存
       var existingNotif = localStorage.getItem('ai_notification');
       if (existingNotif) {
         try {

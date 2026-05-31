@@ -976,36 +976,23 @@
             
             loadProfiles();
 
-            // WebSocket connection for real-time messages
-            var chatWs = null;
-            function getWsUrl() {
-                var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-                var host = window.location.hostname || '192.168.1.198';
-                var port = window.location.port || '3000';
-                return protocol + '//' + host + ':' + port;
-            }
-            function initChatWs() {
-                try {
-                    chatWs = new WebSocket(getWsUrl());
-                    chatWs.onopen = function() {
-                        console.log('Chat room WebSocket connected');
-                    };
-                    chatWs.onmessage = function(event) {
-                        try {
-                            var data = JSON.parse(event.data);
-                            if (data.type === 'new_message' && data.from !== charName) {
-                                loadMessages();
-                            }
-                        } catch(e) {}
-                    };
-                    chatWs.onerror = function(err) {
-                        console.error('Chat WebSocket error:', err);
-                    };
-                } catch(e) {
-                    console.error('WebSocket init error:', e);
+            // Use global WebSocket connection for real-time messages
+            window.GlobalChatHandlers = {
+                onMessage: function(data) {
+                    if (data.type === 'new_message') {
+                        var nickname = localStorage.getItem('char_nickname');
+                        var senderName = nickname || charName;
+                        if (data.from !== senderName) {
+                            loadMessages();
+                        }
+                    }
                 }
+            };
+
+            // Ensure global WebSocket is connected
+            if (window.GlobalChat && window.GlobalChat.connect) {
+                window.GlobalChat.connect();
             }
-            initChatWs();
             
             // Load chat background
             loadChatBackground();

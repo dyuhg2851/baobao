@@ -38,9 +38,11 @@
                 <div class="bg-preview-inner" id="bg-preview-inner">Preview</div>
             </div>
             <div class="button-group">
-                <button id="btn-bg-set" class="btn btn-save">Set Background</button>
+                <button id="btn-bg-select" class="btn btn-save">Select Image</button>
+                <button id="btn-bg-save" class="btn btn-save" disabled>Save</button>
                 <button id="btn-bg-reset" class="btn btn-delete">Reset</button>
             </div>
+            <input type="file" id="bg-file-input" accept="image/*" style="display:none">
         </div>
 
         <!-- Memory -->
@@ -118,22 +120,29 @@
             });
 
             // Background
-            document.getElementById('btn-bg-set').addEventListener('click', function() {
-                const input = document.createElement('input');
-                input.type = 'file';
-                input.accept = 'image/*';
-                input.onchange = function(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const dataUrl = e.target.result;
-                        localStorage.setItem('chat_bg', dataUrl);
-                        updateBgPreview(dataUrl);
-                    };
-                    reader.readAsDataURL(file);
+            let pendingBgDataUrl = null;
+
+            document.getElementById('btn-bg-select').addEventListener('click', function() {
+                document.getElementById('bg-file-input').click();
+            });
+
+            document.getElementById('bg-file-input').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    pendingBgDataUrl = e.target.result;
+                    updateBgPreview(pendingBgDataUrl);
+                    document.getElementById('btn-bg-save').disabled = false;
                 };
-                input.click();
+                reader.readAsDataURL(file);
+            });
+
+            document.getElementById('btn-bg-save').addEventListener('click', function() {
+                if (pendingBgDataUrl) {
+                    localStorage.setItem('chat_bg', pendingBgDataUrl);
+                    document.getElementById('btn-bg-save').disabled = true;
+                }
             });
 
             document.getElementById('btn-bg-reset').addEventListener('click', function() {
