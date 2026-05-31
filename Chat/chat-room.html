@@ -75,7 +75,7 @@
                 <button id="receive-btn" class="receive-btn" title="Receive AI Response">
                     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none" stroke="#000000" stroke-width="1.5"><path stroke-linecap="round" d="M22 10c.018.727 0 1.054 0 2c0 3.771 0 5.657-1.172 6.828S17.771 20 14 20h-4c-3.771 0-5.657 0-6.828-1.172S2 15.771 2 12s0-5.657 1.172-6.828S6.229 4 10 4h3"/><path stroke-linecap="round" d="m6 8l2.159 1.8c1.837 1.53 2.755 2.295 3.841 2.295s2.005-.765 3.841-2.296"/><circle cx="19" cy="5" r="3"/></g></svg>
                 </button>
-                <input type="text" id="message-input" class="message-input" placeholder="Message...">
+                <input type="text" id="message-input" class="message-input" placeholder="Message..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                 <button id="emoji-btn" class="emoji-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 24 24"><g fill="none"><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M8.913 15.934c1.258.315 2.685.315 4.122-.07s2.673-1.099 3.605-2.001"/><ellipse cx="14.509" cy="9.774" fill="#000000" rx="1" ry="1.5" transform="rotate(-15 14.51 9.774)"/><ellipse cx="8.714" cy="11.328" fill="#000000" rx="1" ry="1.5" transform="rotate(-15 8.714 11.328)"/><path stroke="#000000" stroke-width="1.5" d="m13 16l.478.974a1.5 1.5 0 1 0 2.693-1.322l-.46-.935"/><path stroke="#000000" stroke-linecap="round" stroke-width="1.5" d="M4.928 4.927A9.95 9.95 0 0 1 9.412 2.34C14.746.91 20.23 4.077 21.659 9.411c1.43 5.335-1.736 10.818-7.07 12.248S3.77 19.922 2.34 14.588a9.95 9.95 0 0 1-.002-5.176"/></g></svg>
                 </button>
@@ -1234,19 +1234,19 @@
             });
             
             // Enter键发送消息
-            messageInput.addEventListener('keyup', function(e) {
-                if (e.key === 'Enter') {
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     var text = this.value.trim();
                     if (text.length > 0) {
-                        // 保存并发送消息
                         var newIndex = saveMessage(text, 'sent', currentQuote);
                         var messages = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-                        appendSingleMessage(messages[newIndex], newIndex, true);
+                        if (messages[newIndex]) {
+                            appendSingleMessage(messages[newIndex], newIndex, true);
+                        }
                         this.value = '';
                         currentQuote = null;
                         this.placeholder = 'Message...';
-                        // 恢复按钮显示
                         document.getElementById('receive-btn').style.display = 'flex';
                         document.getElementById('emoji-btn').style.display = 'flex';
                     }
