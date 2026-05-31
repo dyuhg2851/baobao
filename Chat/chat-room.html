@@ -178,6 +178,7 @@
             function loadChatBackground() {
                 var bg = localStorage.getItem('chat_bg');
                 if (bg) {
+                    document.body.style.backgroundColor = 'transparent';
                     document.body.style.backgroundImage = 'url(' + bg + ')';
                     document.body.style.backgroundSize = 'cover';
                     document.body.style.backgroundPosition = 'center';
@@ -406,9 +407,7 @@
                             el.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
                         });
 
-                        requestAnimationFrame(function() {
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
-                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
                     } catch(e) {
                         console.error('loadMessages error:', e);
                     }
@@ -444,7 +443,6 @@
                     timestampEl.textContent = formatTimeStamp(date);
                     chatMessages.appendChild(timestampEl);
                 }
-            }
             
             let currentMessageIndex = null;
             let currentMessageRole = null;
@@ -1278,7 +1276,8 @@
             
             // Enter键发送消息
             messageInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                var isEnter = e.key === 'Enter' || e.keyCode === 13 || e.key === 'Go' || e.key === 'Send';
+                if (isEnter && !e.shiftKey) {
                     e.preventDefault();
                     try {
                         var text = this.value.trim();
