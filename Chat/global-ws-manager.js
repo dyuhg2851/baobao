@@ -252,6 +252,17 @@
         console.log('Global WebSocket message received:', data);
 
         if (data.type === 'new_message' || data.type === 'notification') {
+            // Check if user has already viewed chat before this message
+            var chatViewedTime = localStorage.getItem('chat_viewed_time');
+            if (chatViewedTime && parseInt(chatViewedTime) > data.timestamp) {
+                console.log('User already viewed chat, skipping toast for this message');
+                // Still call the handler for chatroom to reload messages
+                if (window.GlobalChatHandlers && window.GlobalChatHandlers.onMessage) {
+                    window.GlobalChatHandlers.onMessage(data);
+                }
+                return;
+            }
+
             var chatRoomUrl = getChatRoomUrl();
 
             console.log('Showing toast for message from:', data.from);

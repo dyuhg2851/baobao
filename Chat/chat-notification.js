@@ -198,6 +198,14 @@
         localStorage.removeItem('ai_notification');
         return;
       }
+
+      // Check if user has viewed chat before this notification was created
+      var chatViewedTime = localStorage.getItem('chat_viewed_time');
+      if (chatViewedTime && parseInt(chatViewedTime) > notif.timestamp) {
+        console.log('User already viewed chat, skipping popup');
+        return;
+      }
+
       showPopupSequence(notif);
     } catch(e) {
       localStorage.removeItem('ai_notification');

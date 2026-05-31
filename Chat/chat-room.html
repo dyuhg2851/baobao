@@ -296,8 +296,13 @@
                 }
                 return prompt;
             }
+
+            function markChatAsViewed() {
+                localStorage.setItem('chat_viewed_time', Date.now().toString());
+            }
             
             function loadMessages() {
+                markChatAsViewed();
                 var saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
                     try {
@@ -1027,6 +1032,18 @@
                     }
                 }
             };
+
+            // Mark chat as viewed when page becomes visible
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    markChatAsViewed();
+                }
+            });
+
+            // Also mark as viewed on focus
+            window.addEventListener('focus', function() {
+                markChatAsViewed();
+            });
 
             // Ensure global WebSocket is connected
             if (window.GlobalChat && window.GlobalChat.connect) {
