@@ -307,9 +307,13 @@
                 if (saved) {
                     try {
                         var messages = JSON.parse(saved);
-                        chatMessages.innerHTML = '';
-                        
-                        // 先收集所有用户消息和char消息的索引
+                        var blocked = localStorage.getItem('chat_block_char') === 'true';
+                        var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
+                        var userAvatarUrl = localStorage.getItem('user_avatar') || '';
+                        var charAvatarUrl = localStorage.getItem('char_avatar') || '';
+                        var userAvatarHtml = userAvatarUrl ? '<img src="' + userAvatarUrl + '" class="message-avatar-img" />' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+                        var charAvatarHtml = charAvatarUrl ? '<img src="' + charAvatarUrl + '" class="message-avatar-img" />' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
                         var userMsgIndices = [];
                         var charMsgIndices = [];
                         messages.forEach(function(msg, index) {
@@ -319,139 +323,97 @@
                                 charMsgIndices.push(index);
                             }
                         });
-                        
+
+                        chatMessages.innerHTML = '';
+                        var htmlParts = [];
+
                         messages.forEach(function(msg, index) {
-                            // 检查是否需要显示时间戳（间隔超过5分钟）
                             if (index > 0) {
                                 var prevMsg = messages[index - 1];
                                 if (shouldShowTimeStamp(msg, prevMsg)) {
-                                    appendTimeStamp(new Date(msg.time));
+                                    var date = new Date(msg.time);
+                                    var weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                    var weekday = weekdayNames[date.getDay()];
+                                    var hours = date.getHours();
+                                    var minutes = date.getMinutes();
+                                    var period = hours >= 12 ? 'PM' : 'AM';
+                                    hours = hours % 12 || 12;
+                                    minutes = minutes.toString().padStart(2, '0');
+                                    htmlParts.push('<div class="message-timestamp">' + weekday + ' ' + hours + ':' + minutes + ' ' + period + '</div>');
                                 }
                             }
-                            
-                            var el = document.createElement('div');
-                            el.className = 'message ' + msg.role + ' no-animation';
-                            el.dataset.index = index;
-                            
-                            // 判断消息的位置
+
+                            var elClass = 'message ' + msg.role + ' no-animation';
+                            var userMsgCount = userMsgIndices.length;
+                            var charMsgCount = charMsgIndices.length;
+
                             if (msg.role === 'sent') {
-                                var userMsgCount = userMsgIndices.length;
                                 var posInUserMsgs = userMsgIndices.indexOf(index);
-                                
-                                if (posInUserMsgs === 0) {
-                                    el.classList.add('is-first');
-                                }
-                                if (posInUserMsgs === userMsgCount - 1) {
-                                    el.classList.add('is-last');
-                                }
-                                if (posInUserMsgs > 0 && posInUserMsgs < userMsgCount - 1) {
-                                    el.classList.add('is-middle');
-                                }
+                                if (posInUserMsgs === 0) elClass += ' is-first';
+                                if (posInUserMsgs === userMsgCount - 1) elClass += ' is-last';
+                                if (posInUserMsgs > 0 && posInUserMsgs < userMsgCount - 1) elClass += ' is-middle';
                             } else {
-                                var charMsgCount = charMsgIndices.length;
                                 var posInCharMsgs = charMsgIndices.indexOf(index);
-                                
-                                if (posInCharMsgs === 0) {
-                                    el.classList.add('is-first');
-                                }
-                                if (posInCharMsgs === charMsgCount - 1) {
-                                    el.classList.add('is-last');
-                                }
-                                if (posInCharMsgs > 0 && posInCharMsgs < charMsgCount - 1) {
-                                    el.classList.add('is-middle');
-                                }
+                                if (posInCharMsgs === 0) elClass += ' is-first';
+                                if (posInCharMsgs === charMsgCount - 1) elClass += ' is-last';
+                                if (posInCharMsgs > 0 && posInCharMsgs < charMsgCount - 1) elClass += ' is-middle';
                             }
-                            
-                            // 判断是否需要显示头像和时间（连续相同角色只显示第一个）
+
                             var showAvatarAndTime = true;
-                            if (index > 0) {
-                                var prevMsg = messages[index - 1];
-                                if (prevMsg.role === msg.role) {
-                                    showAvatarAndTime = false;
-                                }
+                            if (index > 0 && messages[index - 1].role === msg.role) {
+                                showAvatarAndTime = false;
                             }
-                            
-                            var blocked = localStorage.getItem('chat_block_char') === 'true';
-                            var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
+
                             var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
                             var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                             var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
-                            
                             var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
-                            
-                            // 根据角色设置昵称
                             var nickname = msg.role === 'sent' ? '@> <' : '@T T';
-                            
-                            // 只有第一条消息显示头像和昵称
-                            var avatarWrapperHtml, nicknameHtml;
+                            var avatarHtml, timeHtml = '';
+
                             if (showAvatarAndTime) {
-                                var timeHtml = '';
                                 if (msg.time) {
                                     var date = new Date(msg.time);
                                     var bt = formatBeijingTime(date);
                                     timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                                 }
-                                // 获取头像
-                                var avatarUrl = '';
-                                if (msg.role === 'sent') {
-                                    avatarUrl = localStorage.getItem('user_avatar') || '';
-                                } else {
-                                    avatarUrl = localStorage.getItem('char_avatar') || '';
-                                }
-                                var avatarHtml = '';
-                                if (avatarUrl) {
-                                    avatarHtml = '<img src="' + avatarUrl + '" class="message-avatar-img" />';
-                                } else {
-                                    avatarHtml = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
-                                }
-                                avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div>';
-                                nicknameHtml = '<span class="message-nickname">' + nickname + '</span>';
+                                avatarHtml = msg.role === 'sent' ? userAvatarHtml : charAvatarHtml;
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + msg.text + '</div></div></div></div>' + warningIcon + '</div>');
                             } else {
-                                avatarWrapperHtml = '<div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div>';
-                                nicknameHtml = '';
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + msg.text + '</div></div></div></div>' + warningIcon + '</div>');
                             }
-                            
-                            el.innerHTML = avatarWrapperHtml + 
-                                '<div class="message-info">' +
-                                    nicknameHtml +
-                                    quoteHtml +
-                                    '<div class="message-content-wrapper">' +
-                                        '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
-                                    '</div>' +
-                                '</div>' + 
-                                warningIcon;
-                            
-                            // Add select checkbox
-                            var checkEl = document.createElement('span');
-                            checkEl.className = 'select-check';
-                            el.insertBefore(checkEl, el.firstChild);
-                            
-                            // Long press
+                        });
+
+                        chatMessages.innerHTML = htmlParts.join('');
+
+                        document.querySelectorAll('.message').forEach(function(el) {
                             el.addEventListener('contextmenu', function(e) {
                                 e.preventDefault();
-                                showContextMenu(e, index, msg.role);
+                                var idx = parseInt(el.dataset.index);
+                                var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                                showContextMenu(e, idx, msgs[idx].role);
                             });
-                            
-                            // Also support touch long press
-                            let touchTimer;
+                            var touchTimer;
                             el.addEventListener('touchstart', function(e) {
                                 touchTimer = setTimeout(function() {
                                     e.preventDefault();
-                                    showContextMenu(e.touches[0], index, msg.role);
+                                    var idx = parseInt(el.dataset.index);
+                                    var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                                    showContextMenu(e.touches[0], idx, msgs[idx].role);
                                 }, 500);
                             });
-                            el.addEventListener('touchend', function() {
-                                clearTimeout(touchTimer);
-                            });
-                            el.addEventListener('touchmove', function() {
-                                clearTimeout(touchTimer);
-                            });
-                            
-                            chatMessages.appendChild(el);
+                            el.addEventListener('touchend', function() { clearTimeout(touchTimer); });
+                            el.addEventListener('touchmove', function() { clearTimeout(touchTimer); });
                         });
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
-                    } catch(e) {}
+
+                        requestAnimationFrame(function() {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        });
+                    } catch(e) {
+                        console.error('loadMessages error:', e);
+                    }
                 }
+            }
                 
                 function shouldShowTimeStamp(currentMsg, prevMsg) {
                     if (!prevMsg || !prevMsg.time || !currentMsg.time) return false;

@@ -34,6 +34,8 @@
             '  box-shadow:0 4px 20px rgba(0,0,0,0.15);',
             '  max-width:300px;animation:globalToastIn 0.3s ease;',
             '  pointer-events:auto;cursor:pointer;',
+            '  will-change:transform,opacity;',
+            '  contain:layout style;',
             '}',
             '.global-toast.dismiss {',
             '  animation:globalToastOut 0.25s ease forwards;',
@@ -75,6 +77,9 @@
             '@keyframes globalToastOut {',
             '  from{transform:translateX(0);opacity:1}',
             '  to{transform:translateX(100%);opacity:0}',
+            '}',
+            '.global-toast-container {',
+            '  contain:layout style;',
             '}'
         ].join('');
         document.head.appendChild(style);

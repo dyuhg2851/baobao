@@ -319,7 +319,9 @@
     '.ai-notif-popup{' +
       'position:fixed;top:calc(80px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);' +
       'width:calc(100% - 40px);max-width:400px;z-index:99999;cursor:pointer;' +
-      'animation:aiNotifIn 0.3s ease' +
+      'animation:aiNotifIn 0.3s ease;' +
+      'will-change:transform,opacity;' +
+      'contain:layout style;' +
     '}' +
     '.ai-notif-popup.dismiss{' +
       'animation:aiNotifOut 0.25s ease forwards' +
