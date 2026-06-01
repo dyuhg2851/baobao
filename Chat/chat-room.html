@@ -199,6 +199,13 @@
                 name.style.display = 'inline';
                 waiting.style.display = 'none';
             }
+            
+            function formatDate(date) {
+                var year = date.getFullYear();
+                var month = String(date.getMonth() + 1).padStart(2, '0');
+                var day = String(date.getDate()).padStart(2, '0');
+                return year + '年' + month + '月' + day + '日';
+            }
              
              function buildSystemPrompt() {
                 var prompt = '你是' + charName + '。';
@@ -227,7 +234,7 @@
                         var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
                         
                         if (diffDays >= 1) {
-                            prompt += '\n\n【重要信息：今天是你和User幸福的第' + diffDays + '天！请记住这个信息，在对话中可以自然地提及或庆祝这个特殊的日子。】';
+                            prompt += '\n\n【重要信息：今天是你和User幸福的第' + diffDays + '天！请记住这个信息。】';
                         }
                     } catch(e) {}
                 }
@@ -258,6 +265,7 @@
                 prompt += '\n8. 禁止提议或提及任何现实空间中的见面、约会、线下聚会。';
                 prompt += '\n9. 禁止提议或提及点外卖、送餐、快递等涉及现实空间配送的服务。';
                 prompt += '\n10. 禁止提及任何需要实际物理位置或空间互动的活动。';
+                prompt += '\n11. 禁止频繁提及纪念日/在一起的天数，仅在特殊日子（如一周年、生日、节日）或用户主动提问时才可提及。';
                 
                 prompt += '\n\n【对话风格】：';
                 prompt += '\n1. 语气温和、内敛、自然，带有只对恋人开放的松弛感。';

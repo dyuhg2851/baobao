@@ -234,6 +234,15 @@
     }
   }
 
+  function getCharAvatar() {
+    try {
+      var charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+      if (charData.avatar) return charData.avatar;
+    } catch(e) {}
+    // 默认头像
+    return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"%3E%3Ccircle fill="%23e0e0e0" cx="25" cy="25" r="25"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="10" x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle"%3EC%3C/text%3E%3C/svg%3E';
+  }
+  
   function showPopupSequence(data) {
     isShowingPopup = true;
     var parts = data.parts || [data.text || ''];
@@ -260,6 +269,7 @@
     if (existing) existing.remove();
 
     var nickname = getCharNickname();
+    var avatarUrl = getCharAvatar();
 
     var popup = document.createElement('div');
     popup.className = 'ai-notif-popup';
@@ -269,8 +279,13 @@
           '<span class="ai-notif-label">New Message</span>' +
           '<span class="ai-notif-close">×</span>' +
         '</div>' +
-        '<div class="ai-notif-from">' + escapeHtml(nickname) + '</div>' +
-        '<div class="ai-notif-text">' + escapeHtml(text) + '</div>' +
+        '<div class="ai-notif-content">' +
+          '<img class="ai-notif-avatar" src="' + escapeHtml(avatarUrl) + '" alt="Avatar">' +
+          '<div class="ai-notif-info">' +
+            '<div class="ai-notif-from">' + escapeHtml(nickname) + '</div>' +
+            '<div class="ai-notif-text">' + escapeHtml(text) + '</div>' +
+          '</div>' +
+        '</div>' +
       '</div>';
 
     popup.querySelector('.ai-notif-close').onclick = function(e) {
@@ -371,6 +386,15 @@
     '}' +
     '.ai-notif-close{' +
       'font-size:18px;color:#bbb;line-height:1;padding:0 2px;background:none;border:none;cursor:pointer' +
+    '}' +
+    '.ai-notif-content{' +
+      'display:flex;align-items:flex-start;gap:10px' +
+    '}' +
+    '.ai-notif-avatar{' +
+      'width:40px;height:40px;border-radius:50%;object-fit:cover;flex-shrink:0' +
+    '}' +
+    '.ai-notif-info{' +
+      'flex:1;min-width:0' +
     '}' +
     '.ai-notif-from{' +
       'font-size:12px;color:#666;margin-bottom:6px;font-weight:500' +
