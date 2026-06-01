@@ -288,6 +288,19 @@
                 prompt += '\n3. 回复不要太简短，让对话更有活人感，可以适当展开话题。';
                 prompt += '\n4. **绝对禁止使用任何表情符号（emoji）**，保持文字的简洁自然。';
                 
+                var emojiPackRaw = localStorage.getItem('emoji_pack');
+                if (emojiPackRaw) {
+                    try {
+                        var emojiPackData = JSON.parse(emojiPackRaw);
+                        var emojiNames = emojiPackData.map(function(e) { return e.name || ''; }).filter(function(n) { return n; });
+                        if (emojiNames.length > 0) {
+                            prompt += '\n\n当前可用的表情包名称：' + emojiNames.join('、') + '。';
+                            prompt += '\n如果你想发送表情包，请直接在回复中使用格式 [[emoji:表情名]]，系统会根据名称匹配对应的图片。不要使用普通 emoji 符号。';
+                            prompt += '\n只在对话语境需要时才发送表情包，不要每次回复都插入表情包；你的选择应基于人设、对话内容、情绪语境和图片含义。';
+                        }
+                    } catch (e) {}
+                }
+
                 prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话。';
                 
                 // Include memory
@@ -380,7 +393,7 @@
                             var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
                             var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                             var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
-                            var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
+var quoteHtml = renderQuoteHtml(msg.quote);
                             var nickname = msg.role === 'sent' ? '@> <' : '@T T';
                             var avatarHtml, timeHtml = '';
 
@@ -391,9 +404,9 @@
                                     timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                                 }
                                 avatarHtml = msg.role === 'sent' ? userAvatarHtml : charAvatarHtml;
-                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + msg.text + '</div></div></div></div>' + warningIcon + '</div>');
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
                             } else {
-                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + msg.text + '</div></div></div></div>' + warningIcon + '</div>');
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
                             }
                         });
 
@@ -553,7 +566,7 @@
                 var showWarning = (msg.role === 'received' && blocked && msgTime >= blockedAt && blockedAt > 0);
                 var warningIcon = showWarning ? '<span class="block-warning">!</span>' : '';
 
-                var quoteHtml = msg.quote ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + msg.quote.text + '</span></div>' : '';
+                var quoteHtml = renderQuoteHtml(msg.quote);
 
                 var nickname = msg.role === 'sent' ? '@> <' : '@T T';
 
@@ -589,7 +602,7 @@
                         nicknameHtml +
                         quoteHtml +
                         '<div class="message-content-wrapper">' +
-                            '<div class="message-content"><div class="message-text">' + msg.text + '</div></div>' +
+                            '<div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div>' +
                         '</div>' +
                     '</div>' +
                     warningIcon;
@@ -631,30 +644,74 @@
             function buildApiMessages() {
                 var msgs = [{ role: 'system', content: buildSystemPrompt() }];
                 var saved = localStorage.getItem(STORAGE_KEY);
-                var hasHistory = false;
+                var historyMessages = [];
                 if (saved) {
                     try {
                         var history = JSON.parse(saved);
-                        if (history.length > 0) hasHistory = true;
-                        history.forEach(function(m) {
+                        var totalLength = 0;
+                        for (var i = history.length - 1; i >= 0; i--) {
+                            var m = history[i];
                             var content = m.text;
                             if (m.quote) {
                                 content = '[Quote: ' + m.quote.sender + '] ' + m.quote.text + '\n\n' + m.text;
                             }
-                            msgs.push({
+                            var entry = {
                                 role: m.role === 'sent' ? 'user' : 'assistant',
                                 content: content
-                            });
-                        });
-                    } catch(e) {}
+                            };
+                            var entryLength = content.length;
+                            if (historyMessages.length >= 12 || totalLength + entryLength > 3200) {
+                                break;
+                            }
+                            historyMessages.unshift(entry);
+                            totalLength += entryLength;
+                        }
+                    } catch (e) {
+                        historyMessages = [];
+                    }
                 }
-                // 无历史消息时，用日常分享提示触发AI
-                if (!hasHistory) {
+                if (historyMessages.length === 0) {
                     msgs.push({ role: 'user', content: '请根据人设分享自己的日常及感想感受' });
                 }
-                return msgs;
+                return msgs.concat(historyMessages);
             }
-            
+
+            function escapeHtml(str) {
+                return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            }
+
+            function renderMessageText(text) {
+                var escaped = escapeHtml(text || '');
+                var emojiPack = [];
+                try {
+                    emojiPack = JSON.parse(localStorage.getItem('emoji_pack') || '[]');
+                } catch (e) {
+                    emojiPack = [];
+                }
+                // 如果文本本身是一个 URL，直接渲染为图片
+                var urlOnlyMatch = (text || '').trim().match(/^https?:\/\/[\S]+$/i);
+                if (urlOnlyMatch) {
+                    return '<img class="message-image-inline" src="' + escapeHtml(urlOnlyMatch[0]) + '" alt="image" />';
+                }
+
+                escaped = escaped.replace(/\[\[emoji:([^\]]+)\]\]/gi, function(match, name) {
+                    var targetName = name.trim();
+                    var found = emojiPack.find(function(item) {
+                        return item.name === targetName;
+                    });
+                    if (!found) {
+                        return '[emoji:' + escapeHtml(targetName) + ']';
+                    }
+                    return '<span class="emoji-inline" title="' + escapeHtml(found.name) + '"><img src="' + escapeHtml(found.url) + '" alt="' + escapeHtml(found.name) + '"><span>' + escapeHtml(found.name) + '</span></span>';
+                });
+                return escaped.replace(/\r?\n/g, '<br>');
+            }
+
+            function renderQuoteHtml(quote) {
+                if (!quote || !quote.text) return '';
+                return '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + escapeHtml(quote.text) + '</span></div>';
+            }
+
             function callApi(userText, requestId, callback) {
                 var apiConfig = getApiConfig();
                 if (!apiConfig || !apiConfig.url || !apiConfig.key) {
@@ -702,39 +759,19 @@
                         }
                     });
                     
-                    // 将回复按换行分割成多条消息
-                    var replyParts = reply.split('\n').filter(function(part) {
-                        return part.trim().length > 0;
-                    });
-                    
-                    // 如果只有一条，尝试按句号分割
-                    if (replyParts.length === 1 && reply.length > 100) {
-                        replyParts = reply.split(/[。！？]+/).filter(function(part) {
-                            return part.trim().length > 0;
-                        });
+                    // 将回复按换行或句子分割成多条消息
+                    function splitReplyParts(text) {
+                        var lines = text.split(/\r?\n/).map(function(part) { return part.trim(); }).filter(Boolean);
+                        if (lines.length >= 2) return lines;
+                        var sentences = text.match(/[^。！？]+[。！？]*/g) || [];
+                        sentences = sentences.map(function(part) { return part.trim(); }).filter(Boolean);
+                        if (sentences.length >= 2) return sentences;
+                        return [text.trim()];
                     }
-                    
-                    // 限制消息数量在2-5条之间
-                    if (replyParts.length < 2) {
-                        var text = replyParts[0] || reply;
-                        replyParts = [];
-                        var sentences = text.split(/([。！？]+)/).filter(function(p) { return p.trim(); });
-                        var current = '';
-                        sentences.forEach(function(s) {
-                            if (current.length + s.length < 50) {
-                                current += s;
-                            } else {
-                                if (current) replyParts.push(current);
-                                current = s;
-                            }
-                        });
-                        if (current) replyParts.push(current);
-                        if (replyParts.length < 2) {
-                            var half = Math.ceil(text.length / 2);
-                            replyParts = [text.slice(0, half), text.slice(half)];
-                        }
-                    } else if (replyParts.length > 5) {
-                        replyParts = replyParts.slice(0, 5);
+
+                    var replyParts = splitReplyParts(reply);
+                    if (replyParts.length > 5) {
+                        replyParts = replyParts.slice(0, 4).concat([replyParts.slice(4).join(' ')]);
                     }
                     
                     // 保存通知（如果当前正在 chat-room 中，则直接将其标为已读，避免离开后重复弹窗）
@@ -814,8 +851,30 @@
                         // 计算这条消息的延迟：基础延迟 + 字符数 * 字符延迟
                         var partDelay = baseDelay + part.trim().length * charDelay;
                         
+                        // 处理如果 AI 只发送 [[emoji:名字]]，则保存为图片 URL（只在 AI 发送路径）
+                        var rawPart = part.trim();
+                        var contentToSave = rawPart;
+                        var emojiOnlyMatch = rawPart.match(/^\[\[emoji:([^\]]+)\]\]$/i);
+                        if (emojiOnlyMatch) {
+                            var targetName = emojiOnlyMatch[1].trim();
+                            var pack = [];
+                            try { pack = JSON.parse(localStorage.getItem('emoji_pack') || '[]'); } catch(e) { pack = []; }
+                            var found = pack.find(function(item) { return item && item.name === targetName; });
+                            if (!found) {
+                                try { var legacy = JSON.parse(localStorage.getItem('user_emojis') || '[]'); } catch(e) { legacy = []; }
+                                found = legacy.find(function(item) { return (typeof item === 'string' ? item === targetName : (item && item.name === targetName)); });
+                                if (found && typeof found === 'string') {
+                                    // legacy string-only entry, no URL
+                                    found = null;
+                                }
+                            }
+                            if (found && found.url) {
+                                contentToSave = found.url;
+                            }
+                        }
+
                         // 只有第一条回复消息带引用
-                        saveMessage(part.trim(), 'received', index === 0 ? replyQuote : null);
+                        saveMessage(contentToSave, 'received', index === 0 ? replyQuote : null);
                         var replyEl = document.createElement('div');
                         replyEl.className = 'message received new-message';
                         
@@ -848,17 +907,16 @@
                             nicknameHtml = '';
                         }
                         
-                        var quoteHtml = (index === 0 && replyQuote) ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + replyQuote.text + '</span></div>' : '';
-                        
+                        var quoteHtml = (index === 0 && replyQuote) ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + escapeHtml(replyQuote.text) + '</span></div>' : '';
+
                         replyEl.innerHTML = avatarWrapperHtml + 
                             '<div class="message-info">' +
                                 nicknameHtml +
                                 quoteHtml +
                                 '<div class="message-content-wrapper">' +
-                                    '<div class="message-content"><div class="message-text">' + part.trim() + '</div></div>' +
+                                    '<div class="message-content"><div class="message-text">' + renderMessageText(contentToSave) + '</div></div>' +
                                 '</div>' +
                             '</div>';
-                        
                         if (localStorage.getItem('chat_block_char') === 'true') {
                             var blockedAt = parseInt(localStorage.getItem('chat_blocked_at') || '0');
                             if (Date.now() >= blockedAt) {
@@ -1144,52 +1202,71 @@
             function loadEmojis() {
                 var grid = document.getElementById('emoji-grid');
                 var empty = document.getElementById('emoji-empty');
-                var emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]');
-                
+                var emojis = [];
+                try {
+                    emojis = JSON.parse(localStorage.getItem('emoji_pack') || '[]');
+                } catch (e) {
+                    emojis = [];
+                }
+                if (!emojis.length) {
+                    try {
+                        emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]').map(function(item) {
+                            return typeof item === 'string' ? { name: item, url: '' } : item;
+                        });
+                    } catch (e) {
+                        emojis = [];
+                    }
+                }
+
                 grid.innerHTML = '';
                 if (emojis.length === 0) {
                     empty.style.display = 'block';
                     return;
                 }
                 empty.style.display = 'none';
-                
+
                 emojis.forEach(function(emoji, index) {
                     var item = document.createElement('div');
                     item.className = 'emoji-item';
                     item.dataset.index = index;
-                    item.textContent = emoji.char || emoji;
-                    
-                    // Tap to insert
+                    item.innerHTML = '<img src="' + escapeHtml(emoji.url) + '" alt="' + escapeHtml(emoji.name) + '"><span class="emoji-name">' + escapeHtml(emoji.name) + '</span>';
+
                     item.addEventListener('click', function() {
                         var input = document.getElementById('message-input');
-                        input.value += this.textContent;
-                        input.focus();
+                        var placeholder = '[[emoji:' + emoji.name + ']]';
+                        if (input.value.trim().length === 0) {
+                            saveMessage(placeholder, 'sent', currentQuote);
+                            loadMessages();
+                            currentQuote = null;
+                        } else {
+                            input.value = input.value.trim() + ' ' + placeholder;
+                            input.focus();
+                        }
                         document.getElementById('emoji-picker').style.display = 'none';
                     });
-                    
-                    // Long press for delete/reorder
-                    var longTimer;
-                    item.addEventListener('touchstart', function(e) {
-                        longTimer = setTimeout(function() {
-                            e.preventDefault();
-                            showEmojiMenu(index);
-                        }, 500);
-                    });
-                    item.addEventListener('touchend', function() { clearTimeout(longTimer); });
-                    item.addEventListener('touchmove', function() { clearTimeout(longTimer); });
-                    item.addEventListener('contextmenu', function(e) {
-                        e.preventDefault();
-                        showEmojiMenu(index);
-                    });
-                    
+
                     grid.appendChild(item);
                 });
             }
             
             function showEmojiMenu(index) {
-                var emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]');
+                var emojis = [];
+                try {
+                    emojis = JSON.parse(localStorage.getItem('emoji_pack') || '[]');
+                } catch (e) {
+                    emojis = [];
+                }
+                if (!emojis.length) {
+                    try {
+                        emojis = JSON.parse(localStorage.getItem('user_emojis') || '[]').map(function(item) {
+                            return typeof item === 'string' ? { name: item, url: '' } : item;
+                        });
+                    } catch (e) {
+                        emojis = [];
+                    }
+                }
                 if (index < 0 || index >= emojis.length) return;
-                var emojiChar = emojis[index].char || emojis[index];
+                var emojiChar = emojis[index].name || emojis[index].url || '表情';
                 
                 var action = prompt(
                     'Emoji: ' + emojiChar + '\n\n' +
@@ -1201,14 +1278,14 @@
                 
                 if (action.toLowerCase() === 'delete') {
                     emojis.splice(index, 1);
-                    localStorage.setItem('user_emojis', JSON.stringify(emojis));
+                    localStorage.setItem('emoji_pack', JSON.stringify(emojis));
                     loadEmojis();
                 } else {
                     var newPos = parseInt(action);
                     if (!isNaN(newPos) && newPos >= 1 && newPos <= emojis.length) {
                         var item = emojis.splice(index, 1)[0];
                         emojis.splice(newPos - 1, 0, item);
-                        localStorage.setItem('user_emojis', JSON.stringify(emojis));
+                        localStorage.setItem('emoji_pack', JSON.stringify(emojis));
                         loadEmojis();
                     }
                 }
@@ -1278,10 +1355,14 @@
                 });
             }
 
-            window.addEventListener('pagehide', function() {
-                if (localStorage.getItem('pending_ai_request')) {
+            window.addEventListener('visibilitychange', function() {
+                if (document.hidden && localStorage.getItem('pending_ai_request')) {
                     localStorage.removeItem('processing_on_chatroom');
                 }
+            });
+
+            window.addEventListener('pagehide', function() {
+                localStorage.removeItem('processing_on_chatroom');
                 markChatAsViewed();
             });
             

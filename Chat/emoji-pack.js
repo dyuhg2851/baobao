@@ -157,10 +157,10 @@ function parseEmojiInput(raw) {
     const emojis = [];
 
     tokens.forEach(token => {
-        const parts = token.split(/[:：]/);
-        if (parts.length >= 2) {
-            const url = parts.pop().trim();
-            const name = parts.join('：').trim() || `表情${emojiPack.length + emojis.length + 1}`;
+        const match = token.match(/^(.+?)[：:](.+)$/);
+        if (match) {
+            const name = match[1].trim() || `表情${emojiPack.length + emojis.length + 1}`;
+            const url = match[2].trim();
             appendEmoji(emojis, name, url);
             return;
         }

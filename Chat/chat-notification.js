@@ -17,13 +17,24 @@
     }, CHECK_INTERVAL);
 
     document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        checkPending();
-        checkNotification();
+      if (document.hidden) {
+        if (localStorage.getItem('pending_ai_request')) {
+          localStorage.removeItem('processing_on_chatroom');
+        }
+        return;
       }
+
+      if (localStorage.getItem('pending_ai_request')) {
+        localStorage.removeItem('processing_on_chatroom');
+      }
+      checkPending();
+      checkNotification();
     });
 
     window.addEventListener('focus', function() {
+      if (localStorage.getItem('pending_ai_request')) {
+        localStorage.removeItem('processing_on_chatroom');
+      }
       checkPending();
       checkNotification();
     });
@@ -72,8 +83,12 @@
       if (processingStamp) {
         var elapsed = Date.now() - parseInt(processingStamp);
         if (isOnChatRoom()) {
-          if (elapsed < 30000) {
+          if (!document.hidden && elapsed < 30000) {
             console.log('Chatroom is processing, skipping background check');
+            return;
+          }
+          if (document.hidden && elapsed < 5000) {
+            console.log('Hidden chatroom may still be processing, waiting briefly');
             return;
           }
         } else if (elapsed < 1000) {
