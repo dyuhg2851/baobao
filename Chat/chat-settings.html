@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="chat-settings.css">
     <script src="moment-api.js" defer></script>
     <script src="chat-notification.js" defer></script>
+    <script src="global-ws-manager.js"></script>
     <title>Chat Settings</title>
 </head>
 <body>
@@ -48,8 +49,11 @@
         <!-- Memory -->
         <div class="card">
             <h2>记忆</h2>
+            <!-- 总结提示词输入框（隐藏，供用户后续配置） -->
+            <input type="hidden" id="memory-summary-prompt" value="">
+            
             <div class="button-group">
-                <button id="btn-summarize" class="btn btn-save">Summarize & Save Memory</button>
+                <button id="btn-summarize" class="btn btn-save">总结记忆</button>
             </div>
             
             <div id="memory-result" class="memory-result" style="display:none">
@@ -63,6 +67,23 @@
             
             <div class="button-group" style="margin-top: 16px;">
                 <button id="btn-view-memory" class="btn btn-save">View Memory</button>
+            </div>
+        </div>
+
+        <!-- 总结记忆弹窗 -->
+        <div id="summary-modal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>总结记忆</h3>
+                    <button class="modal-close-btn" id="modal-close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <textarea id="summary-textarea" class="summary-textarea" rows="6" placeholder="正在生成总结..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button id="summary-cancel" class="btn btn-cancel">Cancel</button>
+                    <button id="summary-confirm" class="btn btn-confirm">Confirm</button>
+                </div>
             </div>
         </div>
 
@@ -161,7 +182,7 @@
                 const chatData = JSON.parse(localStorage.getItem('chat_messages') || '[]');
                 
                 if (chatData.length === 0) {
-                    alert('No chat history to summarize.');
+                    alert('没有聊天记录可总结。');
                     return;
                 }
 
@@ -171,31 +192,78 @@
                     (c.role === 'sent' ? 'User' : nickname) + ': ' + c.text
                 ).join('\n');
 
-                const defaultPrompt = 'Summarize the key information, personality traits, preferences, and relationship dynamics revealed in this conversation. Output as concise character memory notes.';
+                // 默认提示词：提炼重点不要缺失情感（用户后续可通过修改memory-summary-prompt输入框来自定义）
+                const defaultPrompt = '请提炼以下对话的重点内容，不要缺失情感信息。输出简洁的记忆笔记，包括关键信息、性格特点、偏好和关系动态。';
                 const finalPrompt = summaryPrompt || defaultPrompt;
 
-                document.getElementById('btn-summarize').textContent = 'Summarizing...';
-                document.getElementById('btn-summarize').disabled = true;
+                // 显示弹窗
+                const modal = document.getElementById('summary-modal');
+                const textarea = document.getElementById('summary-textarea');
+                const confirmBtn = document.getElementById('summary-confirm');
+                
+                modal.style.display = 'flex';
+                textarea.value = '正在生成总结...';
+                textarea.disabled = true;
+                confirmBtn.disabled = true;
 
                 try {
                     const result = await callChatAPI([
                         { role: 'system', content: finalPrompt },
                         { role: 'user', content: 'Conversation:\n' + chatText }
-                    ], { maxTokens: 300, temperature: 0.7 });
+                    ], { maxTokens: 500, temperature: 0.7 });
 
                     if (result) {
-                        document.getElementById('memory-result').style.display = 'block';
-                        document.getElementById('memory-content').value = result;
+                        textarea.value = result;
                     } else {
-                        alert('Failed to summarize. Check API settings.');
+                        textarea.value = '总结失败，请检查API设置。';
                     }
                 } catch (err) {
-                    alert('Failed to summarize: ' + err.message);
+                    textarea.value = '总结失败: ' + err.message;
                 } finally {
-                    document.getElementById('btn-summarize').textContent = 'Summarize & Save Memory';
-                    document.getElementById('btn-summarize').disabled = false;
+                    textarea.disabled = false;
+                    confirmBtn.disabled = false;
                 }
             });
+
+            // 弹窗关闭按钮
+            document.getElementById('modal-close-btn').addEventListener('click', function() {
+                closeSummaryModal();
+            });
+
+            // Cancel按钮
+            document.getElementById('summary-cancel').addEventListener('click', function() {
+                closeSummaryModal();
+            });
+
+            // Confirm按钮
+            document.getElementById('summary-confirm').addEventListener('click', function() {
+                const summaryText = document.getElementById('summary-textarea').value;
+                if (summaryText && summaryText.trim()) {
+                    var memoryData = {
+                        content: summaryText.trim(),
+                        timestamp: Date.now()
+                    };
+                    localStorage.setItem('char_memory', JSON.stringify(memoryData));
+                    document.getElementById('memory-content').value = summaryText.trim();
+                    document.getElementById('memory-result').style.display = 'block';
+                    closeSummaryModal();
+                    alert('记忆已保存！');
+                } else {
+                    alert('请输入内容');
+                }
+            });
+
+            // 点击遮罩关闭弹窗
+            document.getElementById('summary-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeSummaryModal();
+                }
+            });
+
+            function closeSummaryModal() {
+                document.getElementById('summary-modal').style.display = 'none';
+                document.getElementById('summary-textarea').value = '';
+            }
 
             // Memory save / clear
             document.getElementById('btn-memory-save').addEventListener('click', function() {
