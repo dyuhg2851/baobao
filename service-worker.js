@@ -52,19 +52,25 @@ self.addEventListener('fetch', function(event) {
 // Background music playback
 let audio = null;
 let audioState = null;
+let progressInterval = null;
 
 self.addEventListener('message', function(event) {
     if (event.data.type === 'PLAY_MUSIC') {
         audioState = event.data.state;
         if (!audio) {
             audio = new Audio();
+            audio.loop = false; // 不循环，由音乐播放器控制
         }
-        audio.src = audioState.currentSong.url;
+        audio.src = audioState.currentSong.musicUrl;
         audio.currentTime = audioState.currentTime;
-        audio.loop = true;
-        audio.play();
+        audio.play().then(() => {
+            console.log('Service Worker 开始后台播放');
+        }).catch(err => {
+            console.error('Service Worker 播放失败:', err);
+        });
 
-        setInterval(function() {
+        if (progressInterval) clearInterval(progressInterval);
+        progressInterval = setInterval(function() {
             if (audio && !audio.paused) {
                 self.clients.matchAll().then(function(clients) {
                     clients.forEach(function(client) {
@@ -88,6 +94,10 @@ self.addEventListener('message', function(event) {
             audio.pause();
             audio.src = '';
             audio = null;
+        }
+        if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
         }
     } else if (event.data.type === 'PUSH_SUBSCRIBE') {
         subscribeToPush(event.data.endpoint, event.data.keys);

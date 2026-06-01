@@ -292,6 +292,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 更新播放列表
         updatePlaylist();
+        
+        // 更新媒体会话信息
+        updateMediaSession();
     }
 
     // 加载歌词
@@ -330,6 +333,63 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
+    // 更新媒体会话
+    function updateMediaSession() {
+        if ('mediaSession' in navigator) {
+            const song = songs[currentSongIndex];
+            if (song) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.name,
+                    artist: song.artist,
+                    artwork: song.cover ? [{ src: song.cover }] : []
+                });
+                
+                // 设置媒体控制动作
+                navigator.mediaSession.setActionHandler('play', function() {
+                    if (!isPlaying && songs.length > 0) {
+                        audio.play();
+                        isPlaying = true;
+                        playBtn.classList.add('playing');
+                        vinylRecord.classList.add('playing');
+                        progressInterval = setInterval(updateProgress, 100);
+                    }
+                });
+                
+                navigator.mediaSession.setActionHandler('pause', function() {
+                    if (isPlaying) {
+                        audio.pause();
+                        isPlaying = false;
+                        playBtn.classList.remove('playing');
+                        vinylRecord.classList.remove('playing');
+                        clearInterval(progressInterval);
+                    }
+                });
+                
+                navigator.mediaSession.setActionHandler('previoustrack', function() {
+                    playPrev();
+                });
+                
+                navigator.mediaSession.setActionHandler('nexttrack', function() {
+                    playNext();
+                });
+                
+                navigator.mediaSession.setActionHandler('seekto', function(event) {
+                    if (event.seekTime && audio.duration) {
+                        audio.currentTime = event.seekTime;
+                        updateProgress();
+                    }
+                });
+            }
+        }
+    }
+    
+    // 更新媒体会话播放状态
+    function updateMediaSessionPlaybackState() {
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+        }
+    }
+    
     // 解析歌词
     function parseLyrics(text) {
         console.log('开始解析歌词');
@@ -406,6 +466,7 @@ document.addEventListener('DOMContentLoaded', function() {
             progressInterval = setInterval(updateProgress, 100);
         }
         isPlaying = !isPlaying;
+        updateMediaSessionPlaybackState();
     }
 
     // 上一首
@@ -694,8 +755,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('currentSongIndex:', currentSongIndex);
         console.log('isPlaying:', isPlaying);
         
-        // 保存音频状态，确保返回主屏幕后音乐继续播放（不显示卡片）
-        if (songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
+        // 如果正在播放，将音频交给 Service Worker 继续播放
+        if (isPlaying && songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
             const currentSong = songs[currentSongIndex];
             console.log('当前歌曲:', currentSong);
             
@@ -705,8 +766,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 isPlaying: isPlaying,
                 listenTime: listenTime
             };
+            
+            // 保存到 localStorage
             localStorage.setItem('music_audio_state', JSON.stringify(audioState));
+            
+            // 交给 Service Worker 继续播放
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'PLAY_MUSIC',
+                    state: audioState
+                });
+            }
         }
+        
         window.location.href = '../index.html';
     });
     
@@ -833,6 +905,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+        // 确保媒体会话状态正确
+        updateMediaSessionPlaybackState();
     });
 
     // 初始化
