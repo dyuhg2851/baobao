@@ -254,6 +254,16 @@
                     window.location.replace('chat-room.html');
                 });
             }
+            
+            // WebSocket消息处理 - 接收新消息时更新聊天列表
+            window.GlobalChatHandlers = {
+                onMessage: function(data) {
+                    if (data.type === 'new_message') {
+                        console.log('Chat list received new message:', data);
+                        loadLastMessage();
+                    }
+                }
+            };
         });
         
         function initCalendar() {

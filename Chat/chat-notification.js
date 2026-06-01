@@ -4,6 +4,8 @@
   var executing = false;
   var swipeY = 0;
   var isSwiping = false;
+  var isShowingPopup = false;
+  var currentNotifId = null;
 
   function init() {
     if (interval) return;
@@ -189,11 +191,13 @@
 
   function checkNotification() {
     if (isOnChatRoom()) return;
+    if (isShowingPopup) return;
     var notifData = localStorage.getItem('ai_notification');
     if (!notifData) return;
     try {
       var notif = JSON.parse(notifData);
       if (notif.shown) return;
+      if (currentNotifId === notif.id) return;
       if (Date.now() - notif.timestamp > 600000) {
         localStorage.removeItem('ai_notification');
         return;
@@ -203,9 +207,12 @@
       var chatViewedTime = localStorage.getItem('chat_viewed_time');
       if (chatViewedTime && parseInt(chatViewedTime) > notif.timestamp) {
         console.log('User already viewed chat, skipping popup');
+        notif.shown = true;
+        localStorage.setItem('ai_notification', JSON.stringify(notif));
         return;
       }
 
+      currentNotifId = notif.id;
       showPopupSequence(notif);
     } catch(e) {
       localStorage.removeItem('ai_notification');
@@ -228,6 +235,7 @@
   }
 
   function showPopupSequence(data) {
+    isShowingPopup = true;
     var parts = data.parts || [data.text || ''];
     if (parts.length === 0) parts = [''];
     parts.forEach(function(part, i) {
@@ -240,6 +248,11 @@
         }
       }, i * 2000);
     });
+    
+    setTimeout(function() {
+      isShowingPopup = false;
+      currentNotifId = null;
+    }, parts.length * 2000 + 3000);
   }
 
   function showPopup(text) {
@@ -263,11 +276,15 @@
     popup.querySelector('.ai-notif-close').onclick = function(e) {
       e.stopPropagation();
       popup.classList.add('dismiss');
-      setTimeout(function() { if (popup.parentNode) popup.remove(); }, 250);
+      setTimeout(function() { 
+        if (popup.parentNode) popup.remove();
+        markNotificationAsShown();
+      }, 250);
     };
 
     popup.onclick = function(e) {
       if (e.target.closest('.ai-notif-close')) return;
+      markNotificationAsShown();
       window.location.href = getChatRoomUrl();
     };
 
@@ -303,9 +320,25 @@
     setTimeout(function() {
       if (popup.parentNode) {
         popup.classList.add('dismiss');
-        setTimeout(function() { if (popup.parentNode) popup.remove(); }, 250);
+        setTimeout(function() { 
+          if (popup.parentNode) popup.remove();
+          markNotificationAsShown();
+        }, 250);
       }
     }, 2000);
+  }
+
+  function markNotificationAsShown() {
+    var notifData = localStorage.getItem('ai_notification');
+    if (notifData) {
+      try {
+        var notif = JSON.parse(notifData);
+        notif.shown = true;
+        localStorage.setItem('ai_notification', JSON.stringify(notif));
+      } catch(e) {}
+    }
+    isShowingPopup = false;
+    currentNotifId = null;
   }
 
   function escapeHtml(text) {
