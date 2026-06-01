@@ -106,11 +106,7 @@ self.addEventListener('message', function(event) {
 
 // Push notification subscription
 function subscribeToPush(endpoint, keys) {
-    var subscriptionData = {
-        endpoint: endpoint,
-        keys: keys
-    };
-    localStorage.setItem('push_subscription', JSON.stringify(subscriptionData));
+    console.log('Service Worker received PUSH_SUBSCRIBE event. Subscription is managed in page context.');
 }
 
 // Push event handler - received push notification

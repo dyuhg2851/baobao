@@ -18,7 +18,7 @@
         }
 
         body {
-            background-color: #ffffff;
+            background: radial-gradient(circle at center, #f8fbff 0%, #f2f4f8 45%, #ffffff 100%);
             display: -webkit-box;
             display: -webkit-flex;
             display: flex;
@@ -39,11 +39,6 @@
         }
 
         .splash-container {
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-
-        .splash-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -59,10 +54,12 @@
             -webkit-justify-content: center;
             justify-content: center;
             z-index: 9999;
-            background: #ffffff;
+            background: transparent;
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             will-change: opacity, transform;
+            flex-direction: column;
+            gap: 18px;
         }
 
         .logo-wrapper {
@@ -120,6 +117,41 @@
             z-index: 1;
             -webkit-animation: scaleIn 0.8s ease-out forwards;
             animation: scaleIn 0.8s ease-out forwards;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            color: #333333;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: slideIn 0.9s ease-out 0.6s forwards;
+        }
+
+        @-webkit-keyframes slideIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: translateY(10px);
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                -webkit-transform: translateY(10px);
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                -webkit-transform: translateY(0);
+                transform: translateY(0);
+            }
         }
 
         @-webkit-keyframes pulse {
@@ -190,27 +222,59 @@
         @-webkit-keyframes fadeOut {
             0% {
                 opacity: 1;
-                -webkit-transform: scale(1);
-                transform: scale(1);
+                -webkit-transform: translateY(0) scale(1);
+                transform: translateY(0) scale(1);
             }
             100% {
                 opacity: 0;
-                -webkit-transform: scale(0.8);
-                transform: scale(0.8);
+                -webkit-transform: translateY(-20px) scale(0.95);
+                transform: translateY(-20px) scale(0.95);
             }
         }
 
         @keyframes fadeOut {
             0% {
                 opacity: 1;
-                -webkit-transform: scale(1);
-                transform: scale(1);
+                -webkit-transform: translateY(0) scale(1);
+                transform: translateY(0) scale(1);
             }
             100% {
                 opacity: 0;
-                -webkit-transform: scale(0.8);
-                transform: scale(0.8);
+                -webkit-transform: translateY(-20px) scale(0.95);
+                transform: translateY(-20px) scale(0.95);
             }
+        }
+
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { -webkit-transform: rotate(0deg); transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+
+        .logo-circle.large {
+            animation-name: pulse, spin;
+            animation-duration: 2s, 24s;
+            animation-timing-function: ease-in-out, linear;
+            animation-iteration-count: infinite, infinite;
+        }
+
+        .logo-circle.medium {
+            animation-name: pulse, spin;
+            animation-duration: 1.5s, 18s;
+            animation-timing-function: ease-in-out, linear;
+            animation-iteration-count: infinite, infinite;
+            animation-direction: reverse;
+        }
+
+        .logo-circle.small {
+            animation-name: pulse, spin;
+            animation-duration: 1s, 14s;
+            animation-timing-function: ease-in-out, linear;
+            animation-iteration-count: infinite, infinite;
         }
 
         @media (max-width: 480px) {
@@ -250,11 +314,20 @@
             <div class="logo-circle small"></div>
             <div class="logo-inner"></div>
         </div>
+        <div class="logo-text">晕倒料理</div>
     </div>
 
     <script>
         (function() {
-            window.location.href = 'index.html';
+            var splash = document.getElementById('splash');
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    splash.classList.add('fade-out');
+                }, 1600);
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 2200);
+            });
         })();
     </script>
 </body>

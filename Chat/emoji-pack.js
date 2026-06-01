@@ -27,7 +27,7 @@ function renderEmojis() {
     grid.innerHTML = '';
 
     if (emojiPack.length === 0) {
-        grid.innerHTML = '<div class="empty-state">暂无表情包<br>点击右上角 + 添加</div>';
+        grid.innerHTML = '<div class="empty-state"><span>暂无表情包</span><span>点击右上角 + 添加</span></div>';
         return;
     }
 
@@ -70,6 +70,7 @@ function setupEventListeners() {
 
     document.getElementById('emoji-input').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
+            e.preventDefault();
             addEmoji();
         }
     });
@@ -136,39 +137,45 @@ function hideDeleteButton() {
 
 function addEmoji() {
     const input = document.getElementById('emoji-input').value.trim();
-    
     if (!input) {
         return;
     }
 
-    const parts = input.split('：');
-    let name, url;
-
-    if (parts.length >= 2) {
-        name = parts.slice(0, -1).join('：').trim();
-        url = parts[parts.length - 1].trim();
-    } else {
-        const colonIndex = input.indexOf(':');
-        if (colonIndex !== -1) {
-            name = input.substring(0, colonIndex).trim();
-            url = input.substring(colonIndex + 1).trim();
-        } else {
-            name = '表情' + (emojiPack.length + 1);
-            url = input;
-        }
-    }
-
-    if (!url) {
+    const newEmojis = parseEmojiInput(input);
+    if (newEmojis.length === 0) {
         return;
     }
 
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        url = 'https://' + url;
-    }
-
-    emojiPack.push({ name, url });
+    emojiPack.push(...newEmojis);
     saveEmojiPack();
     renderEmojis();
-    
     document.getElementById('add-modal').classList.remove('show');
+}
+
+function parseEmojiInput(raw) {
+    const tokens = raw.split(/[\s,，;；]+/).filter(Boolean);
+    const emojis = [];
+
+    tokens.forEach(token => {
+        const parts = token.split(/[:：]/);
+        if (parts.length >= 2) {
+            const url = parts.pop().trim();
+            const name = parts.join('：').trim() || `表情${emojiPack.length + emojis.length + 1}`;
+            appendEmoji(emojis, name, url);
+            return;
+        }
+
+        appendEmoji(emojis, `表情${emojiPack.length + emojis.length + 1}`, token);
+    });
+
+    return emojis;
+}
+
+function appendEmoji(list, name, url) {
+    if (!url) return;
+    let normalized = url.trim();
+    if (!normalized.startsWith('http://') && !normalized.startsWith('https://')) {
+        normalized = 'https://' + normalized;
+    }
+    list.push({ name, url: normalized });
 }

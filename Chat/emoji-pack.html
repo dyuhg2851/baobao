@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="emoji-pack.css">
     <script src="chat-notification.js" defer></script>
+    <script src="push-manager.js" defer></script>
     <script src="global-ws-manager.js"></script>
     <title>Emoji Pack</title>
 </head>
@@ -26,7 +27,7 @@
     <div class="modal" id="add-modal">
         <div class="modal-content">
             <h2>添加表情</h2>
-            <input type="text" id="emoji-input" placeholder="名字：URL">
+            <textarea id="emoji-input" placeholder="可一次性输入多个图片URL，支持空格/逗号分隔，格式：名字：URL 或直接URL"></textarea>
             <div class="modal-buttons">
                 <button id="cancel-btn" class="btn btn-cancel">Cancel</button>
                 <button id="confirm-btn" class="btn btn-confirm">Confirm</button>

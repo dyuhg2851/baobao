@@ -137,7 +137,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const repeatBtn = document.getElementById('repeat-btn');
 
     // 音乐播放器相关变量
-    window.audio = new Audio();
+    window.audio = document.createElement('audio');
+    window.audio.setAttribute('playsinline', '');
+    window.audio.setAttribute('webkit-playsinline', '');
+    window.audio.style.display = 'none';
+    document.body.appendChild(window.audio);
     window.isPlaying = false;
     let currentSongIndex = 0;
     let songs = [];
@@ -180,6 +184,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    function sendMusicStateToServiceWorker(state) {
+        if (!('serviceWorker' in navigator)) return;
+        navigator.serviceWorker.ready.then(function(registration) {
+            if (registration.active) {
+                registration.active.postMessage({ type: 'PLAY_MUSIC', state: state });
+            } else if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'PLAY_MUSIC', state: state });
+            }
+        }).catch(function(err) {
+            console.warn('Service Worker 未准备好，无法继续后台播放:', err);
+        });
+    }
+
     // 注册Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
@@ -754,31 +771,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('songs.length:', songs.length);
         console.log('currentSongIndex:', currentSongIndex);
         console.log('isPlaying:', isPlaying);
-        
-        // 如果正在播放，将音频交给 Service Worker 继续播放
-        if (isPlaying && songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
-            const currentSong = songs[currentSongIndex];
-            console.log('当前歌曲:', currentSong);
-            
-            const audioState = {
-                currentSong: currentSong,
-                currentTime: audio.currentTime,
-                isPlaying: isPlaying,
-                listenTime: listenTime
-            };
-            
-            // 保存到 localStorage
-            localStorage.setItem('music_audio_state', JSON.stringify(audioState));
-            
-            // 交给 Service Worker 继续播放
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'PLAY_MUSIC',
-                    state: audioState
-                });
-            }
-        }
-        
+        handOffPlaybackToServiceWorker();
         window.location.href = '../index.html';
     });
     
@@ -882,29 +875,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     audio.addEventListener('play', function() {
         console.log('音频开始播放');
+        updateMediaSessionPlaybackState();
     });
 
     audio.addEventListener('pause', function() {
         console.log('音频暂停');
+        updateMediaSessionPlaybackState();
     });
 
     // 每分钟增加听歌时间
     setInterval(incrementListenTime, 60000);
 
+    function handOffPlaybackToServiceWorker() {
+        if (!isPlaying || songs.length === 0 || currentSongIndex < 0 || currentSongIndex >= songs.length) return;
+        const currentSong = songs[currentSongIndex];
+        localStorage.setItem('music_audio_state', JSON.stringify({
+            currentSong: currentSong,
+            currentTime: audio.currentTime,
+            isPlaying: true,
+            listenTime: listenTime
+        }));
+        sendMusicStateToServiceWorker({
+            currentSong: currentSong,
+            currentTime: audio.currentTime,
+            isPlaying: true,
+            listenTime: listenTime
+        });
+    }
+
     // 在页面卸载前将音频交给Service Worker
+    window.addEventListener('pagehide', function() {
+        handOffPlaybackToServiceWorker();
+    });
+
     window.addEventListener('beforeunload', function() {
-        if (isPlaying && songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
-            const currentSong = songs[currentSongIndex];
-            navigator.serviceWorker.controller.postMessage({
-                type: 'PLAY_MUSIC',
-                state: {
-                    currentSong: currentSong,
-                    currentTime: audio.currentTime,
-                    isPlaying: true,
-                    listenTime: listenTime
-                }
-            });
-        }
+        handOffPlaybackToServiceWorker();
         // 确保媒体会话状态正确
         updateMediaSessionPlaybackState();
     });

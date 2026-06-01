@@ -34,6 +34,11 @@
         checkNotification();
       }
     });
+
+    window.addEventListener('pagehide', function() {
+      checkPending();
+      checkNotification();
+    });
   }
 
   function broadcastMessage(message, from) {
@@ -66,8 +71,13 @@
       var processingStamp = localStorage.getItem('processing_on_chatroom');
       if (processingStamp) {
         var elapsed = Date.now() - parseInt(processingStamp);
-        if (elapsed < 30000) {
-          console.log('Chatroom is processing, skipping background check');
+        if (isOnChatRoom()) {
+          if (elapsed < 30000) {
+            console.log('Chatroom is processing, skipping background check');
+            return;
+          }
+        } else if (elapsed < 1000) {
+          console.log('Recent chatroom processing detected, waiting briefly');
           return;
         }
       }
@@ -87,7 +97,7 @@
 
   function retryOrRemove(req) {
     req.retryCount = (req.retryCount || 0) + 1;
-    if (req.retryCount >= 3) {
+    if (req.retryCount >= 6) {
       localStorage.removeItem('pending_ai_request');
     } else {
       req.timestamp = Date.now();

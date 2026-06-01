@@ -516,6 +516,22 @@ h1 {
     -webkit-tap-highlight-color: transparent;
 }
 
+.modal-btn.cancel,
+.delete-confirm-btn.cancel,
+.multi-select-cancel,
+.btn-cancel,
+button.cancel {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.modal-btn.cancel:active,
+.delete-confirm-btn.cancel:active,
+.multi-select-cancel:active,
+.btn-cancel:active,
+button.cancel:active {
+    background-color: transparent;
+}
+
 .modal-btn.cancel {
     background-color: transparent;
     color: #999999;

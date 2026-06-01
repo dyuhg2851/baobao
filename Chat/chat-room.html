@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="theme.css" id="theme-css">
     <script src="moment-api.js"></script>
     <script src="chat-notification.js"></script>
+    <script src="push-manager.js" defer></script>
     <script src="global-ws-manager.js"></script>
     <title>Chat Room</title>
 </head>
@@ -344,7 +345,7 @@
                                 var prevMsg = messages[index - 1];
                                 if (shouldShowTimeStamp(msg, prevMsg)) {
                                     var date = new Date(msg.time);
-                                    var weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                                    var weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                                     var weekday = weekdayNames[date.getDay()];
                                     var hours = date.getHours();
                                     var minutes = date.getMinutes();
@@ -436,7 +437,7 @@
                 }
                 
                 function formatTimeStamp(date) {
-                    var weekdayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    var weekdayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
                     var weekday = weekdayNames[date.getDay()];
                     
                     var hours = date.getHours();
@@ -658,8 +659,8 @@
                 var apiConfig = getApiConfig();
                 if (!apiConfig || !apiConfig.url || !apiConfig.key) {
                     showErrorToast('请先在设置中配置 API');
-                    localStorage.removeItem('pending_ai_request');
-                    localStorage.removeItem('processing_on_chatroom');
+                    // 保留 pending_ai_request，让后台页面继续检查和重试
+                    localStorage.setItem('processing_on_chatroom', Date.now().toString());
                     if (callback) callback();
                     return;
                 }
@@ -670,8 +671,8 @@
                 callChatAPI(messages, { maxTokens: 10000, temperature: 0.8 }).then(function(reply) {
                     if (!reply) {
                         showErrorToast('未能获取回复，请检查 API 配置');
-                        localStorage.removeItem('pending_ai_request');
-                        localStorage.removeItem('processing_on_chatroom');
+                        // 保留 pending_ai_request，等待后台页面继续重试
+                        localStorage.setItem('processing_on_chatroom', Date.now().toString());
                         hideWaiting();
                         if (callback) callback();
                         return;
@@ -736,13 +737,17 @@
                         replyParts = replyParts.slice(0, 5);
                     }
                     
-                    // 保存通知（使用处理后的 replyParts，保证与聊天内容一致）
-                    localStorage.setItem('ai_notification', JSON.stringify({
+                    // 保存通知（如果当前正在 chat-room 中，则直接将其标为已读，避免离开后重复弹窗）
+                    var notificationData = {
                         id: requestId,
                         parts: replyParts.map(function(p) { return p.trim(); }),
                         timestamp: Date.now(),
-                        read: false
-                    }));
+                        shown: false
+                    };
+                    if (!document.hidden && window.location.pathname.indexOf('chat-room.html') !== -1) {
+                        notificationData.shown = true;
+                    }
+                    localStorage.setItem('ai_notification', JSON.stringify(notificationData));
                     localStorage.removeItem('processing_on_chatroom');
 
                     // Broadcast message via WebSocket so all pages receive it
@@ -935,8 +940,8 @@
                     }, totalDelay + 200);
                 }).catch(function(err) {
                     showErrorToast('请求失败: ' + (err.message || '网络错误'));
-                    localStorage.removeItem('pending_ai_request');
-                    localStorage.removeItem('processing_on_chatroom');
+                    console.log('Keeping pending AI request for background retry:', err);
+                    localStorage.setItem('processing_on_chatroom', Date.now().toString());
                     if (callback) callback();
                     hideWaiting();
                 });
@@ -1268,11 +1273,17 @@
             
             if (backBtn) {
                 backBtn.addEventListener('click', function() {
+                    markChatAsViewed();
                     window.location.replace('chat.html');
                 });
             }
-            
-            
+
+            window.addEventListener('pagehide', function() {
+                if (localStorage.getItem('pending_ai_request')) {
+                    localStorage.removeItem('processing_on_chatroom');
+                }
+                markChatAsViewed();
+            });
             
             messageInput.addEventListener('input', function(e) {
                 var hasText = this.value.trim().length > 0;
