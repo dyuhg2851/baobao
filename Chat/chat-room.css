@@ -187,6 +187,7 @@ body {
 .signature-label {
     font-size: 10px;
     color: #999999;
+    margin-top: 3px;
 }
 
 .chat-messages {
