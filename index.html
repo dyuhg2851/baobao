@@ -46,7 +46,8 @@
                 console.error('Failed to load wallpaper:', e);
             }
         })();
-        </script>
+        
+        // DOM加载完成后执行其他初始化
         document.addEventListener('DOMContentLoaded', function() {
             // 北京时间格式化函数 (UTC+8) - 使用Intl确保准确的时区转换
             window.formatBeijingTime = function(date) {

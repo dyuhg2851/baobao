@@ -377,7 +377,7 @@ body {
 .message-quote {
     display: flex;
     flex-direction: row;
-    align-items: stretch;
+    align-items: center;
     margin-top: 3px;
     margin-bottom: 2px;
     gap: 6px;
@@ -386,12 +386,18 @@ body {
 }
 
 .message-quote .quote-bar {
-    width: 4px;
-    height: 18px;
-    background-color: #ffffff;
-    border-radius: 2px;
+    width: 8px !important;
+    height: 8px !important;
+    background-color: #ffffff !important;
+    border-radius: 50% !important;
     flex-shrink: 0;
-    box-shadow: 0 0 2px rgba(0,0,0,0.1);
+    border: 1px solid #cccccc;
+    min-width: 8px;
+    min-height: 8px;
+    max-width: 8px;
+    max-height: 8px;
+    box-shadow: none !important;
+    margin-top: 6px;
 }
 
 .message-quote .quote-text {
