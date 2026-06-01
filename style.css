@@ -18,12 +18,16 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: -1;
-    background-color: #f5f5f5;
+    background-color: transparent;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transition: background-image 0.3s ease-in-out, filter 0.3s ease-in-out;
-    will-change: background-image, filter;
+    background-attachment: fixed;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    contain: style layout paint;
 }
 
 /* 通用页面容器 */
