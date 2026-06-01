@@ -471,6 +471,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const cssCopyBtn = document.getElementById('css-copy');
         const cssSaveBtn = document.getElementById('css-save');
         const cssAddBtn = document.getElementById('css-add');
+        const cssClearBtn = document.getElementById('css-clear');
+        const cssDeleteBtn = document.getElementById('css-delete');
         
         // 弹窗元素
         const cssModal = document.getElementById('css-modal');
@@ -541,6 +543,31 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('CSS已保存并应用！');
         }
         
+        // 清空输入框
+        function clearCSS() {
+            cssEditor.value = '';
+            cssPresetSelect.value = '';
+        }
+        
+        // 删除预设
+        function deleteCSSPreset() {
+            const selectedPreset = cssPresetSelect.value;
+            if (!selectedPreset) {
+                alert('请选择要删除的预设');
+                return;
+            }
+            
+            if (confirm(`确定要删除预设 "${selectedPreset}" 吗？`)) {
+                const presets = getCSSPresets();
+                delete presets[selectedPreset];
+                saveCSSPresets(presets);
+                loadCSSPresets();
+                cssPresetSelect.value = '';
+                cssEditor.value = '';
+                alert('预设删除成功');
+            }
+        }
+        
         // 显示弹窗
         function showCSSModal() {
             cssPresetNameInput.value = '';
@@ -601,6 +628,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (cssAddBtn) {
             cssAddBtn.addEventListener('click', showCSSModal);
+        }
+        
+        if (cssClearBtn) {
+            cssClearBtn.addEventListener('click', clearCSS);
+        }
+        
+        if (cssDeleteBtn) {
+            cssDeleteBtn.addEventListener('click', deleteCSSPreset);
         }
         
         if (cssPresetSelect) {

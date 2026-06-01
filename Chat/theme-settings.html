@@ -355,7 +355,11 @@
             
             const presets = getPresets();
             if (presets[presetName]) {
-                document.getElementById('cssEditor').value = presets[presetName];
+                const css = presets[presetName];
+                document.getElementById('cssEditor').value = css;
+                // 保存并应用到聊天界面
+                localStorage.setItem(CSS_KEY, css);
+                showToast('预设已应用到聊天界面');
             }
         }
 

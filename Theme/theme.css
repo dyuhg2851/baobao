@@ -43,8 +43,13 @@ body {
     display: flex;
     align-items: center;
     margin-bottom: 30px;
-    position: relative;
-    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background-color: #ffffff;
+    z-index: 1000;
 }
 
 .back-btn {
@@ -53,7 +58,7 @@ body {
     padding: 0;
     cursor: pointer;
     position: absolute;
-    left: 0;
+    left: 20px;
     top: 50%;
     transform: translateY(-50%);
     transition: transform 0.2s ease;
@@ -158,6 +163,7 @@ h2 {
     
     .button-group {
         justify-content: flex-start;
+        flex-wrap: wrap;
         width: 100%;
     }
     
@@ -168,8 +174,6 @@ h2 {
     }
     
     .card {
-        max-height: 280px;
-        overflow: hidden;
         padding: 20px;
     }
 }
@@ -241,6 +245,10 @@ h2 {
 
 .btn-add {
     color: #000;
+}
+
+.btn-clear {
+    color: #666666;
 }
 
 /* 字体模块样式 */
@@ -329,6 +337,7 @@ h2 {
 
 .css-editor-group {
     width: 100%;
+    margin-bottom: 12px;
 }
 
 #css-editor {
