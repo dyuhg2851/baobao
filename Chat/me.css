@@ -186,6 +186,12 @@ h1 {
     align-items: center;
     padding: 20px 0;
     gap: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.me-row:active {
+    background-color: #f5f5f5;
 }
 
 .col-left {
