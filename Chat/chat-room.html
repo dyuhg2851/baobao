@@ -1235,10 +1235,29 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     var item = document.createElement('div');
                     item.className = 'emoji-item';
                     item.dataset.index = index;
-                    item.innerHTML = '<img src="' + escapeHtml(emoji.url) + '" alt="' + escapeHtml(emoji.name) + '"><span class="emoji-name">' + escapeHtml(sanitizeEmojiName(emoji.name)) + '</span>';
+                    item.innerHTML = '<button type="button" class="emoji-delete-button" aria-label="Delete emoji">×</button><img src="' + escapeHtml(emoji.url) + '" alt="' + escapeHtml(emoji.name) + '"><span class="emoji-name">' + escapeHtml(sanitizeEmojiName(emoji.name)) + '</span>';
+
+                    var deleteButton = item.querySelector('.emoji-delete-button');
+                    deleteButton.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        try {
+                            var emojisList = JSON.parse(localStorage.getItem('emoji_pack') || '[]');
+                            if (index >= 0 && index < emojisList.length) {
+                                if (confirm('Delete this emoji?')) {
+                                    emojisList.splice(index, 1);
+                                    localStorage.setItem('emoji_pack', JSON.stringify(emojisList));
+                                    loadEmojis();
+                                }
+                            }
+                        } catch (e) {}
+                    });
 
                     // 点击插入/发送表情占位
                     item.addEventListener('click', function() {
+                        if (item.classList.contains('show-delete')) {
+                            item.classList.remove('show-delete');
+                            return;
+                        }
                         var input = document.getElementById('message-input');
                         var placeholder = '[[emoji:' + emoji.name + ']]';
                         if (input.value.trim().length === 0) {
@@ -1252,31 +1271,24 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                         document.getElementById('emoji-picker').style.display = 'none';
                     });
 
-                    // 长按删除（touch 和 鼠标）
-                    (function(idx){
+                    // 长按显示删除按钮
+                    (function(el){
                         var longTimer = null;
-                        var startDelete = function() {
-                            try {
-                                var emojisList = JSON.parse(localStorage.getItem('emoji_pack') || '[]');
-                                if (idx >= 0 && idx < emojisList.length) {
-                                    var confirmDel = confirm('Delete this emoji?');
-                                    if (confirmDel) {
-                                        emojisList.splice(idx, 1);
-                                        localStorage.setItem('emoji_pack', JSON.stringify(emojisList));
-                                        loadEmojis();
-                                    }
-                                }
-                            } catch(e){}
+                        var showDelete = function() {
+                            document.querySelectorAll('.emoji-item.show-delete').forEach(function(node) {
+                                node.classList.remove('show-delete');
+                            });
+                            el.classList.add('show-delete');
                         };
-                        item.addEventListener('touchstart', function(e){
-                            longTimer = setTimeout(startDelete, 600);
+                        el.addEventListener('touchstart', function(e) {
+                            longTimer = setTimeout(showDelete, 600);
                         }, { passive: true });
-                        item.addEventListener('touchend', function(e){ clearTimeout(longTimer); });
-                        item.addEventListener('touchmove', function(e){ clearTimeout(longTimer); });
-                        item.addEventListener('mousedown', function(e){ longTimer = setTimeout(startDelete, 800); });
-                        item.addEventListener('mouseup', function(e){ clearTimeout(longTimer); });
-                        item.addEventListener('mouseleave', function(e){ clearTimeout(longTimer); });
-                    })(index);
+                        el.addEventListener('touchend', function(e) { clearTimeout(longTimer); });
+                        el.addEventListener('touchmove', function(e) { clearTimeout(longTimer); });
+                        el.addEventListener('mousedown', function(e) { longTimer = setTimeout(showDelete, 800); });
+                        el.addEventListener('mouseup', function(e) { clearTimeout(longTimer); });
+                        el.addEventListener('mouseleave', function(e) { clearTimeout(longTimer); });
+                    })(item);
 
                     grid.appendChild(item);
                 });
