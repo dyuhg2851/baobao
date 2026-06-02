@@ -22,6 +22,12 @@ function saveEmojiPack() {
     localStorage.setItem(EMOJI_PACK_KEY, JSON.stringify(emojiPack));
 }
 
+function sanitizeEmojiName(name) {
+    var text = String(name || '').trim();
+    var matched = text.match(/[\u4e00-\u9fff]+/g);
+    return matched && matched.length ? matched.join('') : text;
+}
+
 function renderEmojis() {
     const grid = document.getElementById('emoji-grid');
     grid.innerHTML = '';
@@ -37,7 +43,7 @@ function renderEmojis() {
         item.dataset.index = index;
         item.innerHTML = `
             <img src="${emoji.url}" alt="${emoji.name}">
-            <div class="emoji-name">${emoji.name}</div>
+            <div class="emoji-name">${sanitizeEmojiName(emoji.name)}</div>
         `;
         grid.appendChild(item);
     });

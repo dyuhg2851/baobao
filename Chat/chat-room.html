@@ -1225,11 +1225,17 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 }
                 empty.style.display = 'none';
 
+                function sanitizeEmojiName(name) {
+                    var text = String(name || '').trim();
+                    var matched = text.match(/[\u4e00-\u9fff]+/g);
+                    return matched && matched.length ? matched.join('') : text;
+                }
+
                 emojis.forEach(function(emoji, index) {
                     var item = document.createElement('div');
                     item.className = 'emoji-item';
                     item.dataset.index = index;
-                    item.innerHTML = '<img src="' + escapeHtml(emoji.url) + '" alt="' + escapeHtml(emoji.name) + '"><span class="emoji-name">' + escapeHtml(emoji.name) + '</span>';
+                    item.innerHTML = '<img src="' + escapeHtml(emoji.url) + '" alt="' + escapeHtml(emoji.name) + '"><span class="emoji-name">' + escapeHtml(sanitizeEmojiName(emoji.name)) + '</span>';
 
                     item.addEventListener('click', function() {
                         var input = document.getElementById('message-input');
