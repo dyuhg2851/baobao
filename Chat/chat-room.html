@@ -1237,6 +1237,7 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     item.dataset.index = index;
                     item.innerHTML = '<img src="' + escapeHtml(emoji.url) + '" alt="' + escapeHtml(emoji.name) + '"><span class="emoji-name">' + escapeHtml(sanitizeEmojiName(emoji.name)) + '</span>';
 
+                    // 点击插入/发送表情占位
                     item.addEventListener('click', function() {
                         var input = document.getElementById('message-input');
                         var placeholder = '[[emoji:' + emoji.name + ']]';
@@ -1250,6 +1251,32 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                         }
                         document.getElementById('emoji-picker').style.display = 'none';
                     });
+
+                    // 长按删除（touch 和 鼠标）
+                    (function(idx){
+                        var longTimer = null;
+                        var startDelete = function() {
+                            try {
+                                var emojisList = JSON.parse(localStorage.getItem('emoji_pack') || '[]');
+                                if (idx >= 0 && idx < emojisList.length) {
+                                    var confirmDel = confirm('Delete this emoji?');
+                                    if (confirmDel) {
+                                        emojisList.splice(idx, 1);
+                                        localStorage.setItem('emoji_pack', JSON.stringify(emojisList));
+                                        loadEmojis();
+                                    }
+                                }
+                            } catch(e){}
+                        };
+                        item.addEventListener('touchstart', function(e){
+                            longTimer = setTimeout(startDelete, 600);
+                        }, { passive: true });
+                        item.addEventListener('touchend', function(e){ clearTimeout(longTimer); });
+                        item.addEventListener('touchmove', function(e){ clearTimeout(longTimer); });
+                        item.addEventListener('mousedown', function(e){ longTimer = setTimeout(startDelete, 800); });
+                        item.addEventListener('mouseup', function(e){ clearTimeout(longTimer); });
+                        item.addEventListener('mouseleave', function(e){ clearTimeout(longTimer); });
+                    })(index);
 
                     grid.appendChild(item);
                 });

@@ -597,9 +597,9 @@ body {
 
 .emoji-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
-    gap: 8px;
-    align-items: stretch;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    align-items: start;
 }
 
 .emoji-item {
@@ -608,16 +608,16 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding: 10px;
+    padding: 6px 6px;
     gap: 6px;
     cursor: pointer;
-    border-radius: 16px;
-    transition: background-color 0.15s ease;
+    border-radius: 10px;
+    transition: background-color 0.12s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     -webkit-user-select: none;
-    aspect-ratio: 1 / 1;
-    min-height: 0;
+    height: 84px;
+    box-sizing: border-box;
 }
 
 .emoji-item:active {
@@ -625,20 +625,20 @@ body {
 }
 
 .emoji-item img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
+    width: 48px;
+    height: 48px;
     object-fit: cover;
-    border-radius: 16px;
+    border-radius: 10px;
     background: #fafafa;
 }
 
 .emoji-item .emoji-name {
-    font-size: 12px;
+    font-size: 11px;
     color: #333;
-    line-height: 1.2;
+    line-height: 1.1;
     text-align: center;
     width: 100%;
-    white-space: normal;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }

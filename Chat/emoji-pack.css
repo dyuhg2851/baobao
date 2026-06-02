@@ -106,10 +106,10 @@ h1 {
 
 .emoji-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 12px;
-    padding: 10px 0 20px;
-    align-items: stretch;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 8px 0 16px;
+    align-items: start;
     justify-items: stretch;
 }
 
@@ -134,15 +134,16 @@ h1 {
 .emoji-item {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background-color: #f5f5f5;
-    border-radius: 18px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
-    transition: transform 0.2s ease;
-    aspect-ratio: 1 / 1;
-    min-height: 0;
-    padding: 12px;
+    transition: transform 0.12s ease;
+    height: 96px;
+    padding: 6px 6px;
 }
 
 .emoji-item:active {
@@ -150,22 +151,21 @@ h1 {
 }
 
 .emoji-item img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
+    width: 64px;
+    height: 64px;
     object-fit: cover;
-    flex: 1 1 auto;
-    border-radius: 16px;
+    border-radius: 10px;
 }
 
 .emoji-item .emoji-name {
-    padding: 8px 10px 12px;
+    padding: 0 6px 2px;
     color: #333;
-    font-size: 13px;
+    font-size: 12px;
     text-align: center;
-    white-space: normal;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    background-color: rgba(255,255,255,0.85);
+    width: 100%;
 }
 
 .modal {
