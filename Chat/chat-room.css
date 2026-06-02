@@ -366,6 +366,36 @@ body {
     word-break: break-word;
 }
 
+/* 表情包与消息内图片的小尺寸缩略图样式 */
+.message-text img.message-image-inline {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.message-text .emoji-inline img {
+    width: 36px;
+    height: 36px;
+    object-fit: cover;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.message-text .emoji-inline span {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 80px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    color: inherit;
+}
+
 .message.received .message-text {
     color: #333333;
 }
