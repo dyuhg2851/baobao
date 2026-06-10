@@ -366,6 +366,32 @@ body {
     word-break: break-word;
 }
 
+/* 纯图片消息不显示气泡背景 */
+.message-content-image-only {
+    background-color: transparent !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: auto !important;
+}
+
+.message-content-image-only .message-text {
+    font-size: 0;
+    line-height: 0;
+}
+
+/* 纯图片消息的大图样式 */
+.message-text img.message-image-full {
+    max-width: 280px;
+    max-height: 350px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 12px;
+    display: block;
+}
+
 /* 表情包与消息内图片的小尺寸缩略图样式 */
 .message-text img.message-image-inline {
     width: 48px;

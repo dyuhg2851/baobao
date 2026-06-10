@@ -402,6 +402,10 @@
 var quoteHtml = renderQuoteHtml(msg.quote);
                             var nickname = msg.role === 'sent' ? '@> <' : '@T T';
                             var avatarHtml, timeHtml = '';
+                            
+                            // 判断是否是纯图片消息
+                            var isImageOnly = /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test((msg.text || '').trim());
+                            var contentClass = isImageOnly ? 'message-content message-content-image-only' : 'message-content';
 
                             if (showAvatarAndTime) {
                                 if (msg.time) {
@@ -410,9 +414,9 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                                     timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                                 }
                                 avatarHtml = msg.role === 'sent' ? userAvatarHtml : charAvatarHtml;
-                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + '<div class="message-content-wrapper"><div class="' + contentClass + '"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
                             } else {
-                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + '<div class="message-content-wrapper"><div class="' + contentClass + '"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
                             }
                         });
 
@@ -603,12 +607,17 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     nicknameHtml = '';
                 }
 
+                // 判断是否是纯图片消息
+                var isImageOnly = isImageOnlyMessage(msg.text);
+                
                 el.innerHTML = avatarWrapperHtml +
                     '<div class="message-info">' +
                         nicknameHtml +
                         quoteHtml +
                         '<div class="message-content-wrapper">' +
-                            '<div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div>' +
+                            (isImageOnly ? 
+                                '<div class="message-content message-content-image-only"><div class="message-text">' + renderMessageText(msg.text) + '</div></div>' :
+                                '<div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div>') +
                         '</div>' +
                     '</div>' +
                     warningIcon;
@@ -694,10 +703,10 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 } catch (e) {
                     emojiPack = [];
                 }
-                // 如果文本本身是一个 URL，直接渲染为图片
-                var urlOnlyMatch = (text || '').trim().match(/^https?:\/\/[\S]+$/i);
+                // 如果文本本身是一个 URL，直接渲染为图片（大图模式，无气泡）
+                var urlOnlyMatch = (text || '').trim().match(/^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i);
                 if (urlOnlyMatch) {
-                    return '<img class="message-image-inline" src="' + escapeHtml(urlOnlyMatch[0]) + '" alt="image" />';
+                    return '<img class="message-image-full" src="' + escapeHtml(urlOnlyMatch[0]) + '" alt="image" />';
                 }
 
                 escaped = escaped.replace(/\[\[emoji:([^\]]+)\]\]/gi, function(match, name) {
@@ -711,6 +720,11 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     return '<img src="' + escapeHtml(found.url) + '" class="emoji-image" alt="emoji">';
                 });
                 return escaped.replace(/\r?\n/g, '<br>');
+            }
+            
+            // 判断是否是纯图片消息
+            function isImageOnlyMessage(text) {
+                return /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test((text || '').trim());
             }
 
             function renderQuoteHtml(quote) {
@@ -867,13 +881,18 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                         }
                         
                         var quoteHtml = (index === 0 && replyQuote) ? '<div class="message-quote"><div class="quote-bar"></div><span class="quote-text">' + escapeHtml(replyQuote.text) + '</span></div>' : '';
+                        
+                        // 判断是否是纯图片消息
+                        var isImageOnly = isImageOnlyMessage(contentToSave);
 
                         replyEl.innerHTML = avatarWrapperHtml + 
                             '<div class="message-info">' +
                                 nicknameHtml +
                                 quoteHtml +
                                 '<div class="message-content-wrapper">' +
-                                    '<div class="message-content"><div class="message-text">' + renderMessageText(contentToSave) + '</div></div>' +
+                                    (isImageOnly ? 
+                                        '<div class="message-content message-content-image-only"><div class="message-text">' + renderMessageText(contentToSave) + '</div></div>' :
+                                        '<div class="message-content"><div class="message-text">' + renderMessageText(contentToSave) + '</div></div>') +
                                 '</div>' +
                             '</div>';
                         if (localStorage.getItem('chat_block_char') === 'true') {
