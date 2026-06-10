@@ -708,7 +708,7 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     if (!found) {
                         return '[emoji:' + escapeHtml(targetName) + ']';
                     }
-                    return '<span class="emoji-inline" title="' + escapeHtml(found.name) + '"><img src="' + escapeHtml(found.url) + '" alt="' + escapeHtml(found.name) + '"><span>' + escapeHtml(found.name) + '</span></span>';
+                    return '<img src="' + escapeHtml(found.url) + '" class="emoji-image" alt="emoji">';
                 });
                 return escaped.replace(/\r?\n/g, '<br>');
             }

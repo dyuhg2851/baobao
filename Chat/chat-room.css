@@ -376,13 +376,14 @@ body {
     vertical-align: middle;
 }
 
-.message-text .emoji-inline img {
+/* 表情包图片样式 */
+.message-text img.emoji-image {
     width: 36px;
     height: 36px;
     object-fit: cover;
     border-radius: 6px;
+    display: inline-block;
     vertical-align: middle;
-    margin-right: 6px;
 }
 
 .message-text .emoji-inline span {
