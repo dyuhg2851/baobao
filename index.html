@@ -44,8 +44,39 @@
             }
         })();
         
+        // 全局音频播放器 - 在页面间共享播放
+        window.musicAudio = document.createElement('audio');
+        window.musicAudio.setAttribute('playsinline', '');
+        window.musicAudio.setAttribute('webkit-playsinline', '');
+        window.musicAudio.style.display = 'none';
+        document.body.appendChild(window.musicAudio);
+        
+        // 从localStorage恢复音乐播放状态
+        function resumeMusicPlayback() {
+            const savedState = localStorage.getItem('music_audio_state');
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    if (state.isPlaying && state.currentSong && state.currentSong.musicUrl) {
+                        window.musicAudio.src = state.currentSong.musicUrl;
+                        window.musicAudio.currentTime = state.currentTime;
+                        window.musicAudio.play().then(() => {
+                            console.log('音乐在主页继续播放');
+                        }).catch(err => {
+                            console.warn('主页音乐播放失败:', err);
+                        });
+                    }
+                } catch(e) {
+                    console.error('恢复音乐播放失败:', e);
+                }
+            }
+        }
+        
         // DOM加载完成后执行其他初始化
         document.addEventListener('DOMContentLoaded', function() {
+            // 尝试恢复音乐播放
+            resumeMusicPlayback();
+            
             // 北京时间格式化函数 (UTC+8) - 使用Intl确保准确的时区转换
             window.formatBeijingTime = function(date) {
                 if (!(date instanceof Date)) {

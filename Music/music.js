@@ -171,14 +171,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 listenTime = state.listenTime;
                 updateListenTimeDisplay();
                 if (isPlaying) {
-                    audio.play();
-                    vinylRecord.classList.add('playing');
-                    playBtn.classList.add('playing');
-                    progressInterval = setInterval(updateProgress, 100);
-                }
-                // 停止Service Worker的播放
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ type: 'STOP_MUSIC' });
+                    audio.play().then(() => {
+                        vinylRecord.classList.add('playing');
+                        playBtn.classList.add('playing');
+                        progressInterval = setInterval(updateProgress, 100);
+                        // 停止Service Worker的播放
+                        if (navigator.serviceWorker.controller) {
+                            navigator.serviceWorker.controller.postMessage({ type: 'STOP_MUSIC' });
+                        }
+                    }).catch(err => {
+                        console.warn('音频播放失败:', err);
+                    });
                 }
             }
         }
@@ -771,7 +774,18 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('songs.length:', songs.length);
         console.log('currentSongIndex:', currentSongIndex);
         console.log('isPlaying:', isPlaying);
-        handOffPlaybackToServiceWorker();
+        
+        // 保存播放状态到localStorage，但不停止当前播放
+        if (isPlaying && songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
+            const currentSong = songs[currentSongIndex];
+            localStorage.setItem('music_audio_state', JSON.stringify({
+                currentSong: currentSong,
+                currentTime: audio.currentTime,
+                isPlaying: true,
+                listenTime: listenTime
+            }));
+        }
+        
         window.location.href = '../index.html';
     });
     
