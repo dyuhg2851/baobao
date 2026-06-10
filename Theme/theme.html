@@ -6,8 +6,6 @@
     <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="../style.css">
     <title>Theme</title>
-    <script src="../Chat/chat-notification.js"></script>
-    <script src="../Chat/global-ws-manager.js"></script>
 </head>
 <body>
     <div class="settings-container">
@@ -86,375 +84,153 @@
                     <textarea id="css-editor" placeholder="输入自定义CSS代码...">/* ============================================ */
 /* 聊天界面美化样式 - Chat Room Custom Styles     */
 /* ============================================ */
+/* 使用说明：取消注释下方的样式块即可自定义聊天界面 */
+/* 保存后刷新聊天页面即可看到效果 */
 
 /* ------------------------------ */
-/* 1. 聊天头部样式 (Header Styles) */
+/* 1. 页面背景样式 (Body Background) */
 /* ------------------------------ */
-/* 头部堆叠容器 */
-.chat-header-stack {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 15px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 10;
-    padding: 0 20px;
+/* 修改整个页面的背景颜色 */
+/*
+body {
+    background-color: #e8e8e8;  /* 浅灰色背景 */
 }
+*/
 
-/* 头部卡片基础样式 */
-.header-card {
-    width: 100%;
-    border-radius: 24px;
-    padding: 14px 18px;
-    position: relative;
+/* ------------------------------ */
+/* 2. 聊天头部样式 (Header Styles) */
+/* ------------------------------ */
+/* 返回按钮 "To" 的颜色 */
+/*
+.to-label {
+    color: #cccccc;
+    font-size: 36px;
 }
+*/
 
-/* 顶部卡片 - 显示昵称和返回按钮 */
+/* 昵称颜色 */
+/*
+.to-name {
+    color: #000000;
+    font-size: 16px;
+}
+*/
+
+/* 顶部卡片背景 */
+/*
 .header-card.top {
     background-color: #ffffff;
-    padding: 18px;
-    z-index: 3;
-    width: calc(100% + 5px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+*/
 
-/* 返回按钮行 */
-.to-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-}
-
-/* 返回按钮 "To" */
-.to-label {
-    font-size: 36px;
-    font-weight: 400;
-    color: #cccccc;
-    line-height: 1;
-    letter-spacing: 2px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    transition: opacity 0.2s ease;
-}
-
-.to-label:active {
-    opacity: 0.6;
-}
-
-/* 昵称信息容器 */
-.to-info {
-    display: flex;
-    align-items: center;
-    flex: 1;
-}
-
-/* 昵称文字 */
-.to-name {
-    font-size: 16px;
-    font-weight: 500;
-    color: #000000;
-}
-
-/* 等待回复文字 */
-.waiting-text {
-    font-size: 16px;
-    color: #999999;
-    font-weight: 400;
-    white-space: nowrap;
-}
-
-/* 在线状态文字 */
-.online-text {
-    font-size: 10px;
-    color: #999999;
-    flex-shrink: 0;
-}
-
-/* 中间卡片 - 显示个性签名 */
+/* 个性签名卡片背景 */
+/*
 .header-card.middle {
     background-color: #f0f0f0;
-    margin-top: -20px;
-    padding-top: 14px;
-    padding-bottom: 4px;
-    padding-left: 14px;
-    padding-right: 14px;
-    z-index: 2;
-    text-align: center;
-    border-radius: 0 0 24px 24px;
-    width: calc(100% - 40px);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 }
+*/
 
-/* 个性签名文字 */
+/* 个性签名文字颜色 */
+/*
 .signature-label {
+    color: #999999;
     font-size: 10px;
-    color: #999999;
-    margin-top: 8px;
-    display: inline-block;
 }
-
-/* ------------------------------ */
-/* 2. 聊天消息样式 (Message Styles) */
-/* ------------------------------ */
-/* 消息列表容器 */
-.chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    padding: 16px 12px 40px;
-    background-color: transparent;
-    scrollbar-width: none;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: scroll-position;
-    scroll-behavior: auto;
-}
-
-/* 时间戳 */
-.message-timestamp {
-    text-align: center;
-    margin: 10px 0;
-    padding: 3px 8px;
-    background-color: #ffffff;
-    border: 1px solid #dddddd;
-    border-radius: 16px;
-    font-size: 9px;
-    color: #999999;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-    align-self: center;
-    white-space: nowrap;
-}
-
-/* 消息基础样式 */
-.message {
-    margin-bottom: 8px;
-    display: flex;
-    max-width: 75%;
-}
-
-.message + .message {
-    margin-top: 10px;
-}
-
-/* 收到的消息 - 左侧 */
-.message.received {
-    align-self: flex-start;
-    flex-direction: row;
-    margin-left: 5px;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
-
-/* 发送的消息 - 右侧 */
-.message.sent {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
-    margin-right: 5px;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-}
-
-/* 头像 */
-.message-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #f0f0f0;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
-}
-
-.message-avatar-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
+*/
 
 /* ------------------------------ */
 /* 3. 消息气泡样式 (Message Bubble) */
 /* ------------------------------ */
-/* 消息气泡基础样式 */
-.message-content {
-    background-color: #ffffff;
-    border-radius: 20px;
-    padding: 6px 14px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    position: relative;
-    width: max-content;
-    max-width: 280px;
-}
 
-/* 发送的消息气泡 - 深色背景 */
-.message.sent .message-content {
-    background-color: #333333;
+/* ===== 收到的消息（左侧）===== */
+/* 收到消息的气泡背景色 */
+/*
+.message.received .message-content {
+    background-color: #ffffff;  /* 白色气泡 */
 }
+*/
 
-/* 消息文字 */
-.message-text {
-    font-size: 15px;
-    line-height: 1.4;
-    word-break: break-word;
-}
-
-/* 收到的消息文字 - 黑色 */
+/* 收到消息的文字颜色 */
+/*
 .message.received .message-text {
-    color: #333333;
+    color: #333333;  /* 黑色文字 */
 }
+*/
 
-/* 发送的消息文字 - 白色 */
+/* ===== 发送的消息（右侧）===== */
+/* 发送消息的气泡背景色 */
+/*
+.message.sent .message-content {
+    background-color: #333333;  /* 深灰色气泡 */
+}
+*/
+
+/* 发送消息的文字颜色 */
+/*
 .message.sent .message-text {
-    color: #ffffff;
+    color: #ffffff;  /* 白色文字 */
 }
+*/
+
+/* 消息气泡圆角 */
+/*
+.message-content {
+    border-radius: 20px;  /* 圆角大小 */
+    padding: 6px 14px;    /* 内边距 */
+}
+*/
 
 /* ------------------------------ */
-/* 4. 引用消息样式 (Quote Styles) */
+/* 4. 头像样式 (Avatar Styles) */
 /* ------------------------------ */
-/* 引用消息容器 */
-.message-quote {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-top: 3px;
-    margin-bottom: 2px;
-    gap: 6px;
-    max-width: 260px;
-    width: max-content;
+/* 头像大小和形状 */
+/*
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;  /* 圆形头像 */
+    background-color: #f0f0f0;  /* 默认背景色 */
 }
-
-/* 引用小圆点 */
-.message-quote .quote-bar {
-    width: 8px;
-    height: 8px;
-    background-color: #ffffff;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: 1px solid #cccccc;
-    margin-top: 6px;
-}
-
-/* 引用文字 */
-.message-quote .quote-text {
-    font-size: 11px;
-    color: #999999;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    min-width: 0;
-    flex: 1;
-}
-
-/* 发送消息的引用文字 */
-.message.sent .message-quote .quote-text {
-    color: #aaaaaa;
-}
+*/
 
 /* ------------------------------ */
 /* 5. 聊天输入框样式 (Input Styles) */
 /* ------------------------------ */
-/* 输入框容器 */
+/* 输入框背景 */
+/*
 .chat-input {
-    flex-shrink: 0;
-    margin: 0;
-    width: 100%;
-    max-width: 100%;
     background-color: rgba(255, 255, 255, 0.95);
-    border-radius: 5px 5px 0 0;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
-    z-index: 40;
 }
+*/
 
-/* 文本输入框 */
+/* 输入框边框颜色 */
+/*
 .message-input {
-    flex: 1;
-    height: 44px;
-    border: none;
-    border-bottom: 1.5px solid #000000;
-    background: none;
-    padding: 0 4px;
-    font-size: 15px;
-    outline: none;
-    margin: 0;
-    border-radius: 0;
+    border-bottom-color: #000000;  /* 底部边框颜色 */
 }
+*/
 
-/* 按钮基础样式 */
-.receive-btn,
-.emoji-btn {
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: 50%;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    padding: 0;
-    flex-shrink: 0;
-}
-
+/* 发送按钮颜色 */
+/*
 .receive-btn svg,
 .emoji-btn svg {
-    display: block;
-    width: 26px;
-    height: 26px;
     color: #000000;
 }
+*/
 
 /* ------------------------------ */
-/* 6. 右键菜单样式 (Context Menu) */
+/* 6. 时间戳样式 (Timestamp) */
 /* ------------------------------ */
-.context-menu {
-    position: fixed;
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(224, 224, 224, 0.5);
-    border-radius: 50px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
-    padding: 4px 8px;
-    gap: 2px;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
+/*
+.message-timestamp {
+    background-color: #ffffff;
+    color: #999999;
+    font-size: 9px;
 }
+*/
 
-.context-menu-item {
-    padding: 4px 10px;
-    font-size: 12px;
-    color: #666666;
-    cursor: pointer;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.context-menu-item:active {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.context-menu-item.delete {
-    color: #ff3b30;
-}</textarea>
+</textarea>
                 </div>
                 
                 <div class="css-actions">

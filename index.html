@@ -11,9 +11,6 @@
     <link rel="icon" href="https://i.postimg.cc/vBY98wDL/IMG-9251.jpg">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
-    <script src="Chat/chat-notification.js"></script>
-    <script src="Chat/global-ws-manager.js"></script>
-    <script src="Chat/push-manager.js"></script>
     <title>晕倒料理</title>
     <script>
         // 立即同步加载壁纸，避免闪烁
@@ -87,52 +84,6 @@
                 
                 return result;
             };
-            
-            // 格式化完整日期时间（北京时间）
-            window.formatBeijingDateTime = function(date) {
-                var bt = window.formatBeijingTime(date);
-                return bt.year + '-' + bt.month + '-' + bt.day + ' ' + bt.hours + ':' + bt.minutes;
-            };
-            
-            // 获取当前北京时间
-            window.getBeijingNow = function() {
-                return window.formatBeijingTime(new Date());
-            };
-            
-            // 加载字体（非关键，延迟加载）
-            requestAnimationFrame(function() {
-                try {
-                    const savedFont = localStorage.getItem('current_font');
-                    if (savedFont) {
-                        const font = JSON.parse(savedFont);
-                        if (font.url) {
-                            const oldFontStyle = document.getElementById('custom-font-style');
-                            if (oldFontStyle) {
-                                oldFontStyle.remove();
-                            }
-                            
-                            const fontStyle = document.createElement('style');
-                            fontStyle.id = 'custom-font-style';
-                            const fontName = font.family || font.name || 'CustomFont';
-                            
-                            fontStyle.textContent = `@font-face { font-family: '${fontName}'; src: url('${font.url}') format('truetype'); font-weight: normal; font-style: normal; }`;
-                            document.head.appendChild(fontStyle);
-                            document.body.style.fontFamily = fontName;
-                        } else if (font.family) {
-                            document.body.style.fontFamily = font.family;
-                        }
-                    }
-                } catch(e) {
-                    console.error('Failed to load font:', e);
-                }
-            });
-            
-            // 延迟注册Service Worker（不影响首屏）
-            if ('serviceWorker' in navigator) {
-                setTimeout(function() {
-                    navigator.serviceWorker.register('/service-worker.js').catch(function() {});
-                }, 3000);
-            }
         });
     </script>
 </head>

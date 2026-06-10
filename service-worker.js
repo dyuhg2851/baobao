@@ -1,7 +1,6 @@
 // service-worker.js
 
 const CACHE_NAME = 'char-chat-v1';
-const PUSH_VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U';
 
 // URLs to cache
 const CACHE_URLS = [
@@ -99,88 +98,4 @@ self.addEventListener('message', function(event) {
             clearInterval(progressInterval);
             progressInterval = null;
         }
-    } else if (event.data.type === 'PUSH_SUBSCRIBE') {
-        subscribeToPush(event.data.endpoint, event.data.keys);
-    }
-});
-
-// Push notification subscription
-function subscribeToPush(endpoint, keys) {
-    console.log('Service Worker received PUSH_SUBSCRIBE event. Subscription is managed in page context.');
-}
-
-// Push event handler - received push notification
-self.addEventListener('push', function(event) {
-    console.log('Push received:', event);
-
-    let data = {
-        title: 'Char',
-        body: 'You have a new message',
-        icon: 'https://i.postimg.cc/vBY98wDL/IMG-9251.jpg',
-        badge: 'https://i.postimg.cc/vBY98wDL/IMG-9251.jpg',
-        tag: 'char-message',
-        requireInteraction: true,
-        data: {
-            url: '/Chat/chat-room.html'
-        }
-    };
-
-    try {
-        if (event.data) {
-            const payload = event.data.json();
-            data.title = payload.title || data.title;
-            data.body = payload.body || data.body;
-            data.icon = payload.icon || data.icon;
-            data.data = payload.data || data.data;
-            if (!data.data || !data.data.url) {
-                data.data = { url: '/Chat/chat-room.html' };
-            }
-        }
-    } catch (e) {
-        console.error('Push data parse error:', e);
-        try {
-            data.body = event.data.text();
-        } catch (e2) {}
-    }
-
-    event.waitUntil(
-        self.registration.showNotification(data.title, data)
-    );
-});
-
-// Notification click handler
-self.addEventListener('notificationclick', function(event) {
-    console.log('Notification clicked:', event);
-
-    event.notification.close();
-
-    const urlToOpen = event.notification.data && event.notification.data.url
-        ? event.notification.data.url
-        : '/Chat/chat-room.html';
-
-    event.waitUntil(
-        clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
-            // Try to focus existing window
-            for (let i = 0; i < clientList.length; i++) {
-                const client = clientList[i];
-                if (client.url.includes('chat-room.html') && 'focus' in client) {
-                    client.focus();
-                    client.postMessage({
-                        type: 'NOTIFICATION_CLICK',
-                        data: event.notification.data
-                    });
-                    return;
-                }
-            }
-            // Open new window if none found
-            if (clients.openWindow) {
-                return clients.openWindow(urlToOpen);
-            }
-        })
-    );
-});
-
-// Notification close handler
-self.addEventListener('notificationclose', function(event) {
-    console.log('Notification closed:', event);
-});
+    });

@@ -6,10 +6,21 @@
     <link rel="stylesheet" href="chat-room.css">
     <link rel="stylesheet" href="theme.css" id="theme-css">
     <script src="moment-api.js"></script>
-    <script src="chat-notification.js"></script>
-    <script src="push-manager.js" defer></script>
-    <script src="global-ws-manager.js"></script>
+    <style id="custom-css-style"></style>
     <title>Chat Room</title>
+    <script>
+        // 加载自定义CSS
+        function loadCustomCSS() {
+            const customCSS = localStorage.getItem('chat_custom_css');
+            const styleElement = document.getElementById('custom-css-style');
+            if (customCSS && styleElement) {
+                styleElement.textContent = customCSS;
+            }
+        }
+        
+        // 页面加载时应用自定义CSS
+        document.addEventListener('DOMContentLoaded', loadCustomCSS);
+    </script>
 </head>
 <body>
     <div class="settings-container">
@@ -323,12 +334,7 @@
                 return prompt;
             }
 
-            function markChatAsViewed() {
-                localStorage.setItem('chat_viewed_time', Date.now().toString());
-            }
-            
             function loadMessages() {
-                markChatAsViewed();
                 var saved = localStorage.getItem(STORAGE_KEY);
                 if (saved) {
                     try {
@@ -774,55 +780,8 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                         replyParts = replyParts.slice(0, 4).concat([replyParts.slice(4).join(' ')]);
                     }
                     
-                    // 保存通知（如果当前正在 chat-room 中，则直接将其标为已读，避免离开后重复弹窗）
-                    var notificationData = {
-                        id: requestId,
-                        parts: replyParts.map(function(p) { return p.trim(); }),
-                        timestamp: Date.now(),
-                        shown: false
-                    };
-                    if (!document.hidden && window.location.pathname.indexOf('chat-room.html') !== -1) {
-                        notificationData.shown = true;
-                    }
-                    localStorage.setItem('ai_notification', JSON.stringify(notificationData));
                     localStorage.removeItem('processing_on_chatroom');
 
-                    // Broadcast message via WebSocket so all pages receive it
-                    var charNickname = localStorage.getItem('char_nickname') || charName;
-                    var fullMessage = replyParts.join(' ');
-                    var broadcastData = {
-                        type: 'new_message',
-                        message: fullMessage,
-                        from: charNickname,
-                        timestamp: Date.now()
-                    };
-
-                    if (window.GlobalChat && window.GlobalChat.send) {
-                        try {
-                            window.GlobalChat.send(broadcastData);
-                            console.log('Message broadcast via WebSocket:', fullMessage);
-                        } catch (e) {
-                            console.error('WebSocket send error:', e);
-                            // Fallback to HTTP broadcast
-                            httpBroadcast(fullMessage, charNickname);
-                        }
-                    } else {
-                        console.warn('GlobalChat.send not available, using HTTP broadcast');
-                        httpBroadcast(fullMessage, charNickname);
-                    }
-
-                    function httpBroadcast(message, from) {
-                         fetch('/receiveMsg', {
-                             method: 'POST',
-                             headers: { 'Content-Type': 'application/json' },
-                             body: JSON.stringify({ message: message, from: from })
-                         }).then(function(res) {
-                             console.log('HTTP broadcast result:', res.ok);
-                         }).catch(function(e) {
-                             console.error('HTTP broadcast failed:', e);
-                         });
-                     }
-                    
                     var date = new Date();
                     var bt = formatBeijingTime(date);
                     var timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
@@ -1054,36 +1013,6 @@ var quoteHtml = renderQuoteHtml(msg.quote);
             
             loadProfiles();
 
-            // Use global WebSocket connection for real-time messages
-            window.GlobalChatHandlers = {
-                onMessage: function(data) {
-                    if (data.type === 'new_message') {
-                        var nickname = localStorage.getItem('char_nickname');
-                        var senderName = nickname || charName;
-                        if (data.from !== senderName) {
-                            loadMessages();
-                        }
-                    }
-                }
-            };
-
-            // Mark chat as viewed when page becomes visible
-            document.addEventListener('visibilitychange', function() {
-                if (!document.hidden) {
-                    markChatAsViewed();
-                }
-            });
-
-            // Also mark as viewed on focus
-            window.addEventListener('focus', function() {
-                markChatAsViewed();
-            });
-
-            // Ensure global WebSocket is connected
-            if (window.GlobalChat && window.GlobalChat.connect) {
-                window.GlobalChat.connect();
-            }
-            
             // Load chat background
             loadChatBackground();
             
@@ -1395,7 +1324,6 @@ var quoteHtml = renderQuoteHtml(msg.quote);
             
             if (backBtn) {
                 backBtn.addEventListener('click', function() {
-                    markChatAsViewed();
                     window.location.replace('chat.html');
                 });
             }
@@ -1408,7 +1336,6 @@ var quoteHtml = renderQuoteHtml(msg.quote);
 
             window.addEventListener('pagehide', function() {
                 localStorage.removeItem('processing_on_chatroom');
-                markChatAsViewed();
             });
             
             messageInput.addEventListener('input', function(e) {

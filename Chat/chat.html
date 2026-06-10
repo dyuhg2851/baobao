@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <link rel="stylesheet" href="chat.css">
-    <script src="chat-notification.js" defer></script>
-    <script src="push-manager.js" defer></script>
-    <script src="global-ws-manager.js"></script>
+    <style id="custom-css-style"></style>
     <title>WeChat</title>
+    <script>
+        function loadCustomCSS() {
+            const customCSS = localStorage.getItem('chat_custom_css');
+            const styleElement = document.getElementById('custom-css-style');
+            if (customCSS && styleElement) {
+                styleElement.textContent = customCSS;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadCustomCSS);
+    </script>
 </head>
 <body>
     <div class="settings-container">
@@ -255,16 +263,6 @@
                     window.location.replace('chat-room.html');
                 });
             }
-            
-            // WebSocket消息处理 - 接收新消息时更新聊天列表
-            window.GlobalChatHandlers = {
-                onMessage: function(data) {
-                    if (data.type === 'new_message') {
-                        console.log('Chat list received new message:', data);
-                        loadLastMessage();
-                    }
-                }
-            };
         });
         
         function initCalendar() {
