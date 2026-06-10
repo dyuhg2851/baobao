@@ -45,21 +45,46 @@
         })();
         
         // 全局音频播放器 - 在页面间共享播放
-        window.musicAudio = document.createElement('audio');
-        window.musicAudio.setAttribute('playsinline', '');
-        window.musicAudio.setAttribute('webkit-playsinline', '');
-        window.musicAudio.style.display = 'none';
-        document.body.appendChild(window.musicAudio);
+        window.musicAudio = null;
+        
+        // 初始化音频播放器
+        function initMusicAudio() {
+            if (!window.musicAudio && document.body) {
+                window.musicAudio = document.createElement('audio');
+                window.musicAudio.setAttribute('playsinline', '');
+                window.musicAudio.setAttribute('webkit-playsinline', '');
+                window.musicAudio.style.display = 'none';
+                document.body.appendChild(window.musicAudio);
+            }
+        }
         
         // 从localStorage恢复音乐播放状态
         function resumeMusicPlayback() {
             const savedState = localStorage.getItem('music_audio_state');
             if (savedState) {
                 try {
+                    initMusicAudio();
+                    if (!window.musicAudio) return;
                     const state = JSON.parse(savedState);
                     if (state.isPlaying && state.currentSong && state.currentSong.musicUrl) {
                         window.musicAudio.src = state.currentSong.musicUrl;
                         window.musicAudio.currentTime = state.currentTime;
+                        window.musicAudio.volume = 1;
+                        
+                        // 设置Media Session（如果支持）
+                        if ('mediaSession' in navigator && typeof MediaMetadata !== 'undefined') {
+                            try {
+                                navigator.mediaSession.metadata = new MediaMetadata({
+                                    title: state.currentSong.name || '未知歌曲',
+                                    artist: state.currentSong.artist || '未知艺术家',
+                                    album: 'Music Player'
+                                });
+                                navigator.mediaSession.playbackState = 'playing';
+                            } catch(e) {
+                                console.warn('MediaSession设置失败:', e);
+                            }
+                        }
+                        
                         window.musicAudio.play().then(() => {
                             console.log('音乐在主页继续播放');
                         }).catch(err => {
@@ -70,6 +95,19 @@
                     console.error('恢复音乐播放失败:', e);
                 }
             }
+        }
+        
+        // 监听Service Worker的消息
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'UPDATE_AUDIO_STATE') {
+                    localStorage.setItem('music_audio_state', JSON.stringify(event.data.state));
+                    // 更新音频播放位置
+                    if (window.musicAudio && event.data.state && event.data.state.currentTime) {
+                        window.musicAudio.currentTime = event.data.state.currentTime;
+                    }
+                }
+            });
         }
         
         // DOM加载完成后执行其他初始化

@@ -775,15 +775,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('currentSongIndex:', currentSongIndex);
         console.log('isPlaying:', isPlaying);
         
-        // 保存播放状态到localStorage，但不停止当前播放
+        // 将播放状态交给Service Worker继续播放
         if (isPlaying && songs.length > 0 && currentSongIndex >= 0 && currentSongIndex < songs.length) {
-            const currentSong = songs[currentSongIndex];
-            localStorage.setItem('music_audio_state', JSON.stringify({
-                currentSong: currentSong,
-                currentTime: audio.currentTime,
-                isPlaying: true,
-                listenTime: listenTime
-            }));
+            handOffPlaybackToServiceWorker();
         }
         
         window.location.href = '../index.html';
