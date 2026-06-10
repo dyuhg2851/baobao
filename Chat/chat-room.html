@@ -371,11 +371,17 @@
                             prompt += '\n\n当前可用的表情包名称：' + emojiNames.join('、') + '。';
                             prompt += '\n如果你想发送表情包，请直接在回复中使用格式 [[emoji:表情名]]，系统会根据名称匹配对应的图片。不要使用普通 emoji 符号。';
                             prompt += '\n只在对话语境需要时才发送表情包，不要每次回复都插入表情包；你的选择应基于人设、对话内容、情绪语境和图片含义。';
-                        }
-                    } catch (e) {}
-                }
+                    }
+                } catch (e) {}
+            }
+            
+            // 添加转账消息格式说明
+            prompt += '\n\n【转账消息格式】：';
+            prompt += '\n如果你想发送转账消息，请在回复中使用JSON格式：{"type": "transfer", "amount": 金额, "message": "留言"}';
+            prompt += '\n例如：{"type": "transfer", "amount": 520, "message": "给你买奶茶"}';
+            prompt += '\n只在合适的语境下发送转账消息，比如讨论金钱、礼物、红包、报销、借钱等场景。不要频繁发送转账消息。';
 
-                prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话。';
+            prompt += '\n\n请以' + charName + '的身份和我聊天，保持人设统一，语气自然，像真人一样对话。';
                 
                 // Include memory
                 var memoryData = localStorage.getItem('char_memory');
@@ -991,6 +997,16 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                             if (found && found.url) {
                                 contentToSave = found.url;
                             }
+                        }
+                        
+                        // 检测转账消息格式
+                        try {
+                            var parsedTransfer = JSON.parse(rawPart);
+                            if (parsedTransfer.type === 'transfer' && typeof parsedTransfer.amount === 'number') {
+                                contentToSave = rawPart;
+                            }
+                        } catch (e) {
+                            // 不是有效JSON，继续正常处理
                         }
 
                         // 只有第一条回复消息带引用
