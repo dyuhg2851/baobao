@@ -99,6 +99,53 @@
                 </div>
             </div>
         
+        <!-- 图片选择器 -->
+        <input type="file" id="image-upload" accept="image/*" style="display: none;">
+        
+        <!-- 转账弹窗 -->
+        <div class="transfer-modal" id="transfer-modal" style="display: none;">
+            <div class="transfer-modal-overlay" id="transfer-modal-overlay"></div>
+            <div class="transfer-modal-content">
+                <div class="transfer-modal-title">转账</div>
+                <div class="transfer-input-group">
+                    <label class="transfer-label">转账金额</label>
+                    <div class="transfer-amount-input">
+                        <span class="transfer-currency">¥</span>
+                        <input type="number" id="transfer-amount" class="transfer-amount" placeholder="0.00" step="0.01">
+                    </div>
+                </div>
+                <div class="transfer-input-group">
+                    <label class="transfer-label">转账留言</label>
+                    <input type="text" id="transfer-message" class="transfer-message" placeholder="添加留言（可选）">
+                </div>
+                <div class="transfer-modal-buttons">
+                    <button class="transfer-btn cancel" id="transfer-cancel">Cancel</button>
+                    <button class="transfer-btn confirm" id="transfer-confirm">Confirm</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 转账接收/退回弹窗 -->
+        <div class="transfer-action-modal" id="transfer-action-modal" style="display: none;">
+            <div class="transfer-action-overlay" id="transfer-action-overlay"></div>
+            <div class="transfer-action-content">
+                <div class="transfer-action-info">
+                    <div class="transfer-action-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 14 14"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4l2.08 2.77L9.15 4M7.08 6.77V10m-1.62-.69h3.23M5.46 7.5h3.23"/><circle cx="7" cy="7" r="6.5"/></g></svg>
+                    </div>
+                    <div class="transfer-action-details">
+                        <span class="transfer-action-title">Transfer</span>
+                        <span class="transfer-action-amount" id="transfer-action-amount">¥0.00</span>
+                        <span class="transfer-action-message" id="transfer-action-message"></span>
+                    </div>
+                </div>
+                <div class="transfer-action-buttons">
+                    <button class="transfer-action-btn return" id="transfer-action-return">Return</button>
+                    <button class="transfer-action-btn receive" id="transfer-action-receive">Receive</button>
+                </div>
+            </div>
+        </div>
+        
         <div class="chat-input" id="chat-input">
             <div class="chat-input-inner">
                 <button id="receive-btn" class="receive-btn" title="Receive AI Response">
@@ -419,9 +466,35 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                             var nickname = msg.role === 'sent' ? '@> <' : '@T T';
                             var avatarHtml, timeHtml = '';
                             
-                            // 判断是否是纯图片消息
-                            var isImageOnly = /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test((msg.text || '').trim());
-                            var contentClass = isImageOnly ? 'message-content message-content-image-only' : 'message-content';
+                            // 判断是否是纯图片消息（包括URL图片和base64图片）
+                            var trimmedText = (msg.text || '').trim();
+                            var isImageOnly = /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(trimmedText) || 
+                                             /^data:image\/(jpg|jpeg|png|gif|webp|bmp|svg);base64,/i.test(trimmedText);
+                            // 判断是否是转账消息（尝试解析JSON）
+                            var isTransfer = false;
+                            var transferData = null;
+                            try {
+                                var parsedText = JSON.parse(msg.text || '{}');
+                                if (parsedText.type === 'transfer') {
+                                    isTransfer = true;
+                                    transferData = parsedText;
+                                }
+                            } catch (e) {
+                                // 不是JSON格式
+                            }
+                            
+                            var contentHtml = '';
+                            if (isTransfer && transferData) {
+                                // 转账消息不使用气泡包裹
+                                contentHtml = renderTransferMessage(transferData);
+                            } else if (isImageOnly) {
+                                // 图片消息不使用气泡包裹
+                                contentHtml = '<div class="message-image-container">' + renderMessageText(msg.text) + '</div>';
+                            } else {
+                                // 普通消息使用气泡包裹
+                                var contentClass = 'message-content';
+                                contentHtml = '<div class="message-content-wrapper"><div class="' + contentClass + '"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div>';
+                            }
 
                             if (showAvatarAndTime) {
                                 if (msg.time) {
@@ -430,9 +503,9 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                                     timeHtml = '<span class="message-time">' + bt.hours + ':' + bt.minutes + '</span>';
                                 }
                                 avatarHtml = msg.role === 'sent' ? userAvatarHtml : charAvatarHtml;
-                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + '<div class="message-content-wrapper"><div class="' + contentClass + '"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar">' + avatarHtml + '</div>' + timeHtml + '</div><div class="message-info"><span class="message-nickname">' + nickname + '</span>' + quoteHtml + contentHtml + '</div></div>' + warningIcon + '</div>');
                             } else {
-                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + '<div class="message-content-wrapper"><div class="' + contentClass + '"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div></div>' + warningIcon + '</div>');
+                                htmlParts.push('<div class="' + elClass + '" data-index="' + index + '"><span class="select-check"></span><div class="message-avatar-wrapper"><div class="message-avatar hidden"></div></div><div class="message-info">' + quoteHtml + contentHtml + '</div></div>' + warningIcon + '</div>');
                             }
                         });
 
@@ -625,16 +698,33 @@ var quoteHtml = renderQuoteHtml(msg.quote);
 
                 // 判断是否是纯图片消息
                 var isImageOnly = isImageOnlyMessage(msg.text);
+                // 判断是否是转账消息（尝试解析JSON）
+                var isTransfer = false;
+                var transferData = null;
+                try {
+                    var parsedText = JSON.parse(msg.text || '{}');
+                    if (parsedText.type === 'transfer') {
+                        isTransfer = true;
+                        transferData = parsedText;
+                    }
+                } catch (e) {
+                    // 不是JSON格式
+                }
+                
+                var contentHtml = '';
+                if (isTransfer && transferData) {
+                    contentHtml = renderTransferMessage(transferData);
+                } else if (isImageOnly) {
+                    contentHtml = '<div class="message-image-container">' + renderMessageText(msg.text) + '</div>';
+                } else {
+                    contentHtml = '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div>';
+                }
                 
                 el.innerHTML = avatarWrapperHtml +
                     '<div class="message-info">' +
                         nicknameHtml +
                         quoteHtml +
-                        '<div class="message-content-wrapper">' +
-                            (isImageOnly ? 
-                                '<div class="message-content message-content-image-only"><div class="message-text">' + renderMessageText(msg.text) + '</div></div>' :
-                                '<div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div>') +
-                        '</div>' +
+                        contentHtml +
                     '</div>' +
                     warningIcon;
 
@@ -712,6 +802,16 @@ var quoteHtml = renderQuoteHtml(msg.quote);
             }
 
             function renderMessageText(text) {
+                // 检测是否是转账消息
+                try {
+                    var parsed = JSON.parse(text);
+                    if (parsed.type === 'transfer') {
+                        return renderTransferMessage(parsed);
+                    }
+                } catch (e) {
+                    // 不是JSON格式，继续正常处理
+                }
+                
                 var escaped = escapeHtml(text || '');
                 var emojiPack = [];
                 try {
@@ -723,6 +823,12 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 var urlOnlyMatch = (text || '').trim().match(/^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i);
                 if (urlOnlyMatch) {
                     return '<img class="message-image-full" src="' + escapeHtml(urlOnlyMatch[0]) + '" alt="image" />';
+                }
+                
+                // 如果文本是base64图片，直接渲染为图片
+                var base64Match = (text || '').trim().match(/^data:image\/(jpg|jpeg|png|gif|webp|bmp|svg);base64,/i);
+                if (base64Match) {
+                    return '<img class="message-image-full" src="' + escapeHtml(text) + '" alt="image" />';
                 }
 
                 escaped = escaped.replace(/\[\[emoji:([^\]]+)\]\]/gi, function(match, name) {
@@ -738,9 +844,34 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 return escaped.replace(/\r?\n/g, '<br>');
             }
             
-            // 判断是否是纯图片消息
+            // 渲染转账消息
+            function renderTransferMessage(transfer) {
+                var amount = transfer.amount || 0;
+                var message = transfer.message || '';
+                var isExpired = transfer.expired === true;
+                var expiredClass = isExpired ? ' transfer-expired' : '';
+                
+                return `
+                    <div class="message-transfer${expiredClass}">
+                        <div class="transfer-header">
+                            <div class="transfer-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 14 14"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4l2.08 2.77L9.15 4M7.08 6.77V10m-1.62-.69h3.23M5.46 7.5h3.23"/><circle cx="7" cy="7" r="6.5"/></g></svg>
+                            </div>
+                            <span class="transfer-title">Transfer</span>
+                        </div>
+                        <div class="transfer-amount-row">
+                            <span class="transfer-amount-value">¥${amount.toFixed(2)}</span>
+                        </div>
+                        ${message ? '<div class="transfer-message-text">' + escapeHtml(message) + '</div>' : ''}
+                    </div>
+                `;
+            }
+            
+            // 判断是否是纯图片消息（包括URL图片和base64图片）
             function isImageOnlyMessage(text) {
-                return /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test((text || '').trim());
+                var trimmed = (text || '').trim();
+                return /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(trimmed) ||
+                       /^data:image\/(jpg|jpeg|png|gif|webp|bmp|svg);base64,/i.test(trimmed);
             }
 
             function renderQuoteHtml(quote) {
@@ -1166,13 +1297,26 @@ var quoteHtml = renderQuoteHtml(msg.quote);
             // 功能按钮事件
             document.getElementById('action-image').addEventListener('click', function(e) {
                 e.stopPropagation();
-                // 弹出图片URL输入框
-                var imageUrl = prompt('请输入图片URL:');
-                if (imageUrl && imageUrl.trim()) {
-                    var input = document.getElementById('message-input');
-                    input.value = imageUrl.trim();
-                    input.focus();
+                // 触发文件选择器，从系统相册选择图片
+                document.getElementById('image-upload').click();
+            });
+            
+            // 图片上传处理
+            document.getElementById('image-upload').addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                        // 将图片转换为base64，直接发送
+                        var base64Image = event.target.result;
+                        saveMessage(base64Image, 'sent', currentQuote);
+                        loadMessages();
+                        currentQuote = null;
+                    };
+                    reader.readAsDataURL(file);
                 }
+                // 重置文件输入，允许重复选择同一张图片
+                e.target.value = '';
             });
             
             document.getElementById('action-call').addEventListener('click', function(e) {
@@ -1183,8 +1327,99 @@ var quoteHtml = renderQuoteHtml(msg.quote);
             
             document.getElementById('action-transfer').addEventListener('click', function(e) {
                 e.stopPropagation();
-                // TODO: 转账功能
-                alert('转账功能即将上线');
+                // 打开转账弹窗
+                document.getElementById('transfer-modal').style.display = 'flex';
+            });
+            
+            // 转账弹窗取消按钮
+            document.getElementById('transfer-cancel').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('transfer-modal').style.display = 'none';
+                document.getElementById('transfer-amount').value = '';
+                document.getElementById('transfer-message').value = '';
+            });
+            
+            // 转账弹窗遮罩点击关闭
+            document.getElementById('transfer-modal-overlay').addEventListener('click', function(e) {
+                document.getElementById('transfer-modal').style.display = 'none';
+                document.getElementById('transfer-amount').value = '';
+                document.getElementById('transfer-message').value = '';
+            });
+            
+            // 确认转账
+            document.getElementById('transfer-confirm').addEventListener('click', function(e) {
+                e.stopPropagation();
+                var amount = document.getElementById('transfer-amount').value;
+                var message = document.getElementById('transfer-message').value;
+                
+                if (!amount || parseFloat(amount) <= 0) {
+                    alert('请输入有效的转账金额');
+                    return;
+                }
+                
+                // 构建转账消息
+                var transferContent = JSON.stringify({
+                    type: 'transfer',
+                    amount: parseFloat(amount),
+                    message: message || ''
+                });
+                
+                // 发送转账消息
+                saveMessage(transferContent, 'sent', currentQuote);
+                loadMessages();
+                currentQuote = null;
+                
+                // 关闭弹窗
+                document.getElementById('transfer-modal').style.display = 'none';
+                document.getElementById('transfer-amount').value = '';
+                document.getElementById('transfer-message').value = '';
+            });
+            
+            // 点击转账条弹出接收/退回弹窗
+            var currentTransferIndex = null;
+            document.addEventListener('click', function(e) {
+                var transferEl = e.target.closest('.message-transfer');
+                if (transferEl) {
+                    var messageEl = transferEl.closest('.message');
+                    if (messageEl) {
+                        var index = parseInt(messageEl.dataset.index);
+                        var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                        var msg = msgs[index];
+                        if (msg) {
+                            try {
+                                var parsed = JSON.parse(msg.text || '{}');
+                                if (parsed.type === 'transfer') {
+                                    currentTransferIndex = index;
+                                    document.getElementById('transfer-action-amount').textContent = '¥' + (parsed.amount || 0).toFixed(2);
+                                    document.getElementById('transfer-action-message').textContent = parsed.message || '';
+                                    document.getElementById('transfer-action-modal').style.display = 'flex';
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+            });
+            
+            // 接收/退回弹窗遮罩点击关闭
+            document.getElementById('transfer-action-overlay').addEventListener('click', function(e) {
+                document.getElementById('transfer-action-modal').style.display = 'none';
+                currentTransferIndex = null;
+            });
+            
+            // 退回按钮
+            document.getElementById('transfer-action-return').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('transfer-action-modal').style.display = 'none';
+                currentTransferIndex = null;
+                // TODO: 退回逻辑
+            });
+            
+            // 接收按钮
+            document.getElementById('transfer-action-receive').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('transfer-action-modal').style.display = 'none';
+                currentTransferIndex = null;
+                // TODO: 接收逻辑
             });
             
             function loadEmojis() {

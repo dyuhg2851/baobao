@@ -385,17 +385,29 @@ body {
 
 /* 纯图片消息的大图样式 */
 .message-text img.message-image-full {
-    max-width: 200px;
-    max-height: 200px;
-    min-width: 150px;
-    min-height: 150px;
+    max-width: 120px;
+    max-height: 120px;
     width: auto;
     height: auto;
     object-fit: contain;
-    border-radius: 12px;
+    border-radius: 8px;
     display: block;
     margin: 0;
     padding: 0;
+}
+
+/* 图片消息容器 */
+.message-image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message-image-container img.message-image-full {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 8px;
+    display: block;
 }
 
 /* 确保发送的消息图片也没有气泡 */
@@ -585,7 +597,7 @@ body {
 /* 功能按钮区域 - 在输入框上方 */
 .action-buttons {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 10px;
     padding: 4px 12px;
     position: fixed;
@@ -620,6 +632,312 @@ body {
 .action-btn span {
     font-size: 11px;
     color: #333333;
+}
+
+/* 转账弹窗样式 */
+.transfer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.transfer-modal-content {
+    position: relative;
+    width: 70%;
+    max-width: 260px;
+    background-color: #ffffff;
+    border-radius: 3px;
+    padding: 24px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    margin: 20px;
+    text-align: center;
+}
+
+.transfer-modal-title {
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 12px;
+    color: #333333;
+}
+
+.transfer-input-group {
+    margin-bottom: 16px;
+}
+
+.transfer-label {
+    display: block;
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.transfer-amount-input {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #000000;
+    padding: 8px 0;
+    background: none;
+}
+
+.transfer-currency {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333333;
+    margin-right: 8px;
+}
+
+.transfer-amount {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    background: none;
+    outline: none;
+    color: #333333;
+}
+
+.transfer-message {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px solid #000000;
+    font-size: 14px;
+    outline: none;
+    background: none;
+    box-sizing: border-box;
+}
+
+.transfer-modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.transfer-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    background-color: transparent;
+}
+
+.transfer-btn.cancel {
+    color: #999999;
+}
+
+.transfer-btn.confirm {
+    color: #007AFF;
+}
+
+/* 转账条消息样式 */
+.message-transfer {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    border-radius: 10px;
+    padding: 8px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 180px;
+    box-sizing: border-box;
+    margin: 2px 0;
+}
+
+/* 确保转账条在消息布局中对齐 */
+.message.sent .message-transfer {
+    align-self: flex-end;
+}
+
+.message.received .message-transfer {
+    align-self: flex-start;
+}
+
+.transfer-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.transfer-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.transfer-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.transfer-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #333333;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed #cccccc;
+}
+
+.transfer-amount-row {
+    padding-left: 44px;
+    margin-top: -2px;
+}
+
+.transfer-amount-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333333;
+}
+
+.transfer-message-text {
+    padding-left: 44px;
+    font-size: 10px;
+    color: #999999;
+    word-break: break-word;
+}
+
+/* 转账失效样式 - 全部浅灰色 */
+.transfer-expired {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+}
+
+.transfer-expired .transfer-icon svg {
+    stroke: #cccccc;
+}
+
+.transfer-expired .transfer-title {
+    color: #cccccc;
+    border-bottom-color: #dddddd;
+}
+
+.transfer-expired .transfer-amount-value {
+    color: #cccccc;
+}
+
+.transfer-expired .transfer-message-text {
+    color: #cccccc;
+}
+
+/* 转账接收/退回弹窗 */
+.transfer-action-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transfer-action-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.transfer-action-content {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 3px;
+    width: 70%;
+    max-width: 260px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.transfer-action-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.transfer-action-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.transfer-action-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.transfer-action-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.transfer-action-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333333;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed #cccccc;
+}
+
+.transfer-action-amount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333333;
+}
+
+.transfer-action-message {
+    font-size: 11px;
+    color: #999999;
+    word-break: break-word;
+}
+
+.transfer-action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+}
+
+.transfer-action-btn {
+    padding: 0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.transfer-action-btn.return {
+    color: #999999;
+}
+
+.transfer-action-btn.receive {
+    color: #007AFF;
 }
 
 @media (max-width: 768px) {
