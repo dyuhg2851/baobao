@@ -415,6 +415,23 @@ body {
     background-color: transparent !important;
 }
 
+/* 表情包容器样式 - 不使用气泡包裹 */
+.message-emoji-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* 表情包图片样式 - 放大 */
+.message-emoji-container img.emoji-image {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+    display: inline-block;
+}
+
 /* 确保收到的消息图片也没有气泡 */
 .message.received .message-content-image-only {
     background-color: transparent !important;
@@ -744,8 +761,9 @@ body {
 
 /* 转账条消息样式 */
 .message-transfer {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 100%);
     border-radius: 10px;
+    border: 0.5px solid #d0d0d0;
     padding: 8px 14px;
     display: flex;
     flex-direction: column;
@@ -753,6 +771,17 @@ body {
     width: 180px;
     box-sizing: border-box;
     margin: 2px 0;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.message-transfer:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-transfer:active {
+    transform: scale(0.98);
 }
 
 /* 确保转账条在消息布局中对齐 */
@@ -831,6 +860,23 @@ body {
 
 .transfer-expired .transfer-message-text {
     color: #cccccc;
+}
+
+/* 转账状态样式 */
+.transfer-status {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed #cccccc;
+    font-size: 10px;
+    text-align: center;
+}
+
+.transfer-status-received {
+    color: #007AFF;
+}
+
+.transfer-status-returned {
+    color: #999999;
 }
 
 /* 转账接收/退回弹窗 */
@@ -960,6 +1006,11 @@ body {
     .emoji-btn {
         width: 40px;
         height: 40px;
+    }
+    
+    /* 移动端按钮往上移10px */
+    .action-buttons {
+        bottom: 55px;
     }
 }
 

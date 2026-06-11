@@ -48,10 +48,9 @@ body {
     top: env(safe-area-inset-top, 0);
     left: 0;
     right: 0;
-    height: 56px;
+    height: 50px;
     padding: 12px 20px 14px;
     background-color: #ffffff;
-    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.08);
     z-index: 50;
     margin-bottom: 0;
 }
@@ -255,32 +254,28 @@ h2 {
     color: #666666;
 }
 
-/* 字体模块样式 */
-.font-section {
+/* 铃声模块样式 */
+.ringtone-section {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-.font-input-group,
-.font-preset-group,
-.font-copy-group {
+.ringtone-upload-group,
+.ringtone-preview-group {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-.font-input-group label,
-.font-preset-group label,
-.font-copy-group label {
+.ringtone-upload-group label,
+.ringtone-preview-group label {
     font-size: 12px;
     font-weight: 500;
     color: #666;
 }
 
-.font-input-group input,
-.font-preset-group select,
-.font-copy-group input {
+.ringtone-upload-group input[type="file"] {
     width: 100%;
     padding: 4px 0;
     border: none;
@@ -291,6 +286,29 @@ h2 {
     background: transparent;
 }
 
+.ringtone-file-name {
+    font-size: 10px;
+    color: #999;
+    margin-top: 2px;
+}
+
+.ringtone-preview {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.ringtone-name {
+    font-size: 12px;
+    color: #333;
+    flex: 1;
+}
+
+.ringtone-actions {
+    margin: 8px 0;
+}
+
 /* 隐藏滚动条 */
 ::-webkit-scrollbar {
     display: none;
@@ -299,16 +317,6 @@ h2 {
 * {
     scrollbar-width: none;
     -ms-overflow-style: none;
-}
-
-.input-hint {
-    font-size: 10px;
-    color: #999;
-    margin-top: 2px;
-}
-
-.font-actions {
-    margin: 8px 0;
 }
 
 /* CSS美化模块样式 */

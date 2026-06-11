@@ -496,6 +496,9 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                             } else if (isImageOnly) {
                                 // 图片消息不使用气泡包裹
                                 contentHtml = '<div class="message-image-container">' + renderMessageText(msg.text) + '</div>';
+                            } else if (isEmojiOnlyMessage(msg.text)) {
+                                // 表情包消息不使用气泡包裹
+                                contentHtml = '<div class="message-emoji-container">' + renderMessageText(msg.text) + '</div>';
                             } else {
                                 // 普通消息使用气泡包裹
                                 var contentClass = 'message-content';
@@ -722,6 +725,9 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     contentHtml = renderTransferMessage(transferData);
                 } else if (isImageOnly) {
                     contentHtml = '<div class="message-image-container">' + renderMessageText(msg.text) + '</div>';
+                } else if (isEmojiOnlyMessage(msg.text)) {
+                    // 表情包消息不使用气泡包裹
+                    contentHtml = '<div class="message-emoji-container">' + renderMessageText(msg.text) + '</div>';
                 } else {
                     contentHtml = '<div class="message-content-wrapper"><div class="message-content"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div>';
                 }
@@ -779,8 +785,14 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                         for (var i = history.length - 1; i >= 0; i--) {
                             var m = history[i];
                             var content = m.text;
+                            
+                            // 检测是否为图片消息（base64格式）
+                            if (m.text && m.text.startsWith('data:image/')) {
+                                content = '[用户发送了一张图片]';
+                            }
+                            
                             if (m.quote) {
-                                content = '[Quote: ' + m.quote.sender + '] ' + m.quote.text + '\n\n' + m.text;
+                                content = '[Quote: ' + m.quote.sender + '] ' + m.quote.text + '\n\n' + content;
                             }
                             var entry = {
                                 role: m.role === 'sent' ? 'user' : 'assistant',
@@ -801,6 +813,24 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     msgs.push({ role: 'user', content: '请根据人设分享自己的日常及感想感受' });
                 }
                 return msgs.concat(historyMessages);
+            }
+
+            // 播放铃声
+            function playRingtone() {
+                var ringtoneData = localStorage.getItem('chat_ringtone');
+                if (!ringtoneData) return;
+                
+                try {
+                    var ringtone = JSON.parse(ringtoneData);
+                    if (ringtone.data) {
+                        var audio = new Audio(ringtone.data);
+                        audio.play().catch(function(err) {
+                            console.error('铃声播放失败:', err);
+                        });
+                    }
+                } catch (e) {
+                    console.error('铃声解析失败:', e);
+                }
             }
 
             function escapeHtml(str) {
@@ -855,7 +885,15 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 var amount = transfer.amount || 0;
                 var message = transfer.message || '';
                 var isExpired = transfer.expired === true;
+                var status = transfer.status;
                 var expiredClass = isExpired ? ' transfer-expired' : '';
+                
+                var statusHtml = '';
+                if (status === 'received') {
+                    statusHtml = '<div class="transfer-status transfer-status-received">Received</div>';
+                } else if (status === 'returned') {
+                    statusHtml = '<div class="transfer-status transfer-status-returned">Returned</div>';
+                }
                 
                 return `
                     <div class="message-transfer${expiredClass}">
@@ -869,6 +907,7 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                             <span class="transfer-amount-value">¥${amount.toFixed(2)}</span>
                         </div>
                         ${message ? '<div class="transfer-message-text">' + escapeHtml(message) + '</div>' : ''}
+                        ${statusHtml}
                     </div>
                 `;
             }
@@ -878,6 +917,13 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 var trimmed = (text || '').trim();
                 return /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(trimmed) ||
                        /^data:image\/(jpg|jpeg|png|gif|webp|bmp|svg);base64,/i.test(trimmed);
+            }
+            
+            // 判断是否是纯表情包消息（只包含[[emoji:xxx]]格式）
+            function isEmojiOnlyMessage(text) {
+                var trimmed = (text || '').trim();
+                // 匹配一个或多个[[emoji:名字]]格式，表情包之间可以有换行或空格
+                return /^\[\[emoji:[^\]]+\]\]([\s\n]*\[\[emoji:[^\]]+\]\])*$/.test(trimmed);
             }
 
             function renderQuoteHtml(quote) {
@@ -1011,6 +1057,12 @@ var quoteHtml = renderQuoteHtml(msg.quote);
 
                         // 只有第一条回复消息带引用
                         saveMessage(contentToSave, 'received', index === 0 ? replyQuote : null);
+                        
+                        // AI回复时播放铃声（只在第一条消息时播放）
+                        if (index === 0) {
+                            playRingtone();
+                        }
+                        
                         var replyEl = document.createElement('div');
                         replyEl.className = 'message received new-message';
                         
@@ -1426,16 +1478,46 @@ var quoteHtml = renderQuoteHtml(msg.quote);
             document.getElementById('transfer-action-return').addEventListener('click', function(e) {
                 e.stopPropagation();
                 document.getElementById('transfer-action-modal').style.display = 'none';
+                
+                if (currentTransferIndex !== null) {
+                    var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    var msg = msgs[currentTransferIndex];
+                    if (msg) {
+                        try {
+                            var parsed = JSON.parse(msg.text || '{}');
+                            if (parsed.type === 'transfer') {
+                                parsed.status = 'returned';
+                                msg.text = JSON.stringify(parsed);
+                                localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+                                loadMessages();
+                            }
+                        } catch (err) {}
+                    }
+                }
                 currentTransferIndex = null;
-                // TODO: 退回逻辑
             });
             
             // 接收按钮
             document.getElementById('transfer-action-receive').addEventListener('click', function(e) {
                 e.stopPropagation();
                 document.getElementById('transfer-action-modal').style.display = 'none';
+                
+                if (currentTransferIndex !== null) {
+                    var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                    var msg = msgs[currentTransferIndex];
+                    if (msg) {
+                        try {
+                            var parsed = JSON.parse(msg.text || '{}');
+                            if (parsed.type === 'transfer') {
+                                parsed.status = 'received';
+                                msg.text = JSON.stringify(parsed);
+                                localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+                                loadMessages();
+                            }
+                        } catch (err) {}
+                    }
+                }
                 currentTransferIndex = null;
-                // TODO: 接收逻辑
             });
             
             function loadEmojis() {

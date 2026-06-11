@@ -38,35 +38,6 @@
             </div>
         </div>
         
-        <!-- 字体卡片 -->
-        <div class="card">
-            <h2>字体</h2>
-            
-            <div class="font-section">
-                <div class="font-preset-group">
-                    <label for="font-preset">预设字体</label>
-                    <select id="font-preset">
-                        <option value="">选择预设</option>
-                        <!-- 预设字体将通过JS动态添加 -->
-                    </select>
-                </div>
-                
-                <div class="font-input-group">
-                    <label for="font-url">字体链接</label>
-                    <input type="text" id="font-url" placeholder="">
-                </div>
-                
-                <div class="font-actions">
-                    <div class="button-group">
-                        <button id="font-delete" class="btn btn-delete">Delete</button>
-                        <button id="font-save" class="btn btn-save">Save</button>
-                        <button id="font-add" class="btn btn-add">Add</button>
-                        <button id="font-clear" class="btn btn-add">Clear</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <!-- CSS美化卡片 -->
         <div class="card">
             <h2>CSS美化</h2>
@@ -203,6 +174,26 @@ body {
 }
 */
 
+/* 表情包容器样式 - 不使用气泡包裹 */
+/*
+.message-emoji-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+*/
+
+/* 表情包图片样式 - 放大显示 */
+/*
+.message-emoji-container img.emoji-image {
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+*/
+
 /* ------------------------------ */
 /* 4. 头像样式 (Avatar Styles) */
 /* ------------------------------ */
@@ -258,10 +249,28 @@ body {
 /* 转账条整体样式 - 灰白渐变背景 */
 /*
 .message-transfer {
-    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 100%);
     border-radius: 10px;
+    border: 0.5px solid #d0d0d0;
     padding: 8px 14px;
     width: 180px;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+*/
+
+/* 转账条悬停动效 */
+/*
+.message-transfer:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+*/
+
+/* 转账条点击动效 */
+/*
+.message-transfer:active {
+    transform: scale(0.98);
 }
 */
 
@@ -417,7 +426,35 @@ body {
 */
 
 /* ------------------------------ */
-/* 10. 转账弹窗样式 (Transfer Modal) */
+/* 10. 转账状态样式 (Transfer Status) */
+/* ------------------------------ */
+/* 转账状态容器 */
+/*
+.transfer-status {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed #cccccc;
+    font-size: 10px;
+    text-align: center;
+}
+*/
+
+/* 已接收状态 (蓝色) */
+/*
+.transfer-status-received {
+    color: #007AFF;
+}
+*/
+
+/* 已退回状态 (灰色) */
+/*
+.transfer-status-returned {
+    color: #999999;
+}
+*/
+
+/* ------------------------------ */
+/* 11. 转账弹窗样式 (Transfer Modal) */
 /* ------------------------------ */
 /* 弹窗背景遮罩 */
 /*
@@ -481,22 +518,39 @@ body {
                         <button id="css-add" class="btn btn-add">Add</button>
                         <button id="css-delete" class="btn btn-delete">Delete</button>
                     </div>
+            </div>
+        </div>
+        
+        <!-- 铃声卡片 -->
+        <div class="card">
+            <h2>铃声</h2>
+            
+            <div class="ringtone-section">
+                <div class="ringtone-upload-group">
+                    <label for="ringtone-file">上传铃声</label>
+                    <input type="file" id="ringtone-file" accept="audio/*">
+                    <div class="ringtone-file-name" id="ringtone-file-name"></div>
+                </div>
+                
+                <div class="ringtone-preview-group">
+                    <label>当前铃声</label>
+                    <div class="ringtone-preview" id="ringtone-preview">
+                        <span class="ringtone-name" id="ringtone-name">未设置</span>
+                        <button id="ringtone-play" class="btn btn-play">播放</button>
+                        <button id="ringtone-stop" class="btn btn-stop">停止</button>
+                    </div>
+                </div>
+                
+                <div class="ringtone-actions">
+                    <div class="button-group">
+                        <button id="ringtone-delete" class="btn btn-delete">Delete</button>
+                        <button id="ringtone-save" class="btn btn-save">Save</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- 字体预设弹窗 -->
-    <div id="font-modal" class="modal">
-        <div class="modal-content">
-            <h3>添加字体预设</h3>
-            <input type="text" id="font-preset-name" placeholder="输入预设名称">
-            <div class="modal-buttons">
-                <button id="font-modal-cancel" class="btn btn-save">Cancel</button>
-                <button id="font-modal-confirm" class="btn btn-add">Confirm</button>
-            </div>
-        </div>
-    </div>
+</div>
     
     <!-- CSS预设弹窗 -->
     <div id="css-modal" class="modal">

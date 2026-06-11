@@ -98,4 +98,6 @@ self.addEventListener('message', function(event) {
             clearInterval(progressInterval);
             progressInterval = null;
         }
-    });
+    }
+});
+});

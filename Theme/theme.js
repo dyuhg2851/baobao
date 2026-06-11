@@ -38,6 +38,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnSave = document.getElementById('btn-save');
     const btnDelete = document.getElementById('btn-delete');
     
+    // 铃声元素引用
+    const ringtoneFile = document.getElementById('ringtone-file');
+    const ringtoneFileName = document.getElementById('ringtone-file-name');
+    const ringtoneName = document.getElementById('ringtone-name');
+    const ringtonePlay = document.getElementById('ringtone-play');
+    const ringtoneStop = document.getElementById('ringtone-stop');
+    const ringtoneDelete = document.getElementById('ringtone-delete');
+    const ringtoneSave = document.getElementById('ringtone-save');
+    
+    // 铃声音频
+    let ringtoneAudio = null;
+    let currentRingtoneData = null;
+    
     // 模糊度值（0-100%）
     let currentBlur = 0;
     
@@ -336,6 +349,122 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+        
+        // ===== 铃声功能 =====
+        const RINGTONE_KEY = 'chat_ringtone';
+        
+        // 加载铃声
+        function loadRingtone() {
+            const saved = localStorage.getItem(RINGTONE_KEY);
+            if (saved) {
+                try {
+                    currentRingtoneData = JSON.parse(saved);
+                    if (ringtoneName) {
+                        ringtoneName.textContent = currentRingtoneData.name || '自定义铃声';
+                    }
+                } catch (e) {
+                    currentRingtoneData = null;
+                }
+            }
+        }
+        
+        // 上传铃声文件
+        if (ringtoneFile) {
+            ringtoneFile.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (ringtoneFileName) {
+                    ringtoneFileName.textContent = file.name;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentRingtoneData = {
+                        name: file.name,
+                        data: e.target.result
+                    };
+                    if (ringtoneName) {
+                        ringtoneName.textContent = file.name;
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // 播放铃声
+        if (ringtonePlay) {
+            ringtonePlay.addEventListener('click', function() {
+                if (!currentRingtoneData) {
+                    alert('请先上传铃声');
+                    return;
+                }
+                
+                if (ringtoneAudio) {
+                    ringtoneAudio.pause();
+                }
+                
+                ringtoneAudio = new Audio(currentRingtoneData.data);
+                ringtoneAudio.play().catch(function(err) {
+                    console.error('播放失败:', err);
+                });
+            });
+        }
+        
+        // 停止播放
+        if (ringtoneStop) {
+            ringtoneStop.addEventListener('click', function() {
+                if (ringtoneAudio) {
+                    ringtoneAudio.pause();
+                    ringtoneAudio.currentTime = 0;
+                }
+            });
+        }
+        
+        // 保存铃声
+        if (ringtoneSave) {
+            ringtoneSave.addEventListener('click', function() {
+                if (!currentRingtoneData) {
+                    alert('请先上传铃声');
+                    return;
+                }
+                
+                localStorage.setItem(RINGTONE_KEY, JSON.stringify(currentRingtoneData));
+                alert('铃声已保存！');
+            });
+        }
+        
+        // 删除铃声
+        if (ringtoneDelete) {
+            ringtoneDelete.addEventListener('click', function() {
+                if (!currentRingtoneData) {
+                    alert('没有铃声可删除');
+                    return;
+                }
+                
+                if (confirm('确定要删除当前铃声吗？')) {
+                    localStorage.removeItem(RINGTONE_KEY);
+                    currentRingtoneData = null;
+                    if (ringtoneName) {
+                        ringtoneName.textContent = '未设置';
+                    }
+                    if (ringtoneFileName) {
+                        ringtoneFileName.textContent = '';
+                    }
+                    if (ringtoneFile) {
+                        ringtoneFile.value = '';
+                    }
+                    if (ringtoneAudio) {
+                        ringtoneAudio.pause();
+                        ringtoneAudio = null;
+                    }
+                    alert('铃声已删除');
+                }
+            });
+        }
+        
+        // 加载铃声
+        loadRingtone();
         
         // 初始化
         init();
