@@ -9,7 +9,7 @@
     <style id="custom-css-style"></style>
     <title>Chat Room</title>
     <script>
-        // 加载自定义CSS
+        // 加载自定义 CSS
         function loadCustomCSS() {
             const customCSS = localStorage.getItem('chat_custom_css');
             const styleElement = document.getElementById('custom-css-style');
@@ -18,8 +18,15 @@
             }
         }
         
-        // 页面加载时应用自定义CSS
+        // 页面加载时应用自定义 CSS
         document.addEventListener('DOMContentLoaded', loadCustomCSS);
+        
+        // 监听 localStorage 变化，实时更新 CSS
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'chat_custom_css') {
+                loadCustomCSS();
+            }
+        });
     </script>
 </head>
 <body>
@@ -427,8 +434,10 @@
 
                         chatMessages.innerHTML = '';
                         var htmlParts = [];
+                        var timestampJustShown = false; // 追踪时间戳是否刚刚显示
 
                         messages.forEach(function(msg, index) {
+                            var hasTimestamp = false;
                             if (index > 0) {
                                 var prevMsg = messages[index - 1];
                                 if (shouldShowTimeStamp(msg, prevMsg)) {
@@ -441,6 +450,8 @@
                                     hours = hours % 12 || 12;
                                     minutes = minutes.toString().padStart(2, '0');
                                     htmlParts.push('<div class="message-timestamp">' + weekday + ' ' + hours + ':' + minutes + ' ' + period + '</div>');
+                                    timestampJustShown = true;
+                                    hasTimestamp = true;
                                 }
                             }
 
@@ -461,8 +472,14 @@
                             }
 
                             var showAvatarAndTime = true;
-                            if (index > 0 && messages[index - 1].role === msg.role) {
+                            // 如果上一条消息角色相同且没有时间戳刚刚显示，则不显示头像
+                            if (index > 0 && messages[index - 1].role === msg.role && !timestampJustShown) {
                                 showAvatarAndTime = false;
+                            }
+                            
+                            // 重置时间戳标记（除非当前消息是系统消息，不影响头像显示）
+                            if (msg.role !== 'system') {
+                                timestampJustShown = hasTimestamp;
                             }
 
                             var msgTime = msg.time ? new Date(msg.time).getTime() : 0;
@@ -490,7 +507,10 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                             }
                             
                             var contentHtml = '';
-                            if (isTransfer && transferData) {
+                            if (msg.role === 'system') {
+                                // 系统消息（转账状态提示条）
+                                contentHtml = '<div class="system-message transfer-status-bar">' + escapeHtml(msg.text) + '</div>';
+                            } else if (isTransfer && transferData) {
                                 // 转账消息不使用气泡包裹
                                 contentHtml = renderTransferMessage(transferData);
                             } else if (isImageOnly) {
@@ -505,7 +525,10 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                                 contentHtml = '<div class="message-content-wrapper"><div class="' + contentClass + '"><div class="message-text">' + renderMessageText(msg.text) + '</div></div></div>';
                             }
 
-                            if (showAvatarAndTime) {
+                            if (msg.role === 'system') {
+                                // 系统消息单独渲染，不需要头像和昵称
+                                htmlParts.push('<div class="message system-message-wrapper" data-index="' + index + '">' + contentHtml + '</div>');
+                            } else if (showAvatarAndTime) {
                                 if (msg.time) {
                                     var date = new Date(msg.time);
                                     var bt = formatBeijingTime(date);
@@ -784,21 +807,50 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                         var totalLength = 0;
                         for (var i = history.length - 1; i >= 0; i--) {
                             var m = history[i];
-                            var content = m.text;
                             
-                            // 检测是否为图片消息（base64格式）
-                            if (m.text && m.text.startsWith('data:image/')) {
-                                content = '[用户发送了一张图片]';
+                            // 检测是否为图片消息（base64格式或URL）
+                            var isImageMessage = m.text && (m.text.startsWith('data:image/') || 
+                                /^https?:\/\/[\S]+\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(m.text));
+                            
+                            var content;
+                            if (isImageMessage) {
+                                // 如果是图片消息，直接传递图片URL给AI
+                                // 支持GPT-4V等多模态模型的格式
+                                content = {
+                                    type: "image_url",
+                                    image_url: {
+                                        url: m.text
+                                    }
+                                };
+                            } else {
+                                content = m.text;
                             }
                             
-                            if (m.quote) {
+                            if (m.quote && !isImageMessage) {
                                 content = '[Quote: ' + m.quote.sender + '] ' + m.quote.text + '\n\n' + content;
                             }
-                            var entry = {
-                                role: m.role === 'sent' ? 'user' : 'assistant',
-                                content: content
-                            };
-                            var entryLength = content.length;
+                            
+                            var entry;
+                            if (isImageMessage) {
+                                // 图片消息使用content数组格式
+                                entry = {
+                                    role: m.role === 'sent' ? 'user' : 'assistant',
+                                    content: [
+                                        {
+                                            type: "text",
+                                            text: "[图片]"
+                                        },
+                                        content
+                                    ]
+                                };
+                            } else {
+                                entry = {
+                                    role: m.role === 'sent' ? 'user' : 'assistant',
+                                    content: content
+                                };
+                            }
+                            
+                            var entryLength = typeof content === 'string' ? content.length : 100; // 图片按100长度计算
                             if (historyMessages.length >= 12 || totalLength + entryLength > 3200) {
                                 break;
                             }
@@ -887,6 +939,7 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 var isExpired = transfer.expired === true;
                 var status = transfer.status;
                 var expiredClass = isExpired ? ' transfer-expired' : '';
+                var processedClass = (status === 'received' || status === 'returned') ? ' processed' : '';
                 
                 var statusHtml = '';
                 if (status === 'received') {
@@ -896,7 +949,7 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 }
                 
                 return `
-                    <div class="message-transfer${expiredClass}">
+                    <div class="message-transfer${expiredClass}${processedClass}">
                         <div class="transfer-header">
                             <div class="transfer-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 14 14"><g fill="none" stroke="#000000" stroke-linecap="round" stroke-linejoin="round"><path d="m5 4l2.08 2.77L9.15 4M7.08 6.77V10m-1.62-.69h3.23M5.46 7.5h3.23"/><circle cx="7" cy="7" r="6.5"/></g></svg>
@@ -963,6 +1016,37 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                     
                     // 移除所有emoji
                     reply = reply.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}]/gu, '');
+                    
+                    // 检查是否包含备注修改命令 [rename: 新备注] 或 [rename: 旧备注 -> 新备注]
+                    var renameMatch = reply.match(/\[rename:\s*([^\]→]+?)(?:\s*→\s*([^\]]+))?\s*\]/i);
+                    if (renameMatch) {
+                        var newNickname = renameMatch[1].trim();
+                        var oldNickname = renameMatch[2] ? renameMatch[2].trim() : '';
+                        
+                        // 获取当前用户昵称
+                        var currentNickname = localStorage.getItem('chat_user_name') || 'User';
+                        
+                        // 如果没有指定旧昵称，使用当前昵称
+                        if (!oldNickname) {
+                            oldNickname = currentNickname;
+                        }
+                        
+                        // 更新用户备注
+                        localStorage.setItem('chat_user_name', newNickname);
+                        
+                        // 添加系统提示条：从XX改名为XX
+                        var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                        var statusMsg = {
+                            role: 'system',
+                            text: `Char将对您的备注从「${oldNickname}」改为「${newNickname}」`,
+                            time: Date.now()
+                        };
+                        msgs.push(statusMsg);
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+                        
+                        // 从回复中移除备注修改命令
+                        reply = reply.replace(/\[rename:\s*[^\]]+\s*\]/i, '').trim();
+                    }
                     
                     // AI回复时，用户消息序列结束，最后一条用户消息变成is-last
                     document.querySelectorAll('.message.sent.is-middle, .message.sent.is-first').forEach(function(msgEl) {
@@ -1041,7 +1125,8 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                                 }
                             }
                             if (found && found.url) {
-                                contentToSave = found.url;
+                                // 保存为 [[emoji:名字]] 格式，这样渲染时会正确识别为表情包
+                                contentToSave = '[[emoji:' + targetName + ']]';
                             }
                         }
                         
@@ -1489,6 +1574,10 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                                 parsed.status = 'returned';
                                 msg.text = JSON.stringify(parsed);
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+                                
+                                // 添加退回提示条
+                                addTransferStatusMessage(msg.role, false);
+                                
                                 loadMessages();
                             }
                         } catch (err) {}
@@ -1512,6 +1601,10 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                                 parsed.status = 'received';
                                 msg.text = JSON.stringify(parsed);
                                 localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+                                
+                                // 添加接收提示条
+                                addTransferStatusMessage(msg.role, true);
+                                
                                 loadMessages();
                             }
                         } catch (err) {}
@@ -1519,6 +1612,36 @@ var quoteHtml = renderQuoteHtml(msg.quote);
                 }
                 currentTransferIndex = null;
             });
+            
+            // 添加转账状态提示条消息
+            function addTransferStatusMessage(senderRole, isReceived) {
+                var msgs = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+                
+                // 获取用户和角色名称
+                var userData = JSON.parse(localStorage.getItem('profile_user') || '{}');
+                var charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
+                var charName = localStorage.getItem('chat_char_name') || charData.name || 'Char';
+                var userName = userData.name || 'User';
+                
+                // 根据发送者角色确定显示的名称
+                var displayName = senderRole === 'sent' ? userName : charName;
+                
+                // 生成提示消息
+                var statusText = isReceived ? 
+                    `${displayName}已接收此转账 ^ ^` : 
+                    `${displayName}已退回此转账 TT`;
+                
+                // 创建提示消息
+                var statusMsg = {
+                    role: 'system',
+                    text: statusText,
+                    time: Date.now()
+                };
+                
+                // 插入到当前转账消息之后
+                msgs.splice(currentTransferIndex + 1, 0, statusMsg);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+            }
             
             function loadEmojis() {
                 var grid = document.getElementById('emoji-grid');

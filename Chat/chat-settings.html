@@ -104,12 +104,6 @@
                 <button id="btn-clear-chat" class="btn btn-delete">清除聊天记录</button>
             </div>
         </div>
-
-        <!-- 预设管理 -->
-        <div class="card">
-            <h2>预设管理</h2>
-            <div class="preset-list" id="preset-list"></div>
-        </div> <!-- page-content -->
     </div> <!-- settings-container -->
 
     <script>
@@ -186,12 +180,27 @@
 
                 const charData = JSON.parse(localStorage.getItem('profile_char') || '{}');
                 const nickname = localStorage.getItem('char_nickname') || charData.name || 'Char';
-                const chatText = chatData.map(c => 
-                    (c.role === 'sent' ? 'User' : nickname) + ': ' + c.text
-                ).join('\n');
+                
+                // 构建聊天记录文本，过滤掉系统消息
+                const chatText = chatData
+                    .filter(c => c.role !== 'system')
+                    .map(c => {
+                        const sender = c.role === 'sent' ? 'User' : nickname;
+                        return `${sender}: ${c.text}`;
+                    })
+                    .join('\n');
 
-                // 默认提示词：提炼重点不要缺失情感（用户后续可通过修改memory-summary-prompt输入框来自定义）
-                const defaultPrompt = '请提炼以下对话的重点内容，不要缺失情感信息。输出简洁的记忆笔记，包括关键信息、性格特点、偏好和关系动态。';
+                // 默认提示词：分点总结全部内容
+                const defaultPrompt = `请根据以下聊天记录进行完整总结，要求：
+1. 分点列出所有重要信息
+2. 包含用户和${nickname}的对话要点
+3. 记录性格特点、偏好、重要事件和关系动态
+4. 不要遗漏情感信息
+5. 使用简洁清晰的条目格式
+
+聊天记录：
+${chatText}`;
+
                 const finalPrompt = summaryPrompt || defaultPrompt;
 
                 // 显示弹窗
@@ -206,9 +215,9 @@
 
                 try {
                     const result = await callChatAPI([
-                        { role: 'system', content: finalPrompt },
-                        { role: 'user', content: 'Conversation:\n' + chatText }
-                    ], { maxTokens: 500, temperature: 0.7 });
+                        { role: 'system', content: '你是一个专业的记忆助手，负责从对话中提取重要信息并分点总结。' },
+                        { role: 'user', content: finalPrompt }
+                    ], { maxTokens: 800, temperature: 0.7 });
 
                     if (result) {
                         textarea.value = result;
@@ -345,46 +354,6 @@
             document.getElementById('memory-summary-prompt').addEventListener('change', function() {
                 localStorage.setItem('memory_summary_prompt', this.value);
             });
-
-            // Preset management
-            loadPresetsList();
-
-            function loadPresetsList() {
-                const presetListEl = document.getElementById('preset-list');
-                try {
-                    const presets = JSON.parse(localStorage.getItem('chat_theme_presets') || '{}');
-                    const presetNames = Object.keys(presets);
-                    
-                    if (presetNames.length === 0) {
-                        presetListEl.innerHTML = '<div class="preset-empty">暂无预设</div>';
-                        return;
-                    }
-                    
-                    presetListEl.innerHTML = presetNames.map(name => `
-                        <div class="preset-item">
-                            <span class="preset-item-name">${escapeHtml(name)}</span>
-                            <button class="preset-delete-btn" onclick="deletePreset('${escapeHtml(name)}')">删除</button>
-                        </div>
-                    `).join('');
-                } catch(e) {
-                    presetListEl.innerHTML = '<div class="preset-empty">暂无预设</div>';
-                }
-            }
-
-            window.deletePreset = function(name) {
-                if (!name) return;
-                if (confirm('确定要删除预设 "' + name + '" 吗？')) {
-                    try {
-                        const presets = JSON.parse(localStorage.getItem('chat_theme_presets') || '{}');
-                        delete presets[name];
-                        localStorage.setItem('chat_theme_presets', JSON.stringify(presets));
-                        loadPresetsList();
-                        alert('预设已删除');
-                    } catch(e) {
-                        alert('删除失败');
-                    }
-                }
-            };
 
             function escapeHtml(text) {
                 const div = document.createElement('div');

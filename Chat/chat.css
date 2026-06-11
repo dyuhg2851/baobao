@@ -27,6 +27,17 @@ body {
     -webkit-transform: translateZ(0);
 }
 
+/* 全局图标样式 - 确保点击前后粗细一致 */
+button, button svg, .nav-item, .nav-item svg, .action-btn, .action-btn svg {
+    stroke-width: inherit !important;
+}
+
+button:active svg, button:focus svg, 
+.nav-item:active svg, .nav-item:focus svg,
+.action-btn:active svg, .action-btn:focus svg {
+    stroke-width: inherit !important;
+}
+
 .settings-container {
     max-width: 600px;
     margin: 0 auto;
@@ -539,7 +550,8 @@ button.cancel:active {
 
 .modal-btn.confirm {
     background-color: transparent;
-    color: #000000;
+    color: #007aff;
+    font-size: 14px;
 }
 
 .modal-btn:hover {

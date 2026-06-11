@@ -302,3 +302,54 @@
     justify-content: center;
     padding: 0 20px;
 }
+
+/* 系统消息 - 统一提示条样式 */
+.message.system-message-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+    padding: 0;
+}
+
+.system-message {
+    border-top: 1px dashed #cccccc;
+    font-size: 10px;
+    color: #999999;
+    text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    width: 100%;
+    max-width: 280px;
+}
+
+/* 多选模式下系统消息可选中 */
+.message.system-message-wrapper.selectable {
+    cursor: pointer;
+}
+
+.message.system-message-wrapper.selected {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+/* 昵称样式 */
+.message-nickname {
+    font-size: 12px;
+    color: #666666;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+}
+
+/* 颜文字昵称样式 */
+.message-nickname[style*="@> <"],
+.message-nickname[style*="@T T"] {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+}
+
+.message.received .message-nickname {
+    text-align: left;
+}
+
+.message.sent .message-nickname {
+    text-align: right;
+}

@@ -780,7 +780,10 @@ document.addEventListener('DOMContentLoaded', function() {
             handOffPlaybackToServiceWorker();
         }
         
-        window.location.href = '../index.html';
+        // 延迟跳转，给Service Worker足够的时间处理消息
+        setTimeout(function() {
+            window.location.href = '../index.html';
+        }, 100);
     });
     
     addBtn.addEventListener('click', function() {

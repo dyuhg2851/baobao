@@ -205,6 +205,8 @@ body {
     -webkit-transform: translateZ(0);
     will-change: scroll-position;
     scroll-behavior: auto;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -326,6 +328,13 @@ body {
     letter-spacing: 1px;
 }
 
+/* 颜文字昵称样式 */
+.message-nickname[style*="@> <"],
+.message-nickname[style*="@T T"] {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+}
+
 .message.received .message-nickname {
     text-align: left;
 }
@@ -385,12 +394,12 @@ body {
 
 /* 纯图片消息的大图样式 */
 .message-text img.message-image-full {
-    max-width: 120px;
-    max-height: 120px;
+    max-width: 100px;
+    max-height: 100px;
     width: auto;
     height: auto;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 5px;
     display: block;
     margin: 0;
     padding: 0;
@@ -404,9 +413,9 @@ body {
 }
 
 .message-image-container img.message-image-full {
-    max-width: 120px;
-    max-height: 120px;
-    border-radius: 8px;
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 5px;
     display: block;
 }
 
@@ -425,10 +434,10 @@ body {
 
 /* 表情包图片样式 - 放大 */
 .message-emoji-container img.emoji-image {
-    width: 56px;
-    height: 56px;
+    width: 72px;
+    height: 72px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 5px;
     display: inline-block;
 }
 
@@ -452,7 +461,7 @@ body {
     width: 36px;
     height: 36px;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 5px;
     display: inline-block;
     vertical-align: middle;
 }
@@ -634,11 +643,16 @@ body {
     padding: 4px 6px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
-    transition: opacity 0.2s ease;
+    transition: transform 0.1s ease;
+    transform-origin: center center;
 }
 
 .action-btn:hover {
-    opacity: 0.7;
+    transform: scale(1.02);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
 }
 
 .action-btn svg {
@@ -872,11 +886,52 @@ body {
 }
 
 .transfer-status-received {
-    color: #007AFF;
+    color: #999999;
 }
 
 .transfer-status-returned {
     color: #999999;
+}
+
+/* 转账条已处理（接收或退回）状态 - 整体变灰 */
+.message-transfer.processed {
+    opacity: 0.7;
+}
+
+.message-transfer.processed .transfer-title,
+.message-transfer.processed .transfer-amount-value,
+.message-transfer.processed .transfer-message-text,
+.message-transfer.processed .transfer-icon svg {
+    color: #999999 !important;
+    stroke: #999999 !important;
+}
+
+/* 系统消息 - 统一提示条样式 */
+.message.system-message-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 8px 0;
+    padding: 0;
+}
+
+.system-message {
+    border-top: 1px dashed #cccccc;
+    font-size: 10px;
+    color: #999999;
+    text-align: center;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    width: 100%;
+    max-width: 280px;
+}
+
+/* 多选模式下系统消息可选中 */
+.message.system-message-wrapper.selectable {
+    cursor: pointer;
+}
+
+.message.system-message-wrapper.selected {
+    background-color: rgba(0, 122, 255, 0.1);
 }
 
 /* 转账接收/退回弹窗 */
@@ -1008,9 +1063,9 @@ body {
         height: 40px;
     }
     
-    /* 移动端按钮往上移10px */
+    /* 移动端按钮往上移15px */
     .action-buttons {
-        bottom: 55px;
+        bottom: 40px;
     }
 }
 

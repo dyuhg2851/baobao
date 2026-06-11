@@ -518,17 +518,18 @@ body {
                         <button id="css-add" class="btn btn-add">Add</button>
                         <button id="css-delete" class="btn btn-delete">Delete</button>
                     </div>
+                </div>
             </div>
         </div>
         
-        <!-- 铃声卡片 -->
-        <div class="card">
+        <!-- 铃声卡片 - 独立放置，不嵌套在CSS卡片内 -->
+        <div class="card ringtone-card">
             <h2>铃声</h2>
             
             <div class="ringtone-section">
                 <div class="ringtone-upload-group">
                     <label for="ringtone-file">上传铃声</label>
-                    <input type="file" id="ringtone-file" accept="audio/*">
+                    <input type="file" id="ringtone-file" accept="audio/mp3">
                     <div class="ringtone-file-name" id="ringtone-file-name"></div>
                 </div>
                 
